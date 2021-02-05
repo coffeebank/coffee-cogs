@@ -44,10 +44,10 @@ class loveping(commands.Cog):
             await ctx.send("The love cannon is empty. Ready to be reloaded using `bbsetlove` again :)")
 
     @commands.command()
-    async def loveping(self, ctx, usermention):
-        """Ping someone to send them messages of love...
+    async def lovecannon(self, ctx, usermention):
+        """Ping someone to send them messages of love... [cannon edition]
         
-        command: [p]loveping @user
+        command: [p]lovecannon @user
         """
 
         whookData = await self.config.guild(ctx.guild).loveCannon()
@@ -70,4 +70,35 @@ class loveping(commands.Cog):
                 await asyncio.sleep(random.randint(3, 20))
             await hook.close()
         else:
-            await ctx.send("I love you too <3 Add some webhook urls in an array format using `bbsetlove` :)")
+            await ctx.send("I love you too <3 Add a webhook url using `[p]setlove` :)")
+
+    
+    @commands.command()
+    async def loveping(self, ctx, usermention):
+        """Ping someone to send them messages of love...
+        
+        command: [p]loveping @user
+        """
+
+        loveGifs = [
+            "https://tenor.com/view/a-whisker-away-hug-love-anime-embrace-gif-17694740",
+            "https://tenor.com/view/anime-couples-cuddles-nuzzles-snuggles-gif-15069987",
+            "https://tenor.com/view/tonikaku-kawaii-tonikaku-kawaii-tonikawa-over-the-moon-for-you-gif-18959319",
+            "https://tenor.com/view/horimiya-izumi-miyamura-hori-kyoko-couple-hug-gif-14539121",
+            "https://tenor.com/view/anime-cute-in-love-happy-gif-4394528"
+        ]
+
+        whookData = await self.config.guild(ctx.guild).loveCannon()
+        if whookData != "":
+            x = 0
+            hook = Webhook.Async(whookData)
+            while x < 8:
+                time.sleep(0.3)
+                await hook.send("Hi i love you "+usermention+" :)")
+                time.sleep(0.1)
+                await hook.send(random.choice(loveGifs))
+                x += 1
+            await hook.close()
+        else:
+            await ctx.send("I love you too <3 Add a webhook url using `[p]setlove` :)")
+
