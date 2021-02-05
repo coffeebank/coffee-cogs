@@ -52,12 +52,12 @@ class loveping(commands.Cog):
 
         whookData = await self.config.guild(ctx.guild).loveCannon()
         if whookData != "":
+            hook = Webhook.Async(whookData)
 
             # ping torrent
             # removed multi-webhook support, maybe another day :')
             x = 0
             while x < 15:
-                hook = Webhook.Async(whookData)
                 time.sleep(random.uniform(0.05, 0.15))
                 await hook.send("Hi i love you "+usermention+" :)")
                 x += 1
