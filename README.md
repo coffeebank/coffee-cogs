@@ -4,6 +4,12 @@ Specialized cogs that no one would ever hope to need :)
 
 This repo contains cogs for [Red-DiscordBot](https://github.com/Cog-Creators/Red-DiscordBot).
 
+To install, use:
+```
+[p]repo add coffee-cogs https://github.com/coffeebank/coffee-cogs
+[p]cog install coffee-cogs [name-of-the-cog-you-want]
+```
+
 ## loveping
 
 Ping someone to send them messages of love... Takes what you type (including but not limited to pings) and resends it a couple (loveping) or a bajillion (lovecannon) times over a webhook.
