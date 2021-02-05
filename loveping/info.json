@@ -3,7 +3,7 @@
   "install_msg" : "Thanks for installing :') Come make pull requests over at my GitHub!",
   "name" : "loveping",
   "short" : "Ping someone to send them messages of love :)",
-  "requirements" : ["Example library", "Example 2", "Example 3"],
+  "requirements" : ["dhooks"]
   "description" : "Ping someone to send them messages of love :) Set a webhook url, send the command, and the bot will rain back what you typed.",
   "permissions" : [],
   "tags" : ["webhook"]
