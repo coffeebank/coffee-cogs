@@ -10,7 +10,7 @@ Ping someone to send them messages of love... Takes what you type (including but
 
 ## Contact
 
-Let me know of broken things or suggestions in [the Issues tab](issues).
+Let me know of broken things or suggestions in the Issues tab!
 
 ## Credits
 
