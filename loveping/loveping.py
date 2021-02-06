@@ -33,7 +33,7 @@ class loveping(commands.Cog):
     @checks.admin_or_permissions(manage_guild=True)
     async def clearlove(self, ctx):
         await self.config.guild(ctx.guild).loveCannon.set("")
-        await ctx.send("Cleaned the love cannon. Ready to be reloaded using `bbsetlove` again :)")
+        await ctx.send("Cleaned the love cannon. Ready to be reloaded using `[p]setlove` again :)")
     
     @commands.command()
     async def whatislove(self, ctx):
@@ -41,7 +41,7 @@ class loveping(commands.Cog):
         if whookData:
             await ctx.send(whookData)
         else:
-            await ctx.send("The love cannon is empty. Ready to be reloaded using `bbsetlove` again :)")
+            await ctx.send("The love cannon is empty. Ready to be reloaded using `[p]setlove` again :)")
 
     @commands.command()
     async def lovecannon(self, ctx, usermention):
