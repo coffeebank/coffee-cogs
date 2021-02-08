@@ -58,17 +58,33 @@ class loveping(commands.Cog):
             # removed multi-webhook support, maybe another day :')
             x = 0
             while x < 15:
-                time.sleep(random.uniform(0.05, 0.15))
+                time.sleep(0.6)
                 await hook.send("Hi i love you "+usermention+" :)")
                 x += 1
+            await hook.close()
+
+        else:
+            await ctx.send("I love you too <3 Add a webhook url using `[p]setlove` :)")
+
+
+    @commands.command()
+    async def loverain(self, ctx, usermention):
+        """Ping someone to send them messages of love... [rain edition]
+        
+        command: [p]loverain @user
+        """
+
+        whookData = await self.config.guild(ctx.guild).loveCannon()
+        if whookData != "":
+            hook = Webhook.Async(whookData)
 
             # ping rain
-            await asyncio.sleep(random.randint(3, 12))
-            for rainCount in range(15):
+            for rainCount in range(14):
                 print("pingRain #", rainCount)
-                await hook.send("I still love youuu come backk "+usermention+" :'(")
-                await asyncio.sleep(random.randint(3, 20))
+                await hook.send("Please give me some love "+usermention+" :'(")
+                await asyncio.sleep(random.randint(10, 30))
             await hook.close()
+
         else:
             await ctx.send("I love you too <3 Add a webhook url using `[p]setlove` :)")
 
