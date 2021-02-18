@@ -37,8 +37,8 @@ class sendhook(commands.Cog):
     async def edithook(self, ctx, webhookUrl, messageId, *, webhookText):
         """Edit a webhook"""
         head = {"Content-Type":"application/json"}
-        url = webhookUrl + "/messages/" + messageId
-        payload = {'content' : webhookText }
+        url = webhookUrl + "/messages/" + str(messageId)
+        payload = {"content": webhookText }
 
         requests.patch(url, payload, headers=head)
         await ctx.send("Updated webhook")
