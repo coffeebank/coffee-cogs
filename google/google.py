@@ -30,7 +30,7 @@ class google(commands.Cog):
         pass
 
     @commands.command()
-    async def google(self, ctx, searchtext):
+    async def google(self, ctx, *, searchtext):
         if searchtext:
             query = quote(searchtext)
             searchEngines = await self.config.guild(ctx.guild).searchEngines()

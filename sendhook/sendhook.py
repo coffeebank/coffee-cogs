@@ -3,10 +3,8 @@ from redbot.core import Config, commands, checks
 from array import *
 from dhooks import Webhook, Embed
 import asyncio
-import aiohttp
-import discord
-import time
-import random
+import requests
+import json
 
 class sendhook(commands.Cog):
     """Send webhooks easily..."""
@@ -28,8 +26,19 @@ class sendhook(commands.Cog):
     '''
 
     @commands.command()
-    async def sendhook(self, ctx, webhookUrl, text):
+    async def sendhook(self, ctx, webhookUrl, *, webhookText):
         """Send a webhook"""
 
         hook = Webhook(webhookUrl)
-        hook.send(text)
+        hook.send(webhookText)
+        await ctx.send("Sent webhook")
+
+    @commands.command()
+    async def edithook(self, ctx, webhookUrl, messageId, *, webhookText):
+        """Edit a webhook"""
+        head = {"Content-Type":"application/json"}
+        url = webhookUrl + "/messages/" + messageId
+        payload = {'content' : webhookText }
+
+        requests.patch(url, payload, headers=head)
+        await ctx.send("Updated webhook")
