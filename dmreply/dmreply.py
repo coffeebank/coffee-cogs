@@ -46,7 +46,7 @@ class dmreply(BaseCog):
         description = await self.config.guild(ctx.guild).title()
         # content = _("You can reply to this message with {}contact").format(prefix)
         if await ctx.embed_requested():
-            e = discord.Embed(colour=discord.Colour.red(), description=message)
+            e = discord.Embed(color=(await ctx.embed_colour()), description=message)
 
             # e.set_footer(text=content)
             if ctx.bot.user.avatar_url:
