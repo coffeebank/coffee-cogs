@@ -5,6 +5,7 @@ from dhooks import Webhook, Embed
 import asyncio
 import aiohttp
 import discord
+import requests
 import time
 import random
 
@@ -57,9 +58,14 @@ class loveping(commands.Cog):
             # ping torrent
             # removed multi-webhook support, maybe another day :')
             x = 0
-            while x < 15:
-                time.sleep(0.6)
-                await hook.send("Hi i love you "+usermention+" :)")
+            #req = requests.get(whookData)
+            #ceiling = req.headers["X-RateLimit-Remaining"]
+            ceiling = 20
+
+            while (x < 20): # and (ceiling > 4):
+                time.sleep(0.2)
+                await hook.send("Hi i love you "+usermention+str(ceiling)+" :)")
+                ceiling -= 1
                 x += 1
             await hook.close()
 
