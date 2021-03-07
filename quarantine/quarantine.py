@@ -89,4 +89,4 @@ class quarantine(commands.Cog):
                     e.set_author(name=user.display_name)
 
                 destination = ctx.guild.get_channel(destinationdata)
-                await destination.send(embed=e)
+                await destination.send(user.mention, embed=e)
