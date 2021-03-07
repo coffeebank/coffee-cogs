@@ -26,7 +26,12 @@ class dmreply(BaseCog):
         
         self.bot = bot
         self.repo_tags = []
-        self.config = Config.get_conf(self, identifier=806715409318936616)
+        self.config = Config.get_conf(self, identifier=806715409318936616, force_registration=True)
+        
+        self.config.register_global(
+            defaultreply="Hi! This bot isn't set up to receive DMs yet. Please try sending your message in the server. Thanks!",
+            defaultreplyfooter="This is an automated reply.",
+        )
 
         default_guild = {
             "title": "DM from Bot Owner"
@@ -71,15 +76,46 @@ class dmreply(BaseCog):
 
 
     @commands.command()
-    @checks.admin_or_permissions(manage_guild=True)
+    @commands.is_owner()
     async def setdmreply(self, ctx, setting="", *, message):
-        """Change the configurations in dmreply
+        """Change the configurations in dmreply (Owner only)
         
         - title
+        - defaultreply
+        - defaultreplyfooter
         """
         if setting == "title":
             await self.config.guild(ctx.guild).title.set(message)
             await ctx.message.add_reaction("✅")
+        elif setting == "defaultreply":
+            await self.config.defaultreply.set(message)
+            await ctx.message.add_reaction("✅")
+        elif setting == "defaultreplyfooter":
+            await self.config.defaultreplyfooter.set(message)
+            await ctx.message.add_reaction("✅")
         else:
             title = await self.config.guild(ctx.guild).title()
             await ctx.send(title)
+
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.guild:
+            return
+        if message.author.bot:
+            return
+        if isinstance(message.channel, discord.abc.PrivateChannel):
+            defaultreply = await self.config.defaultreply()
+            defaultreplyfooter = await self.config.defaultreplyfooter()
+            
+            e = discord.Embed(color=16711680, description=defaultreply)
+            e.set_footer(text=defaultreplyfooter)
+
+            if self.bot.user.avatar_url:
+                e.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            else:
+                e.set_author(name=self.bot.user.name)
+
+            await message.author.send(embed=e)
+        else:
+            return
