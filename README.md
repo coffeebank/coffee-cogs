@@ -10,9 +10,9 @@ To install, use:
 [p]cog install coffee-cogs [name-of-the-cog-you-want]
 ```
 
-## loveping
+## Cog Information
 
-Ping someone to send them messages of love... Takes what you type (including but not limited to pings) and resends it a couple (loveping) or a bajillion (lovecannon) times over a webhook.
+See `info.json` in cog folder for cog information.
 
 ## Contact
 
