@@ -50,52 +50,82 @@ class dmreply(BaseCog):
 
         description = await self.config.guild(ctx.guild).title()
         # content = _("You can reply to this message with {}contact").format(prefix)
-        if await ctx.embed_requested():
-            e = discord.Embed(color=(await ctx.embed_colour()), description=message)
+        e = discord.Embed(color=(await ctx.embed_colour()), description=message)
 
-            # e.set_footer(text=content)
-            if ctx.bot.user.avatar_url:
-                e.set_author(name=description, icon_url=ctx.bot.user.avatar_url)
-            else:
-                e.set_author(name=description)
-
-            try:
-                await destination.send(embed=e)
-            except discord.HTTPException:
-                await ctx.send("Sorry, I couldn't deliver your message")
-            else:
-                await ctx.send("Message delivered")
+        # e.set_footer(text=content)
+        if ctx.bot.user.avatar_url:
+            e.set_author(name=description, icon_url=ctx.bot.user.avatar_url)
         else:
-            response = "{}\nMessage:\n\n{}".format(description, message)
-            try:
-                await destination.send("{}\n{}".format(box(response)))
-            except discord.HTTPException:
-                await ctx.send("Sorry, I couldn't deliver your message")
-            else:
-                await ctx.send("Message delivered")
+            e.set_author(name=description)
+
+        try:
+            await destination.send(embed=e)
+        except discord.HTTPException:
+            await ctx.send("Sorry, I couldn't deliver your message")
+        else:
+            await ctx.send("Message delivered")
 
 
-    @commands.command()
+    @commands.guild_only()
+    @commands.group()
     @commands.is_owner()
-    async def setdmreply(self, ctx, setting="", *, message):
+    async def setdmreply(self, ctx: commands.Context):
         """Change the configurations in dmreply (Owner only)
         
-        - title
-        - defaultreply
-        - defaultreplyfooter
-        """
-        if setting == "title":
-            await self.config.guild(ctx.guild).title.set(message)
-            await ctx.message.add_reaction("✅")
-        elif setting == "defaultreply":
-            await self.config.defaultreply.set(message)
-            await ctx.message.add_reaction("✅")
-        elif setting == "defaultreplyfooter":
-            await self.config.defaultreplyfooter.set(message)
-            await ctx.message.add_reaction("✅")
+        Embed color is determined by your bot's settings under [p]set.
+        Automatic reply embed color cannot be changed."""
+        if not ctx.invoked_subcommand:
+            pass
+
+    @setdmreply.command(name="title")
+    async def sdmtitle(self, ctx, *, message):
+        """Change the embed title"""
+        await self.config.guild(ctx.guild).title.set(message)
+        await ctx.message.add_reaction("✅")
+
+    @setdmreply.command(name="defaultreply")
+    async def sdmdefaultreply(self, ctx, *, message):
+        """Change the embed body/content"""
+        await self.config.defaultreply.set(message)
+        await ctx.message.add_reaction("✅")
+        
+    @setdmreply.command(name="defaultreplyfooter")
+    async def sdmdefaultreplyfooter(self, ctx, *, message):
+        """Change the embed footer text"""
+        await self.config.defaultreplyfooter.set(message)
+        await ctx.message.add_reaction("✅")
+
+    @setdmreply.command(name="list")
+    async def sdmlist(self, ctx):
+        """List current settings"""
+
+        # sending a dm
+        title = await self.config.guild(ctx.guild).title()
+        e = discord.Embed(color=(await ctx.embed_colour()), description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+        if ctx.bot.user.avatar_url:
+            e.set_author(name=title, icon_url=ctx.bot.user.avatar_url)
         else:
-            title = await self.config.guild(ctx.guild).title()
-            await ctx.send(title)
+            e.set_author(name=title)
+
+        # automatic reply
+        defaultreply = await self.config.defaultreply()
+        defaultreplyfooter = await self.config.defaultreplyfooter()
+        
+        dme = discord.Embed(color=16711680, description=defaultreply)
+        dme.set_footer(text=defaultreplyfooter)
+
+        if self.bot.user.avatar_url:
+            dme.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        else:
+            dme.set_author(name=self.bot.user.name)
+
+        try:
+            await ctx.send("sending a dm", embed=e)
+            await ctx.send("automatic reply", embed=dme)
+        except discord.HTTPException:
+            await ctx.send("Sorry, it looks like I might be missing some permissions...")
+
+        # await ctx.send(title)
 
 
     @commands.Cog.listener()
