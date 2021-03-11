@@ -1,24 +1,27 @@
-# coffee-cogs
+<h1 align="center">
+  coffee-cogs
+</h1>
 
-A collection of Discord Bot extensions ("cogs") built for users with a self-hosted instance of [Red Discord Bot](https://github.com/Cog-Creators/Red-DiscordBot).
+<div id="supportdiscord"></div>
 
-To start using it for your Red Discord Bot, type:
+<p align="center">
+  A collection of Discord Bot extensions ("cogs") built for users with a self-hosted instance of <a href="https://github.com/Cog-Creators/Red-DiscordBot">Red Discord Bot</a>.
+</p>
+
+<p align="center">
+  <strong>To start using it for your Red Discord Bot, type:</strong>
+</p>
+
 ```
 [p]repo add coffee-cogs https://github.com/coffeebank/coffee-cogs
 [p]cog install coffee-cogs insertCogNameHere
 ```
 
-Join the Support Discord: <https://discord.gg/Waeg227Jvb>
+<p align="center">
+  <a href="https://discord.gg/Waeg227Jvb">Join the Support Discord ></a>
+</p>
 
-
-## About this repo
-
-These cogs were created because it was mind boggling as a non-coding Discord user learning that certain features didn't exist but was stupid easy to change or create as a Discord bot. The cogs in this repo were made out of pure desperation to solve some very specific pain points.
-
-**I am new to Python development, and thus most of my code is likely to be very bad.** If you have an idea to improve on the code here, feel free to start Issues and Pull Requests!
-
-
-## Cog Information
+## Cog Info
 
 See `info.json` in cog folders for the latest cog information.
 
@@ -31,16 +34,23 @@ See `info.json` in cog folders for the latest cog information.
 |websearch|A simple Discord bot feature that gives you links to search engines like Google without needing to copy-paste and search it yourself.|
 
 
-## License
+## About this repo
 
-See `LICENSE.md`.
+These cogs were created because it was mind boggling as a non-coding Discord user learning that certain features didn't exist but was stupid easy to change or create as a Discord bot. The cogs in this repo were made out of pure desperation to solve some very specific pain points.
+
+**I am new to Python development, and thus most of my code is likely to be very bad.** If you have an idea to improve on the code here, feel free to start Issues and Pull Requests!
 
 
 ## Contact
 
 Let me know of broken things or suggestions in the Issues tab!
 
-Join the Support Discord: <https://discord.gg/Waeg227Jvb>
+[Join the Support Discord >](#supportdiscord)
+
+
+## License
+
+See `LICENSE.md`.
 
 
 ## Credits
