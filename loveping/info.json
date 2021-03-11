@@ -6,5 +6,6 @@
   "requirements" : ["dhooks"],
   "description" : "Ping someone to send them messages of love :) Set a webhook url, send the command, and the bot will rain back what you typed.",
   "permissions" : [],
+  "end_user_data_statement" : "This cog does not store any End User Data.",
   "tags" : ["webhook"]
 }

@@ -4,7 +4,8 @@
   "name" : "websearch",
   "short" : "Search for stuff on the web",
   "requirements" : [],
-  "description" : "Gives you links to common search engines based on a search query.",
+  "description" : "A simple Discord bot feature that gives you links to search engines like Google without needing to copy-paste and search it yourself.",
   "permissions" : [],
-  "tags" : []
+  "end_user_data_statement" : "This cog does not store any End User Data.",
+  "tags" : ["search", "search engine", "google"]
 }

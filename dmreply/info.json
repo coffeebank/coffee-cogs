@@ -6,5 +6,6 @@
   "requirements" : ["dhooks"],
   "description" : "Upgrading the built-in DM feature to be more customizable. Made with the goal of helping support teams responding to queries via DM.",
   "permissions" : [],
+  "end_user_data_statement" : "This cog does not store any End User Data.",
   "tags" : ["dm"]
 }

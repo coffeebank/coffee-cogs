@@ -4,7 +4,8 @@
   "name" : "quarantine",
   "short" : "Quarantine a user",
   "requirements" : [],
-  "description" : "Quarantine a user",
+  "description" : "Quarantine a user easily. Set a muterole and mod log channel, and any users specified will have their roles removed and replaced with the muterole.",
   "permissions" : [],
-  "tags" : []
+  "end_user_data_statement" : "This cog does not store any End User Data.",
+  "tags" : ["moderation", "roles", "mute", "mod"]
 }

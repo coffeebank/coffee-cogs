@@ -4,7 +4,8 @@
   "name" : "sendhook",
   "short" : "Send webhooks easily...",
   "requirements" : ["dhooks"],
-  "description" : "Send webhooks easily...",
+  "description" : "Makes sending webhooks from the Discord chat super easy. Just give it a webhook url and a message! Can even save aliases for webhooks you want to send to often.",
   "permissions" : [],
+  "end_user_data_statement" : "This cog does not store any End User Data.",
   "tags" : ["webhook"]
 }
