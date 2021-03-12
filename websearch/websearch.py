@@ -82,7 +82,7 @@ class websearch(commands.Cog):
             pass
         else:
             try:
-                message = str(searchEn["url"].split('%s')[0]) + query + str(searchEn["url"].split('%s')[1]) + ">"
+                message = str(searchEn["url"].split('%s')[0]) + query + str(searchEn["url"].split('%s')[1])
             except:
                 message = str(searchEn["url"]) + query
             finally:
