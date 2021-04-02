@@ -99,7 +99,8 @@ class emotes(commands.Cog):
 
         # Send embed for each result
         for b in emoteresults:
-            e = discord.Embed(color=(await ctx.embed_colour()), description=b[2])
+            desc = f"`{b[2]}`"
+            e = discord.Embed(color=(await ctx.embed_colour()), description=desc)
             # [1] is emote name
             e.set_author(name=b[1], url=b[2])
             # [2] is image url
