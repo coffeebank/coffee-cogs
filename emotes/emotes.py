@@ -20,7 +20,7 @@ class emotes(commands.Cog):
         self.config.register_global(**default_global)
 
 
-    @commands.group()
+    @commands.group(aliases=["se"])
     @checks.is_owner()
     async def setemote(self, ctx: commands.Context):
         """Change the configurations for Emotes cog
@@ -35,8 +35,8 @@ class emotes(commands.Cog):
         await self.config.emoteGoogleSheetId.set(sheetId)
         await ctx.message.add_reaction("✅")
 
-    @setemote.command(aliases=["eupdate"])
-    async def update(self, ctx):
+    @setemote.command(name="update")
+    async def seteupdate(self, ctx):
         """Pull updates from Emote Google Sheet"""
         await ctx.message.add_reaction("⏳")
 
