@@ -110,5 +110,20 @@ class emotes(commands.Cog):
                 e.set_footer(text="Tags: "+b[3])
             await ctx.send(embed=e)
 
+    @commands.command(aliases=["esend", "eee"])
+    async def emotesend(self, ctx, search):
+        """Send an image-ized emote url, with first search result"""
+        emotestore = await self.config.emotestore()
+        for a in emotestore:
+            # [1] is name, [3] is tags
+            if search.lower() in a[1] or search.lower() in a[3]:
+                # [2] is image url
+                await ctx.send(a[2])
+                # (try to) Delete trigger message
+                try:
+                    return await ctx.message.delete()
+                except:
+                    return
+
 
 
