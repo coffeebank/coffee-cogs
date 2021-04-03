@@ -20,6 +20,18 @@ class emotes(commands.Cog):
         self.config.register_global(**default_global)
 
 
+    # Utility Commands
+
+    def convertNum(self, n):
+        numarray = {2: '2️⃣', 3: '3️⃣', 4: '4️⃣', 5: '5️⃣', 6: '6️⃣', 7: '7️⃣', 8: '8️⃣', 9: '9️⃣'}
+        try:
+            return numarray[n]
+        except:
+            return "🔢"
+            
+
+    # Bot Commands
+
     @commands.group(aliases=["se"])
     @checks.is_owner()
     async def setemote(self, ctx: commands.Context):
@@ -29,9 +41,9 @@ class emotes(commands.Cog):
         if not ctx.invoked_subcommand:
             pass
     
-    @setemote.command(name="gsheet")
-    async def setegsheet(self, ctx, sheetId: str):
-        """Set Google Sheet ID with the emote data"""
+    @setemote.command(name="sheet")
+    async def setesheet(self, ctx, sheetId: str):
+        """Set Emote Google Sheet's ID, where the emote data was entered into"""
         await self.config.emoteGoogleSheetId.set(sheetId)
         await ctx.message.add_reaction("✅")
 
@@ -82,7 +94,7 @@ class emotes(commands.Cog):
 
 
     @commands.command(aliases=["esearch", "ee"])
-    async def emotesearch(self, ctx, search):
+    async def emotesearch(self, ctx, search, page: int=1):
         """Search for image-ized emote url"""
         emotestore = await self.config.emotestore()
         emoteresults = []
@@ -91,11 +103,27 @@ class emotes(commands.Cog):
             if search.lower() in a[1] or search.lower() in a[3]:
                 emoteresults.append(a)
 
-        # Prune search results to only 4
-        try:
-            emoteresults = emoteresults[:3]
-        except:
-            pass
+        # Exit early if empty
+        if len(emoteresults) <= 0:
+            return await ctx.message.add_reaction("💨")
+
+        # Prune search results to only maxresults
+        maxresults = 3
+        if len(emoteresults) > maxresults:
+            emotestart = page*maxresults-maxresults
+            # Fallback to page 1 if specified page doesn't exist
+            if emotestart > len(emoteresults):
+                page = 1
+                emotestart = (page-1)*maxresults
+            emoteend = page*maxresults
+            try:
+                emoteresults = emoteresults[emotestart:emoteend]
+            except:
+                emoteresults = emoteresults[emotestart:]
+
+        # Send react if it's not page 1 results
+        if page != 1:
+            await ctx.message.add_reaction(self.convertNum(page))
 
         # Send embed for each result
         for b in emoteresults:
@@ -109,6 +137,7 @@ class emotes(commands.Cog):
             if b[3] != "":
                 e.set_footer(text="Tags: "+b[3])
             await ctx.send(embed=e)
+
 
     @commands.command(aliases=["esend", "eee"])
     async def emotesend(self, ctx, search):
