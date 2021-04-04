@@ -108,7 +108,10 @@ class emotes(commands.Cog):
             return await ctx.message.add_reaction("💨")
 
         # If page=0, return all; otherwise, limit to 3 per page
-        if page != 0:
+        if page == 0:
+            emotelength = len(emoteresults)
+            await ctx.send(f"{emotelength} results")
+        else:
             # Prune search results to only maxresults
             maxresults = 3
             if len(emoteresults) > maxresults:
@@ -124,7 +127,7 @@ class emotes(commands.Cog):
                     emoteresults = emoteresults[emotestart:]
 
         # Send react if it's not page 1 results
-        if page != 1:
+        if page > 1:
             await ctx.message.add_reaction(self.convertNum(page))
 
         # Send embed for each result
@@ -138,6 +141,9 @@ class emotes(commands.Cog):
             # [3] is tags
             if b[3] != "":
                 e.set_footer(text="Tags: "+b[3])
+            # Ratelimit to 1 per 0.75s if bot is going to list all at once
+            if page == 0:
+                time.sleep(0.65)
             await ctx.send(embed=e)
 
 
