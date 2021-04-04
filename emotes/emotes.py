@@ -107,19 +107,21 @@ class emotes(commands.Cog):
         if len(emoteresults) <= 0:
             return await ctx.message.add_reaction("💨")
 
-        # Prune search results to only maxresults
-        maxresults = 3
-        if len(emoteresults) > maxresults:
-            emotestart = page*maxresults-maxresults
-            # Fallback to page 1 if specified page doesn't exist
-            if emotestart > len(emoteresults):
-                page = 1
-                emotestart = (page-1)*maxresults
-            emoteend = page*maxresults
-            try:
-                emoteresults = emoteresults[emotestart:emoteend]
-            except:
-                emoteresults = emoteresults[emotestart:]
+        # If page=0, return all; otherwise, limit to 3 per page
+        if page != 0:
+            # Prune search results to only maxresults
+            maxresults = 3
+            if len(emoteresults) > maxresults:
+                emotestart = page*maxresults-maxresults
+                # Fallback to page 1 if specified page doesn't exist
+                if emotestart > len(emoteresults):
+                    page = 1
+                    emotestart = (page-1)*maxresults
+                emoteend = page*maxresults
+                try:
+                    emoteresults = emoteresults[emotestart:emoteend]
+                except:
+                    emoteresults = emoteresults[emotestart:]
 
         # Send react if it's not page 1 results
         if page != 1:
