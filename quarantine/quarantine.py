@@ -5,7 +5,7 @@ import aiohttp
 import discord
 import time
 
-class quarantine(commands.Cog):
+class Quarantine(commands.Cog):
     """Quarantine a user"""
 
     def __init__(self):

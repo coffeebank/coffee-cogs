@@ -1,5 +1,4 @@
-from .emotes import emotes
-
+from .emotes import Emotes
 
 def setup(bot):
-    bot.add_cog(emotes(bot))
+    bot.add_cog(Emotes(bot))

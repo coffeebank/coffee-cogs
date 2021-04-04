@@ -7,7 +7,7 @@ import requests
 import time
 import random
 
-class emotes(commands.Cog):
+class Emotes(commands.Cog):
     """Custom emote solution for non-nitro users"""
 
     def __init__(self, bot):

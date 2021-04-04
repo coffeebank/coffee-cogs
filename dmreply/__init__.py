@@ -1,5 +1,4 @@
-from .dmreply import dmreply
-
+from .dmreply import Dmreply
 
 def setup(bot):
-    bot.add_cog(dmreply(bot))
+    bot.add_cog(Dmreply(bot))

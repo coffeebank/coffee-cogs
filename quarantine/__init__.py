@@ -1,5 +1,4 @@
-from .quarantine import quarantine
-
+from .quarantine import Quarantine
 
 def setup(bot):
-    bot.add_cog(quarantine())
+    bot.add_cog(Quarantine())

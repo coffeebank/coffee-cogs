@@ -9,7 +9,7 @@ import requests
 import time
 import random
 
-class loveping(commands.Cog):
+class Loveping(commands.Cog):
     """Ping someone to send them messages of love :)"""
 
     def __init__(self):

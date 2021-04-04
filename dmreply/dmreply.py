@@ -21,7 +21,7 @@ BaseCog = getattr(commands, "Cog", object)
 # imports and template are from Crossedfall/crossed-cogs and Red bot, many thanks! (no affiliation)
 
 
-class dmreply(BaseCog):
+class Dmreply(BaseCog):
     def __init__(self, bot):
         
         self.bot = bot

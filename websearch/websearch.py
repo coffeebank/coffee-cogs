@@ -6,7 +6,7 @@ import discord
 from urllib.parse import quote
 import json
 
-class websearch(commands.Cog):
+class Websearch(commands.Cog):
     """Gives you links to common search engines based on a search query."""
 
     def __init__(self):

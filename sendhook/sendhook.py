@@ -5,7 +5,7 @@ import asyncio
 import requests
 import json
 
-class sendhook(commands.Cog):
+class Sendhook(commands.Cog):
     """Send webhooks easily..."""
 
     def __init__(self):
