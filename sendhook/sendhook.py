@@ -87,12 +87,14 @@ class Sendhook(commands.Cog):
             hook.send(webhookText)
         except:
             await ctx.send("Oh no! Webhook couldn't be sent :(")
-        finally:
+        else:
             # Try adding react, if no perms then send normal message
             try:
                 await ctx.message.add_reaction("✅")
             except:
                 await ctx.send("Webhook sent ✅")
+            finally:
+                await ctx.send(f"Message ID: {ctx.message.id}")
 
 
     @commands.command()
@@ -128,7 +130,7 @@ class Sendhook(commands.Cog):
             requests.patch(url, json=payload, headers=head)
         except:
             await ctx.send("Oh no! Webhook couldn't be sent :(")
-        finally:
+        else:
             # Try adding react, if no perms then send normal message
             try:
                 await ctx.message.add_reaction("✅")
