@@ -85,6 +85,9 @@ class Sendhook(commands.Cog):
         
         try:
             hook.send(webhookText)
+            # TODO: Make it return message ID after send
+            # hooktosend = hook.send(webhookText)
+            # await ctx.send(f"Message ID: {hooktosend}")
         except:
             await ctx.send("Oh no! Webhook couldn't be sent :(")
         else:
@@ -93,8 +96,6 @@ class Sendhook(commands.Cog):
                 await ctx.message.add_reaction("✅")
             except:
                 await ctx.send("Webhook sent ✅")
-            finally:
-                await ctx.send(f"Message ID: {ctx.message.id}")
 
 
     @commands.command()
