@@ -1,5 +1,6 @@
 from redbot.core import Config, commands, checks
 from urllib.request import urlopen
+import mimetypes
 import discord
 import asyncio
 import random
@@ -24,21 +25,28 @@ class Loveplay(commands.Cog):
     # Utility Commands
 
     def purrbotApi(self, topic, mincount:int, maxcount:int, gifImg, filetype):
-        # Check for file integrity locally
-        url = "https://purrbot.site/img/sfw/{2}/{0}/{2}_0{1}.{3}".format(gifImg, random.randint(mincount, maxcount), topic, filetype)
-        status_code = self.checkAlive(url)
+        url = "https://purrbot.site/img/sfw/{2}/{0}/{2}_{1}.{3}".format(gifImg, format(random.randint(mincount, maxcount), '03'), topic, filetype)
 
-        if status_code == False:
-            reqdata = requests.get("https://purrbot.site/api/img/sfw/{0}/{1}".format(topic,gifImg)).json()
-            return reqdata["link"]
-        else:
-            return status_code
+        # Immediately return generated url whether the link is a real image or not
+        return url
+
+        # Check for file integrity, fallback to online API
+        # Removing bc load times take too long
+
+        # status_code = self.checkAlive(url)
+
+        # if status_code == False:
+        #     reqdata = requests.get("https://purrbot.site/api/img/sfw/{0}/{1}".format(topic,gifImg)).json()
+        #     return reqdata["link"]
+        # else:
+        #     return status_code
 
     def checkAlive(self, url):
-        if urlopen(url).getcode() == 200:
+        meta = urlopen(url).info()
+        if "image" in meta["content-type"]:
             return url
         else:
-            return False
+            return url
 
     async def buildEmbed(self, ctx, descriptor, imgUrl, text=None):
         if text == None:
@@ -58,7 +66,7 @@ class Loveplay(commands.Cog):
     async def lpblush(self, ctx, user):
         """Send a blush"""
         desc = "blush"
-        src = self.purrbotApi(desc, 10, 60, "gif", "gif")
+        src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
 
@@ -66,7 +74,7 @@ class Loveplay(commands.Cog):
     async def lpdance(self, ctx, user):
         """Send a dance"""
         desc = "dance"
-        src = self.purrbotApi(desc, 10, 60, "gif", "gif")
+        src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
@@ -74,7 +82,7 @@ class Loveplay(commands.Cog):
     async def lphug(self, ctx, user):
         """Send a hug"""
         desc = "hug"
-        src = self.purrbotApi(desc, 10, 60, "gif", "gif")
+        src = self.purrbotApi(desc, 1, 60, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
@@ -82,7 +90,7 @@ class Loveplay(commands.Cog):
     async def lpkiss(self, ctx, user):
         """Send a kiss"""
         desc = "kiss"
-        src = self.purrbotApi(desc, 10, 60, "gif", "gif")
+        src = self.purrbotApi(desc, 1, 60, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
@@ -90,7 +98,7 @@ class Loveplay(commands.Cog):
     async def lplick(self, ctx, user):
         """Send a lick"""
         desc = "lick"
-        src = self.purrbotApi(desc, 10, 60, "gif", "gif")
+        src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
@@ -98,7 +106,7 @@ class Loveplay(commands.Cog):
     async def lpneko(self, ctx, user):
         """Send a neko"""
         desc = "neko"
-        src = self.purrbotApi(desc, 10, 60, "gif", "gif")
+        src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
@@ -106,7 +114,7 @@ class Loveplay(commands.Cog):
     async def lppat(self, ctx, user):
         """Send a pat"""
         desc = "pat"
-        src = self.purrbotApi(desc, 10, 60, "gif", "gif")
+        src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
@@ -114,7 +122,7 @@ class Loveplay(commands.Cog):
     async def lppoke(self, ctx, user):
         """Send a poke"""
         desc = "poke"
-        src = self.purrbotApi(desc, 10, 60, "gif", "gif")
+        src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
@@ -122,7 +130,7 @@ class Loveplay(commands.Cog):
     async def lpslap(self, ctx, user):
         """Send a slap"""
         desc = "slap"
-        src = self.purrbotApi(desc, 10, 60, "gif", "gif")
+        src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
