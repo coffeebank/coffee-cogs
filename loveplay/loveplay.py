@@ -63,7 +63,7 @@ class Loveplay(commands.Cog):
     # Bot Commands
  
     @commands.command(name="blush")
-    async def lpblush(self, ctx, user):
+    async def lpblush(self, ctx, *, user):
         """Send a blush"""
         desc = "blush"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
@@ -71,7 +71,7 @@ class Loveplay(commands.Cog):
         await ctx.send(embed=e)
 
     @commands.command(name="dance")
-    async def lpdance(self, ctx, user):
+    async def lpdance(self, ctx, *, user):
         """Send a dance"""
         desc = "dance"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
@@ -79,7 +79,7 @@ class Loveplay(commands.Cog):
         await ctx.send(embed=e)
         
     @commands.command(name="hug")
-    async def lphug(self, ctx, user):
+    async def lphug(self, ctx, *, user):
         """Send a hug"""
         desc = "hug"
         src = self.purrbotApi(desc, 1, 60, "gif", "gif")
@@ -87,7 +87,7 @@ class Loveplay(commands.Cog):
         await ctx.send(embed=e)
         
     @commands.command(name="kiss")
-    async def lpkiss(self, ctx, user):
+    async def lpkiss(self, ctx, *, user):
         """Send a kiss"""
         desc = "kiss"
         src = self.purrbotApi(desc, 1, 60, "gif", "gif")
@@ -95,7 +95,7 @@ class Loveplay(commands.Cog):
         await ctx.send(embed=e)
         
     @commands.command(name="lick")
-    async def lplick(self, ctx, user):
+    async def lplick(self, ctx, *, user):
         """Send a lick"""
         desc = "lick"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
@@ -103,7 +103,7 @@ class Loveplay(commands.Cog):
         await ctx.send(embed=e)
         
     @commands.command(name="neko")
-    async def lpneko(self, ctx, user):
+    async def lpneko(self, ctx, *, user):
         """Send a neko"""
         desc = "neko"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
@@ -111,7 +111,7 @@ class Loveplay(commands.Cog):
         await ctx.send(embed=e)
         
     @commands.command(name="pat")
-    async def lppat(self, ctx, user):
+    async def lppat(self, ctx, *, user):
         """Send a pat"""
         desc = "pat"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
@@ -119,7 +119,7 @@ class Loveplay(commands.Cog):
         await ctx.send(embed=e)
         
     @commands.command(name="poke")
-    async def lppoke(self, ctx, user):
+    async def lppoke(self, ctx, *, user):
         """Send a poke"""
         desc = "poke"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
@@ -127,7 +127,7 @@ class Loveplay(commands.Cog):
         await ctx.send(embed=e)
         
     @commands.command(name="slap")
-    async def lpslap(self, ctx, user):
+    async def lpslap(self, ctx, *, user):
         """Send a slap"""
         desc = "slap"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
@@ -136,7 +136,7 @@ class Loveplay(commands.Cog):
         
     @commands.command(name="yuri")
     @commands.is_nsfw()
-    async def lpyuri(self, ctx, user):
+    async def lpyuri(self, ctx, *, user):
         """Send a yuri"""
         desc = "yuri"
         req = requests.get("https://purrbot.site/api/img/nsfw/yuri/gif").json()
