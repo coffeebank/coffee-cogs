@@ -127,6 +127,7 @@ class Loveplay(commands.Cog):
         await ctx.send(embed=e)
         
     @commands.command(name="yuri")
+    @commands.is_nsfw()
     async def lpyuri(self, ctx, user):
         """Send a yuri"""
         desc = "yuri"
