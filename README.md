@@ -28,7 +28,10 @@ See `info.json` in cog folders for the latest cog information.
 |Name|Info|
 |---|---|
 |dmreply|Upgrading the built-in DM feature to be more customizable. Made with the goal of helping support teams responding to queries via DM.|
-|loveping|Ping someone to send them messages of love :) Set a webhook url, send the command, and the bot will rain back what you typed.|
+|emotes|*[Needs custom setup]* Custom emote solution for non-nitro users, using emotes saved in a Google Sheets spreadsheet.|
+|jsonrequest|Send and receive a json request from Discord. Can be used to supplement other cogs, and includes domain whitelisting by server.|
+|loveping|*[Hidden]*|
+|loveplay|Send love to other members of the server with hugs, kisses, and more, from Purrbot API|
 |quarantine|Quarantine a user easily. Set a muterole and mod log channel, and any users specified will have their roles removed and replaced with the muterole.|
 |sendhook|Makes sending webhooks from the Discord chat super easy. Just give it a webhook url and a message! Can even save aliases for webhooks you want to send to often.|
 |websearch|A simple Discord bot feature that gives you links to search engines like Google without needing to copy-paste and search it yourself.|
