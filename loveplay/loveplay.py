@@ -52,7 +52,7 @@ class Loveplay(commands.Cog):
         if text == None:
             desc = ""
         else:
-            desc = "**{0}**\u2002gives **{1}** a {2}".format(ctx.author.display_name, text, descriptor)
+            desc = "**{0}** gives **{1}** a {2}".format(ctx.author.mention, text, descriptor)
         botcolor = await ctx.embed_colour()
         e = discord.Embed(color=botcolor, description=desc)
         e.set_image(url=imgUrl)
