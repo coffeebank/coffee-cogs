@@ -2,7 +2,7 @@ from redbot.core import Config, commands, checks
 import random
 
 class Coffeetools(commands.Cog):
-    """Gives you links to common search engines based on a search query."""
+    """Replacement for 'General' cog, since it needs to be disabled to override certain commands."""
 
     def __init__(self):
         self.config = Config.get_conf(self, identifier=806715409318936616)

@@ -4,7 +4,7 @@
   "name" : "coffeetools",
   "short" : "Replacement for 'General' cog, with some common tools",
   "requirements" : [],
-  "description" : "Replacement for 'General' cog, since it needs to be disabled for 'loveplay' to work properly.",
+  "description" : "Replacement for 'General' cog, since it needs to be disabled to override certain commands.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
   "tags" : ["tools", "choose", "choice"]
