@@ -15,7 +15,8 @@ class Loveping(commands.Cog):
     def __init__(self):
         self.config = Config.get_conf(self, identifier=806715409318936616)
         default_guild = {
-            "loveCannon": ""
+            "loveCannon": "",
+            "loveMute": "",
         }
         self.config.register_guild(**default_guild)
 
@@ -44,6 +45,13 @@ class Loveping(commands.Cog):
             await ctx.send(whookData)
         else:
             await ctx.send("The love cannon is empty. Ready to be reloaded using `[p]setlove` again :)")
+
+    @commands.command()
+    @checks.mod()
+    async def setlovemute(self, ctx, role: discord.Role):
+        """Set the lovemute role"""
+        await self.config.guild(ctx.guild).loveMute.set(role.id)
+        await ctx.message.add_reaction("✅")
 
     @commands.command()
     async def lovecannon(self, ctx, usermention):
@@ -95,6 +103,53 @@ class Loveping(commands.Cog):
 
         else:
             await ctx.send("I love you too <3 Add a webhook url using `[p]setlove` :)")
+
+
+    @commands.command()
+    async def lovemute(self, ctx, usermention: discord.Member):
+        """Wreck some havoc while muting peeps :)"""
+
+        # Find the role in server
+        muteroledata = await self.config.guild(ctx.guild).loveMute()
+        muterole = ctx.guild.get_role(muteroledata)
+
+        # Replace all of a user's roles with just [muterole]
+        try:
+            await usermention.edit(roles=[muterole])
+        except:
+            return await ctx.send("Be sure to set the muterole first using [p]setlovemute :)")
+
+        msgid = ctx.message.id
+        whookData = await self.config.guild(ctx.guild).loveCannon()
+        checklove = "love"
+
+        if whookData != "":
+            hook = Webhook.Async(whookData)
+
+            # ping torrent
+            for i in range(20):
+                print("pingCannon #", i)
+                newmsgcontent = await ctx.fetch_message(msgid)
+                if checklove in newmsgcontent.content:
+                    await hook.send("Hi i love you "+usermention.mention+" :)")
+                    await asyncio.sleep(0.2)
+                else:
+                    return await hook.send("Thanks for having fun with us "+usermention.mention+" :')")
+
+            # ping rain
+            for ii in range(60):
+                print("pingRain #", ii)
+                newmsgcontent = await ctx.fetch_message(msgid)
+                if checklove in newmsgcontent.content:
+                    await hook.send("Please give me some love "+usermention.mention+" :'(")
+                    await asyncio.sleep(random.randint(10, 45))
+                else:
+                    return await hook.send("Thanks for having fun with us "+usermention.mention+" :')")
+            await hook.close()
+
+        else:
+            await ctx.send("I love you too <3 Add a webhook url using `[p]setlove` :)")
+
 
     
     @commands.command()
