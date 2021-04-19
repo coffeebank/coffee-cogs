@@ -1,5 +1,6 @@
 # from redbot.core import Config
 from redbot.core import Config, commands, checks
+from typing import Union
 import asyncio
 import aiohttp
 import discord
@@ -161,6 +162,15 @@ class Emotes(commands.Cog):
                     return await ctx.message.delete()
                 except:
                     return
+
+    @commands.command(aliases=["ei"])
+    async def emoteinfo(self, ctx, emote: Union[discord.Emoji, discord.PartialEmoji]):
+        """Send info about an emote"""
+        ttl = str(emote.id)
+        desc = str(emote.url)
+        e = discord.Embed(color=(await ctx.embed_colour()), title=ttl, description=desc)
+        e.set_thumbnail(url=emote.url)
+        await ctx.send(embed=e)
 
 
 
