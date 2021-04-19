@@ -106,8 +106,11 @@ class Loveping(commands.Cog):
 
 
     @commands.command()
+    @checks.mod()
     async def lovemute(self, ctx, usermention: discord.Member):
-        """Wreck some havoc while muting peeps :)"""
+        """Wreck some havoc while muting peeps :)
+        
+        If you're not mod, give [p]lovecannon a try :'))"""
 
         # Find the role in server
         muteroledata = await self.config.guild(ctx.guild).loveMute()
