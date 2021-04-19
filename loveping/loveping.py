@@ -19,6 +19,7 @@ class Loveping(commands.Cog):
         }
         self.config.register_guild(**default_guild)
 
+
     @commands.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def setlove(self, ctx, message):
@@ -50,23 +51,20 @@ class Loveping(commands.Cog):
         
         command: [p]lovecannon @user
         """
-
+        msgid = ctx.message.id
         whookData = await self.config.guild(ctx.guild).loveCannon()
         if whookData != "":
             hook = Webhook.Async(whookData)
 
             # ping torrent
-            # removed multi-webhook support, maybe another day :')
-            x = 0
-            #req = requests.get(whookData)
-            #ceiling = req.headers["X-RateLimit-Remaining"]
-            ceiling = 20
-
-            while (x < 20): # and (ceiling > 4):
-                time.sleep(0.2)
-                await hook.send("Hi i love you "+usermention+str(ceiling)+" :)")
-                ceiling -= 1
-                x += 1
+            for i in range(20):
+                print("pingCannon #", i)
+                newmsgcontent = await ctx.fetch_message(msgid)
+                if usermention in newmsgcontent.content:
+                    await hook.send("Hi i love you "+usermention+" :)")
+                    await asyncio.sleep(0.2)
+                else:
+                    return await hook.send("Thanks for having fun with us "+usermention+" :')")
             await hook.close()
 
         else:
@@ -79,16 +77,20 @@ class Loveping(commands.Cog):
         
         command: [p]loverain @user
         """
-
+        msgid = ctx.message.id
         whookData = await self.config.guild(ctx.guild).loveCannon()
         if whookData != "":
             hook = Webhook.Async(whookData)
 
             # ping rain
-            for rainCount in range(14):
-                print("pingRain #", rainCount)
-                await hook.send("Please give me some love "+usermention+" :'(")
-                await asyncio.sleep(random.randint(10, 30))
+            for i in range(60):
+                print("pingRain #", i)
+                newmsgcontent = await ctx.fetch_message(msgid)
+                if usermention in newmsgcontent.content:
+                    await hook.send("Please give me some love "+usermention+" :'(")
+                    await asyncio.sleep(random.randint(10, 45))
+                else:
+                    return await hook.send("Thanks for having fun with us "+usermention+" :')")
             await hook.close()
 
         else:
