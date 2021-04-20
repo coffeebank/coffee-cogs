@@ -18,7 +18,7 @@
 ```
 
 <p align="center">
-  <a href="https://discord.gg/Waeg227Jvb">Join the Support Discord ></a>
+  <a href="https://coffeebank.github.io/discord">Join the Support Discord ></a>
 </p>
 
 ## Cog Info
