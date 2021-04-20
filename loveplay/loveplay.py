@@ -98,7 +98,7 @@ class Loveplay(commands.Cog):
     async def lplick(self, ctx, *, user):
         """Send a lick"""
         desc = "lick"
-        src = self.purrbotApi(desc, 1, 20, "gif", "gif")
+        src = self.purrbotApi(desc, 1, 16, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
