@@ -27,10 +27,11 @@ See `info.json` in cog folders for the latest cog information.
 
 |Name|Info|
 |---|---|
+|coffeetools|Replacement for 'General' cog, since it needs to be disabled to override certain commands.|
 |dmreply|Upgrading the built-in DM feature to be more customizable. Made with the goal of helping support teams responding to queries via DM.|
 |emotes|*[Needs custom setup]* Custom emote solution for non-nitro users, using emotes saved in a Google Sheets spreadsheet.|
 |jsonrequest|Send and receive a json request from Discord. Can be used to supplement other cogs, and includes domain whitelisting by server.|
-|loveping|*[Hidden]*|
+|loveping|*[Hidden]* A moderation powerhouse that can spam pings on raiders who dare trespass on your property :)|
 |loveplay|Send love to other members of the server with hugs, kisses, and more, from Purrbot API|
 |quarantine|Quarantine a user easily. Set a muterole and mod log channel, and any users specified will have their roles removed and replaced with the muterole.|
 |sendhook|Makes sending webhooks from the Discord chat super easy. Just give it a webhook url and a message! Can even save aliases for webhooks you want to send to often.|
