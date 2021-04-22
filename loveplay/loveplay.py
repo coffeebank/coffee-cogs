@@ -70,6 +70,14 @@ class Loveplay(commands.Cog):
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
 
+    @commands.command(name="cuddle")
+    async def lpcuddle(self, ctx, *, user):
+        """Send a cuddle"""
+        desc = "cuddle"
+        src = self.purrbotApi(desc, 1, 20, "gif", "gif")
+        e = await self.buildEmbed(ctx, desc, src, user)
+        await ctx.send(embed=e)
+
     @commands.command(name="dance")
     async def lpdance(self, ctx, *, user):
         """Send a dance"""
