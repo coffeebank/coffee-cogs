@@ -40,8 +40,11 @@ class Dmreply(BaseCog):
 
 
     @commands.command()
+    @checks.mod()
     async def dmreply(self, ctx, user_id: int, *, message: str):
-        """Sends a DM to a user."""
+        """Sends a DM to a user.
+
+        Requires a User ID, or it won't work."""
 
         destination = self.bot.get_user(user_id)
         if destination is None or destination.bot:
