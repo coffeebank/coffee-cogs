@@ -1,6 +1,8 @@
 from redbot.core import Config, commands, checks
 # from array import *
 from dhooks import Webhook, Embed
+import discord
+import aiohttp
 import asyncio
 import requests
 import json
@@ -71,6 +73,7 @@ class Sendhook(commands.Cog):
     # @commands.bot_has_permissions(embed_links=True, add_reactions=True)
 
     @commands.command()
+    @checks.mod()
     async def sendhook(self, ctx, webhookUrl, *, webhookText):
         """Send a webhook
         
@@ -99,6 +102,7 @@ class Sendhook(commands.Cog):
 
 
     @commands.command()
+    @checks.mod()
     async def edithook(self, ctx, webhookUrl, messageId, *, webhookText):
         """Edit a webhook
         
@@ -137,3 +141,38 @@ class Sendhook(commands.Cog):
                 await ctx.message.add_reaction("✅")
             except:
                 await ctx.send("Webhook updated ✅")
+
+
+    @commands.command()
+    @checks.mod()
+    async def newhook(self, ctx, webhookName, webhookImage, channel: discord.TextChannel=None):
+        """Create a webhook"""
+        if channel == None:
+            channel = ctx.message.channel
+        await ctx.message.add_reaction("⏳")
+        await ctx.send(channel.id)
+        async with aiohttp.ClientSession() as session:
+            async with session.get(webhookImage) as resp:
+                if resp.status != 200:
+                    return await channel.send('Could not download file...')
+                wimgdata = await resp.read()
+                try:
+                    thenewhook = await channel.create_webhook(name=webhookName, avatar=wimgdata)
+                except Exception as e:
+                    await ctx.send("Could not create webhook. Do I have permissions to create webhooks?\n"+str(e)+"\n"+str(wimgdata))
+                else:
+                    await ctx.message.add_reaction("✅")
+                    await ctx.send(thenewhook)
+
+    
+    @commands.command()
+    @checks.mod()
+    async def listhooks(self, ctx, channel: discord.TextChannel=None):
+        """List the webhooks in a channel"""
+        if channel == None:
+            channel = ctx.message.channel
+        try:
+            await ctx.send(str([[a.name, a.url, a.token] for a in channel.webhooks()]))
+        except:
+            a = await channel.webhooks()
+            await ctx.send([a.name, a.url, a.token])
