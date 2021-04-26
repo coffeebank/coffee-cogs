@@ -164,6 +164,11 @@ class Msgmover(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
+        # Ignore message if it's a webhook
+        # REQUIRED IF TWO-WAY CHAT REDIRECTS
+        # TO STOP A TWO-WAY REDIRECT, USE [p]msgrelay delete #channel
+        if message.webhook_id:
+            return
         # only do anything if message is sent in a guild
         if message.guild:
             # Retrieve channel list and check channel ID
