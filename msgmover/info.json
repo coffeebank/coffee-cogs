@@ -1,0 +1,12 @@
+{
+  "author" : ["coffee-cogs"],
+  "install_msg" : "Thanks for installing :') Come make pull requests over at my GitHub! https://github.com/coffeebank/coffee-cogs",
+  "name" : "msgmover",
+  "short" : "Move messages across channels and servers",
+  "hidden": true,
+  "requirements" : [],
+  "description" : "Copy messages into a new channel, or link up two channels within a server/across servers! Uses webhooks with profiles and nicknames to forward messages around.",
+  "permissions" : [],
+  "end_user_data_statement" : "This cog does not store any End User Data.",
+  "tags" : ["relays", "messages", "forwarding", "link", "channels", "server"]
+}
