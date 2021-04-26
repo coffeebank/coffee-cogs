@@ -73,11 +73,18 @@ class Msgmover(commands.Cog):
         else:
             # If content is empty (ie. if it's an embed), add content
             if message.clean_content == "":
-                await webhook.send(
-                    "Content",
-                    username=message.author.display_name,
-                    avatar_url=message.author.avatar_url
-                )
+                try:
+                    await webhook.send(
+                        username=message.author.display_name,
+                        avatar_url=message.author.avatar_url,
+                        embeds=message.embeds
+                    )
+                except:
+                    await webhook.send(
+                        "Content",
+                        username=message.author.display_name,
+                        avatar_url=message.author.avatar_url
+                    )
             else:
                 await webhook.send(
                     message.clean_content,
