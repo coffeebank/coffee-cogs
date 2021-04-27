@@ -20,9 +20,6 @@ class Coffeetools(commands.Cog):
         """Have the bot choose for you
         
         **`[p]choose item1 | item2 | item3`**"""
-
-        # Split choosetext into an array
+        # Split choosetext into an array, and return random choice
         choosearray = choosetext.split("|")
-
-        # Return a random choice from array
         return await ctx.send(random.choice(choosearray))
