@@ -2,6 +2,7 @@ from redbot.core import Config, commands, checks
 # from array import *
 from dhooks import Webhook, Embed
 import discord
+from discord import Webhook, AsyncWebhookAdapter
 import aiohttp
 import asyncio
 import requests
@@ -99,6 +100,60 @@ class Sendhook(commands.Cog):
                 await ctx.message.add_reaction("✅")
             except:
                 await ctx.send("Webhook sent ✅")
+
+
+    @commands.command()
+    @checks.mod()
+    async def sendhookself(self, ctx, webhookUrl, *, webhookText):
+        """Send a webhook as yourself
+        
+        webhookUrl can be an alias"""
+
+        message = ctx.message
+
+        # Check if webhookUrl is an alias
+        webhookAlias = await self.config.guild(ctx.guild).webhookAlias()
+        if webhookUrl in webhookAlias:
+            toWebhook = webhookAlias[webhookUrl]
+        else:
+            toWebhook = webhookUrl
+
+        # Start webhook session
+        async with aiohttp.ClientSession() as session:
+            webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
+
+            # Check for attachments
+            if message.attachments:
+                # Send message first if there is a message
+                if webhookText:
+                    await webhook.send(
+                        webhookText,
+                        username=message.author.display_name,
+                        avatar_url=message.author.avatar_url
+                    )
+                # Then send each attachment in separate messages
+                for msgAttach in message.attachments:
+                    try:
+                        await webhook.send(
+                            username=message.author.display_name,
+                            avatar_url=message.author.avatar_url,
+                            file=await msgAttach.to_file()
+                        )
+                    except:
+                        # Couldn't send, retry sending file as url only
+                        await webhook.send(
+                            "File: "+str(msgAttach.url), 
+                            username=message.author.display_name,
+                            avatar_url=message.author.avatar_url
+                        )
+            else:
+                await webhook.send(
+                    webhookText,
+                    username=message.author.display_name,
+                    avatar_url=message.author.avatar_url
+                )
+
+        await ctx.message.add_reaction("✅")
 
 
     @commands.command()
