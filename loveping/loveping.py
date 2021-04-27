@@ -54,6 +54,7 @@ class Loveping(commands.Cog):
         await ctx.message.add_reaction("✅")
 
     @commands.command()
+    @commands.cooldown(rate=1, per=40, type=commands.BucketType.guild)
     async def lovecannon(self, ctx, usermention):
         """Ping someone to send them messages of love... [cannon edition]
         
@@ -80,6 +81,7 @@ class Loveping(commands.Cog):
 
 
     @commands.command()
+    @commands.cooldown(rate=4, per=300, type=commands.BucketType.guild)
     async def loverain(self, ctx, usermention):
         """Ping someone to send them messages of love... [rain edition]
         
@@ -107,6 +109,7 @@ class Loveping(commands.Cog):
 
     @commands.command()
     @checks.mod()
+    @commands.cooldown(rate=4, per=300, type=commands.BucketType.guild)
     async def lovemute(self, ctx, usermention: discord.Member):
         """Wreck some havoc while muting peeps :)
         
