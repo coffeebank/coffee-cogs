@@ -163,7 +163,7 @@ class Pinshare(commands.Cog):
         pinStore[pinnedMsgName]["content"] = {}
         await self.config.guild(ctx.guild).pinStore.set(pinStore)
 
-        await self.psUpdateData(ctx, pinnedMsgName)
+        await self.psUpdateData(ctx, pinnedMsgName, True)
         await ctx.message.add_reaction("✅")
     
     @setpinshare.command(name="remove")
