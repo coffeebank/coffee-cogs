@@ -1,0 +1,11 @@
+{
+  "author" : ["coffee-cogs"],
+  "install_msg" : "Thanks for installing :') Come make pull requests over at my GitHub! https://github.com/coffeebank/coffee-cogs",
+  "name" : "pinshare",
+  "short" : "Make pinned messages communal! Let people add/remove their own blurbs to a message.",
+  "requirements" : [],
+  "description" : "Make pinned messages communal! Users can add and remove their contributions to a pinned message at any time.",
+  "permissions" : [],
+  "end_user_data_statement" : "This cog does not store any End User Data.",
+  "tags" : ["pins", "pinned", "messages"]
+}
