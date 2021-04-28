@@ -38,59 +38,69 @@ class Msgmover(commands.Cog):
     # Utility Commands
 
     async def msgFormatter(self, webhook, message, attachsAsUrl=False):
-        # await ensures the loop doesn't progress until after each webhook is sent
-        # Check for attachments
-        if message.attachments:
-            # Send message first if there is a message
-            if message.clean_content:
-                await webhook.send(
-                    message.clean_content,
-                    username=message.author.display_name,
-                    avatar_url=message.author.avatar_url
-                )
-            # Then send each attachment in separate messages
-            for msgAttach in message.attachments:
-                if attachsAsUrl == False:
-                    try:
-                        await webhook.send(
-                            username=message.author.display_name,
-                            avatar_url=message.author.avatar_url,
-                            file=await msgAttach.to_file()
-                        )
-                    except:
-                        # Couldn't send, retry sending file as url only
-                        await webhook.send(
-                            "File: "+str(msgAttach.url), 
-                            username=message.author.display_name,
-                            avatar_url=message.author.avatar_url
-                        )
-                else:
-                    await webhook.send(
-                        str(msgAttach.url), 
-                        username=message.author.display_name,
-                        avatar_url=message.author.avatar_url
-                    )
+        # webhook: A webhook object from discord.py
+        # message: A message object from discord.py
+        # attachsAsUrl: Sets whether attachments should be linked using URLS, or re-uploaded as an independent file
+
+        msgContent = message.clean_content
+
+        # Add reply if it exists
+        # if message.reference:
+        #     refObj = await message.reference.resolved
+        #     # replyColor = discord.Color(value=0x25c059)
+        #     # replyEmbed = discord.Embed(description=str(refObj))
+        #     # replyBody = (refObj.clean_content[:6] + '...') if len(refObj.clean_content) > 6 else refObj.clean_content
+        #     # replyTitle = f"{refObj.author.display_name}: {replyBody}"
+        #     # replyEmbed.set_author(name=replyTitle, icon_url=refObj.author.avatar, url=refObj.jump_url)
+        #     await webhook.send(
+        #         str(refObj),
+        #         username=message.author.display_name,
+        #         avatar_url=message.author.avatar_url,
+        #         # embed=replyEmbed
+        #     )
+
+        # Add embed if exists
+        if message.embeds:
+            msgEmbed = message.embeds
         else:
-            # If content is empty (ie. if it's an embed), add content
-            if message.clean_content == "":
+            msgEmbed = None
+
+        # Add attachment if exists
+        if message.attachments and attachsAsUrl == True:
+            for msgAttach in message.attachments:
+                msgContent = msgContent+str(msgAttach.url)+"\n"
+
+        # Send core message
+        try:
+            await webhook.send(
+                msgContent,
+                username=message.author.display_name,
+                avatar_url=message.author.avatar_url,
+                embeds=msgEmbed
+            )
+        except:
+            pass
+        
+        # Send full attachments
+        if message.attachments and attachsAsUrl == False:
+            for msgAttach in message.attachments:
                 try:
                     await webhook.send(
                         username=message.author.display_name,
                         avatar_url=message.author.avatar_url,
-                        embeds=message.embeds
+                        file=await msgAttach.to_file()
                     )
                 except:
+                    # Couldn't send, retry sending file as url only
                     await webhook.send(
-                        "Content",
+                        "File: "+str(msgAttach.url), 
                         username=message.author.display_name,
                         avatar_url=message.author.avatar_url
                     )
-            else:
-                await webhook.send(
-                    message.clean_content,
-                    username=message.author.display_name,
-                    avatar_url=message.author.avatar_url
-                )
+
+        # Need to tell endpoint that function ended, so that sent message order is enforceable by await
+        return
+
 
     async def relayAddChannel(self, channel, webhookUrl):
         # Retrieve stored data
