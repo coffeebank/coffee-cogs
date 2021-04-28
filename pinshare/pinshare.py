@@ -152,7 +152,7 @@ class Pinshare(commands.Cog):
         
         pinnedMsgName is a label for the pinned message, so that you/others can easily refer back to it later. It should be a single word and short/easy to remember."""
         await ctx.message.add_reaction("⏳")
-        messageObj = await ctx.send("Pin me!")
+        messageObj = await channel.send("Pin me!")
 
         pinStore = await self.config.guild(ctx.guild).pinStore()
         pinStore[pinnedMsgName] = {}
