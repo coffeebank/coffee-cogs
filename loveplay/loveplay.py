@@ -63,8 +63,10 @@ class Loveplay(commands.Cog):
     # Bot Commands
  
     @commands.command(name="loveplay", aliases=["lp"])
-    async def lpcustom(self, ctx, description, action, *, user):
-        """Send a custom lovely reaction to someone!"""
+    async def lpcustom(self, ctx, user, action, description):
+        """Send a custom lovely reaction to someone!
+        
+        Use \"quote marks\" around multi-word phrases"""
         src = self.purrbotApi(action, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, description, src, user)
         await ctx.send(embed=e)
