@@ -62,6 +62,13 @@ class Loveplay(commands.Cog):
 
     # Bot Commands
  
+    @commands.command(name="loveplay", aliases=["lp"])
+    async def lpcustom(self, ctx, description, action, *, user):
+        """Send a custom lovely reaction to someone!"""
+        src = self.purrbotApi(action, 1, 20, "gif", "gif")
+        e = await self.buildEmbed(ctx, description, src, user)
+        await ctx.send(embed=e)
+ 
     @commands.command(name="blush")
     async def lpblush(self, ctx, *, user):
         """Send a blush"""
