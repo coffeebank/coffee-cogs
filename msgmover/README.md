@@ -10,27 +10,21 @@
   The Discord Bot for Moving Messages Between Channels and Servers
 </h3>
 
-<br>
+<p align="center">
+  <a href="https://github.com/coffeebank/coffee-cogs/tree/master/msgmover#Install">Add to your Discord ></a>
+</p>
 
 <p align="center">
   <a href="https://coffeebank.github.io/discord">Join the Support Discord ></a>
 </p>
 
-<p align="center">
-  <a href="https://github.com/coffeebank/coffee-cogs">See more Cogs ></a>
-</p>
-
-<br>
-
 ## What is msgmover?
 
-**msgmover** is a Discord bot with two main features that rely on the same technology:
+**msgmover** is a Discord bot made for redirecting chats, merging Discord channels, and linking up two Discord servers. The two main features rely on the same technology:
 
 - **msgcopy**: Copy existing messages from one Discord channel into another Discord channel  
 
 - **msgrelay**: Forward all new messages from one Discord channel into another Discord channel
-
-This Discord bot is useful for redirecting chats, merging Discord channels, and linking up two Discord servers!
 
 
 ## How does it work?
@@ -49,7 +43,9 @@ Each user's profile picture, nickname/username, and message is copied and pasted
 
 ## Install
 
-This bot isn't public for you to add, but you can run it off a computer for your Discord. It's very easy:
+This bot isn't public for you to add, but you can run it off a computer for your Discord.
+
+It's very easy, takes about 10-20 minutes:
 
 ### Step 1: Download Red DiscordBot
 
