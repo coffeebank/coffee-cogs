@@ -2,9 +2,9 @@
   "author" : ["coffee-cogs"],
   "install_msg" : "Thanks for installing :') Come make pull requests over at my GitHub! https://github.com/coffeebank/coffee-cogs",
   "name" : "sendhook",
-  "short" : "Send webhooks easily...",
-  "requirements" : ["dhooks"],
-  "description" : "Makes sending webhooks from the Discord chat super easy. Just give it a webhook url and a message! Can even save aliases for webhooks you want to send to often.",
+  "short" : "The comprehensive webhooks cog, with sending, listing, and creating of webhooks",
+  "requirements" : [],
+  "description" : "The comprehensive webhooks cog, with sending, listing, and creating of webhooks. Comes with support for webhook aliases and sending as your username/avatar. Perfect for users stuck on mobile Discord.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
   "tags" : ["webhook"]

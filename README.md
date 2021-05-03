@@ -36,7 +36,7 @@ See `info.json` in cog folders for the latest cog information.
 |msgmover|Copy messages into a new channel, or link up two channels within a server/across servers! Uses webhooks with profiles and nicknames to forward messages around.|
 |pinshare|Make a bulletin board pinned message! Users can add/remove their own content to/from a shared, "bulletin board" style pinned message.|
 |quarantine|Quarantine a user easily. Set a muterole and mod log channel, and any users specified will have their roles removed and replaced with the muterole.|
-|sendhook|Makes sending webhooks from the Discord chat super easy. Just give it a webhook url and a message! Can even save aliases for webhooks you want to send to often.|
+|sendhook|The comprehensive webhooks cog, with sending, listing, and creating of webhooks. Comes with support for webhook aliases and sending as your username/avatar. Perfect for users stuck on mobile Discord.|
 |websearch|A simple Discord bot feature that gives you links to search engines like Google without needing to copy-paste and search it yourself.|
 
 
