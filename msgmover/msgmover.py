@@ -45,19 +45,24 @@ class Msgmover(commands.Cog):
         msgContent = message.clean_content
 
         # Add reply if it exists
-        # if message.reference:
-        #     refObj = await message.reference.resolved
-        #     # replyColor = discord.Color(value=0x25c059)
-        #     # replyEmbed = discord.Embed(description=str(refObj))
-        #     # replyBody = (refObj.clean_content[:6] + '...') if len(refObj.clean_content) > 6 else refObj.clean_content
-        #     # replyTitle = f"{refObj.author.display_name}: {replyBody}"
-        #     # replyEmbed.set_author(name=replyTitle, icon_url=refObj.author.avatar, url=refObj.jump_url)
-        #     await webhook.send(
-        #         str(refObj),
-        #         username=message.author.display_name,
-        #         avatar_url=message.author.avatar_url,
-        #         # embed=replyEmbed
-        #     )
+        if message.reference:
+            # Retrieve replied-to message
+            refObj = message.reference.resolved
+            replyEmbed = discord.Embed(color=discord.Color(value=0x25c059), description="")
+            # Check whether message is empty
+            if refObj.clean_content:
+                replyBody = (refObj.clean_content[:56] + '...') if len(refObj.clean_content) > 56 else refObj.clean_content
+            else:
+                replyBody = "Click to see attachment 🖼️"
+            # Create link to message
+            replyTitle = f"↪️ {replyBody}"
+            replyEmbed.set_author(name=replyTitle, icon_url=refObj.author.avatar_url, url=refObj.jump_url)
+            # Send this before the original message so that the embed appears above the message in chat
+            await webhook.send(
+                username=message.author.display_name,
+                avatar_url=message.author.avatar_url,
+                embed=replyEmbed
+            )
 
         # Add embed if exists
         if message.embeds:
