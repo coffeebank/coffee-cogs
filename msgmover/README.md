@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/coffeebank/coffee-cogs/master/msgmover/preview.jpg" />
+</p>
+
 <h1 align="center">
   msgmover
 </h1>
