@@ -1,6 +1,5 @@
 from redbot.core import Config, commands, checks
 # from array import *
-from dhooks import Webhook, Embed
 import discord
 from discord import Webhook, AsyncWebhookAdapter
 import aiohttp
@@ -18,6 +17,47 @@ class Sendhook(commands.Cog):
         }
         self.config.register_guild(**default_guild)
 
+
+    # Utility Commands
+
+    async def sendhookEngine(self, toWebhook, messageObj, webhookText=None, webhookUser=None, webhookAvatar=None):
+        # Start webhook session
+        async with aiohttp.ClientSession() as session:
+            webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
+
+            # Check for attachments
+            if messageObj.attachments:
+                # Send message first if there is a message
+                if webhookText is not None:
+                    await webhook.send(
+                        webhookText,
+                        username=webhookUser,
+                        avatar_url=webhookAvatar
+                    )
+                # Then send each attachment in separate messages
+                for msgAttach in messageObj.attachments:
+                    try:
+                        await webhook.send(
+                            username=webhookUser,
+                            avatar_url=webhookAvatar,
+                            file=await msgAttach.to_file()
+                        )
+                    except:
+                        # Couldn't send, retry sending file as url only
+                        await webhook.send(
+                            "File: "+str(msgAttach.url), 
+                            username=webhookUser,
+                            avatar_url=webhookAvatar
+                        )
+            else:
+                await webhook.send(
+                    webhookText,
+                    username=webhookUser,
+                    avatar_url=webhookAvatar
+                )
+
+
+    # Bot Commands
 
     @commands.guild_only()
     @commands.group()
@@ -75,36 +115,32 @@ class Sendhook(commands.Cog):
 
     @commands.command()
     @checks.mod()
-    async def sendhook(self, ctx, webhookUrl, *, webhookText):
+    async def sendhook(self, ctx, webhookUrl, *, webhookText=None):
         """Send a webhook
         
         webhookUrl can be an alias"""
 
+        message = ctx.message
+
         # Check if webhookUrl is an alias
         webhookAlias = await self.config.guild(ctx.guild).webhookAlias()
         if webhookUrl in webhookAlias:
-            hook = Webhook(webhookAlias[webhookUrl])
+            toWebhook = webhookAlias[webhookUrl]
         else:
-            hook = Webhook(webhookUrl)
-        
+            toWebhook = webhookUrl
+
+        # Send webhook
         try:
-            hook.send(webhookText)
-            # TODO: Make it return message ID after send
-            # hooktosend = hook.send(webhookText)
-            # await ctx.send(f"Message ID: {hooktosend}")
+            await self.sendhookEngine(toWebhook, message, webhookText)
         except:
-            await ctx.send("Oh no! Webhook couldn't be sent :(")
+            await ctx.send("Oops, an error occurred :'(")
         else:
-            # Try adding react, if no perms then send normal message
-            try:
-                await ctx.message.add_reaction("✅")
-            except:
-                await ctx.send("Webhook sent ✅")
+            await ctx.message.add_reaction("✅")
 
 
     @commands.command()
     @checks.mod()
-    async def sendhookself(self, ctx, webhookUrl, *, webhookText):
+    async def sendhookself(self, ctx, webhookUrl, *, webhookText=None):
         """Send a webhook as yourself
         
         webhookUrl can be an alias"""
@@ -118,48 +154,19 @@ class Sendhook(commands.Cog):
         else:
             toWebhook = webhookUrl
 
-        # Start webhook session
-        async with aiohttp.ClientSession() as session:
-            webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
-
-            # Check for attachments
-            if message.attachments:
-                # Send message first if there is a message
-                if webhookText:
-                    await webhook.send(
-                        webhookText,
-                        username=message.author.display_name,
-                        avatar_url=message.author.avatar_url
-                    )
-                # Then send each attachment in separate messages
-                for msgAttach in message.attachments:
-                    try:
-                        await webhook.send(
-                            username=message.author.display_name,
-                            avatar_url=message.author.avatar_url,
-                            file=await msgAttach.to_file()
-                        )
-                    except:
-                        # Couldn't send, retry sending file as url only
-                        await webhook.send(
-                            "File: "+str(msgAttach.url), 
-                            username=message.author.display_name,
-                            avatar_url=message.author.avatar_url
-                        )
-            else:
-                await webhook.send(
-                    webhookText,
-                    username=message.author.display_name,
-                    avatar_url=message.author.avatar_url
-                )
-
-        await ctx.message.add_reaction("✅")
+        # Send webhook
+        try:
+            await self.sendhookEngine(toWebhook, message, webhookText, message.author.display_name, message.author.avatar_url)
+        except:
+            await ctx.send("Oops, an error occurred :'(")
+        else:
+            await ctx.message.add_reaction("✅")
 
 
     @commands.command()
     @checks.mod()
     async def edithook(self, ctx, webhookUrl, messageId, *, webhookText):
-        """Edit a webhook
+        """Edit a message sent by a webhook
         
         webhookUrl can be an alias"""
 
@@ -205,7 +212,7 @@ class Sendhook(commands.Cog):
         if channel == None:
             channel = ctx.message.channel
         await ctx.message.add_reaction("⏳")
-        await ctx.send(channel.id)
+        await ctx.send(str(channel.mention)+" "+str(channel.id))
         async with aiohttp.ClientSession() as session:
             async with session.get(webhookImage) as resp:
                 if resp.status != 200:
@@ -217,7 +224,7 @@ class Sendhook(commands.Cog):
                     await ctx.send("Could not create webhook. Do I have permissions to create webhooks?\n"+str(e)+"\n"+str(wimgdata))
                 else:
                     await ctx.message.add_reaction("✅")
-                    await ctx.send(thenewhook)
+                    await ctx.send(str(thenewhook.name)+" "+str(thenewhook.url))
 
     
     @commands.command()
@@ -226,8 +233,18 @@ class Sendhook(commands.Cog):
         """List the webhooks in a channel"""
         if channel == None:
             channel = ctx.message.channel
-        try:
-            await ctx.send(str([[a.name, a.url, a.token] for a in channel.webhooks()]))
-        except:
-            a = await channel.webhooks()
-            await ctx.send([a.name, a.url, a.token])
+
+        a = await channel.webhooks()
+        returntext = ""
+
+        if len(a) > 1:
+            for b in a:
+                name = str(b.name)
+                url = str(b.url)
+                returntext += name+"\n"+url+"\n\n"
+        else:
+            name = str(b.name)
+            url = str(b.url)
+            returntext += name+" "+url+"\n"
+
+        await ctx.send(returntext)
