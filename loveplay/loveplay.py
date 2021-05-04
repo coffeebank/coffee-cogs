@@ -127,6 +127,14 @@ class Loveplay(commands.Cog):
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
+    @commands.command(name="nom", aliases=["cookie"])
+    async def lpnom(self, ctx, *, user):
+        """Send a nom/cookie"""
+        desc = "feed"
+        src = self.purrbotApi(desc, 1, 20, "gif", "gif")
+        e = await self.buildEmbed(ctx, "yummy cookie", src, user)
+        await ctx.send(embed=e)
+        
     @commands.command(name="pat")
     async def lppat(self, ctx, *, user):
         """Send a pat"""
