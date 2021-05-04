@@ -11,7 +11,7 @@
 </h3>
 
 <p align="center">
-  <a href="https://github.com/coffeebank/coffee-cogs/tree/master/msgmover#Install">Add to your Discord ></a>
+  <a href="https://github.com/coffeebank/coffee-cogs/wiki/Add-to-Discord">Add to your Discord ></a>
 </p>
 
 <p align="center">
@@ -40,35 +40,6 @@ Each user's profile picture, nickname/username, and message is copied and pasted
 - Syncing message edits
 - Syncing message deletes
 
-
-## Install
-
-This bot isn't public for you to add, but you can run it off a computer for your Discord.
-
-It's very easy, takes about 10-20 minutes:
-
-### Step 1: Download Red DiscordBot
-
-- [Installing Red on Windows](https://docs.discord.red/en/stable/install_windows.html)
-- [Installing Red on Linux or Mac](https://docs.discord.red/en/stable/install_linux_mac.html)
-
-### Step 2: Add your bot to your Discord server
-
-- [Getting Started](https://docs.discord.red/en/stable/getting_started.html)
-
-
-### Step 3: Add coffee-cogs
-
-The bot supports adding plugins to make the bot do more stuff, and the **msgmover** cog is a plugin you can add.
-
-Type these commands in a DM with your bot: ([p] is your prefix)
-
-```
-[p]repo add coffee-cogs https://github.com/coffeebank/coffee-cogs
-[p]cog install coffee-cogs msgmover
-```
-
-You're done!
 
 ## Bot Commands
 
