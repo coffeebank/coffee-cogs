@@ -65,7 +65,8 @@ class Msgmover(commands.Cog):
             )
 
         # Add embed if exists
-        if message.embeds:
+        # Do not set the embed if it came from a http link in the message (fixes repo issue #4)
+        if message.embeds and "http" not in msgContent:
             msgEmbed = message.embeds
         else:
             msgEmbed = None
