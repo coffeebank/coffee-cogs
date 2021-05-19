@@ -119,19 +119,19 @@ class Pinboard(commands.Cog):
 
     @commands.guild_only()
     @commands.group()
-    async def pinshare(self, ctx: commands.Context):
+    async def pinboard(self, ctx: commands.Context):
         """Change the list of active pinned messages"""
         if not ctx.invoked_subcommand:
             pass
 
-    @pinshare.command(name="add", aliases=["edit"])
+    @pinboard.command(name="add", aliases=["edit"])
     async def psadd(self, ctx, pinnedMsgName, *, content):
         """Add or edit your own content to a pinned message"""
         await self.psAddData(ctx, pinnedMsgName, ctx.message.author.id, content)
         await self.psUpdateData(ctx, pinnedMsgName, repin=False)
         await ctx.message.add_reaction("✅")
 
-    @pinshare.command(name="remove")
+    @pinboard.command(name="remove")
     async def psremove(self, ctx, pinnedMsgName):
         """Remove your own content to a pinned message"""
         await self.psRemoveData(ctx, pinnedMsgName, ctx.message.author.id)
@@ -141,12 +141,12 @@ class Pinboard(commands.Cog):
     @commands.guild_only()
     @commands.group()
     @checks.admin_or_permissions(manage_guild=True)
-    async def setpinshare(self, ctx: commands.Context):
+    async def setpinboard(self, ctx: commands.Context):
         """Change the list of active pinned messages"""
         if not ctx.invoked_subcommand:
             pass
     
-    @setpinshare.command(name="add")
+    @setpinboard.command(name="add")
     async def spsadd(self, ctx, pinnedMsgName, channel: discord.TextChannel, *, messageDescription):
         """Create a new pinned message
         
@@ -166,7 +166,7 @@ class Pinboard(commands.Cog):
         await self.psUpdateData(ctx, pinnedMsgName, True)
         await ctx.message.add_reaction("✅")
     
-    @setpinshare.command(name="remove")
+    @setpinboard.command(name="remove")
     async def spsremove(self, ctx, pinnedMsgName):
         """Remove a pinned message
         
@@ -175,7 +175,7 @@ class Pinboard(commands.Cog):
         pinStore.pop(pinnedMsgName, None)
         await ctx.message.add_reaction("✅")
 
-    @setpinshare.command(name="edit")
+    @setpinboard.command(name="edit")
     async def spsedit(self, ctx, pinnedMsgName, *, description):
         """Edit description of a pinned message"""
         pinStore = await self.config.guild(ctx.guild).pinStore()
@@ -184,25 +184,25 @@ class Pinboard(commands.Cog):
         await self.psUpdateData(ctx, pinnedMsgName)
         await ctx.message.add_reaction("✅")
 
-    @setpinshare.command(name="export")
+    @setpinboard.command(name="export")
     async def spsexport(self, ctx):
         """Export data"""
         await ctx.send("```"+str(await self.config.guild(ctx.guild).pinStore())+"```")
 
-    @setpinshare.command(name="import")
+    @setpinboard.command(name="import")
     async def spsimport(self, ctx, *, data):
         """Import data"""
         await self.config.guild(ctx.guild).pinStore.set(json.loads(data))
         await ctx.send("done")
 
-    @setpinshare.command(name="list")
+    @setpinboard.command(name="list")
     async def spslist(self, ctx):
         """List all pinned messages"""
         pinStore = await self.config.guild(ctx.guild).pinStore()
         pinStoreData = json.dumps(pinStore, sort_keys=True, indent=2, separators=(',', ': '))
         await ctx.send("```json\n"+pinStoreData+"```")
 
-    @setpinshare.command(name="update")
+    @setpinboard.command(name="update")
     async def spsupdate(self, ctx, pinnedMsgName=None, repin=False):
         """Update one or all pinned messages"""
         if pinnedMsgName == None:
@@ -211,11 +211,11 @@ class Pinboard(commands.Cog):
             await self.psUpdateData(ctx, pinnedMsgName, repin)
         await ctx.message.add_reaction("✅")
 
-    @setpinshare.command(name="reset")
+    @setpinboard.command(name="reset")
     async def spsreset(self, ctx, areYouSure=False):
         """⚠️ Reset all pinned messages
         
-        Type **`[p]setpinshare reset True`** if you're really sure."""
+        Type **`[p]setpinboard reset True`** if you're really sure."""
         if areYouSure == True:
             await self.config.guild(ctx.guild).pinStore.set({})
             await ctx.message.add_reaction("✅")
