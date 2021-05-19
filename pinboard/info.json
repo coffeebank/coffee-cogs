@@ -7,5 +7,5 @@
   "description" : "Make a bulletin board pinned message! Users can add/remove their own content to/from a shared, \"bulletin board\" style pinned message.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["pins", "pinned", "messages"]
+  "tags" : ["pins", "pinned", "messages", "board"]
 }

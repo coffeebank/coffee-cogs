@@ -94,20 +94,6 @@ class Pinshare(commands.Cog):
             await pinnedMsgObj.pin()
         return
 
-        # description = str(pinStore[pinnedMsgName]["description"])
-        # content = ""
-
-        # for key, value in pinStore[pinnedMsgName]["content"].items():
-        #     userObj = self.bot.get_user(int(key))
-        #     content = content+userObj.mention+"\n"+str(value)+"\n\n"
-
-        # msgbody = description+"\n\n"+content
-        # await pinnedMsgObj.edit(content=msgbody)
-        # if repin == True:
-        #     await pinnedMsgObj.unpin()
-        #     await pinnedMsgObj.pin()
-        # return
-
     async def psUpdateAll(self, ctx, repin=False):
         pinStore = await self.config.guild(ctx.guild).pinStore()
         for key, value in pinStore.items():
@@ -118,82 +104,19 @@ class Pinshare(commands.Cog):
     # Bot Commands
 
     @commands.guild_only()
-    @commands.group()
-    async def pinshare(self, ctx: commands.Context):
-        """Change the list of active pinned messages"""
-        if not ctx.invoked_subcommand:
-            pass
-
-    @pinshare.command(name="add", aliases=["edit"])
-    async def psadd(self, ctx, pinnedMsgName, *, content):
-        """Add or edit your own content to a pinned message"""
-        await self.psAddData(ctx, pinnedMsgName, ctx.message.author.id, content)
-        await self.psUpdateData(ctx, pinnedMsgName, repin=False)
-        await ctx.message.add_reaction("✅")
-
-    @pinshare.command(name="remove")
-    async def psremove(self, ctx, pinnedMsgName):
-        """Remove your own content to a pinned message"""
-        await self.psRemoveData(ctx, pinnedMsgName, ctx.message.author.id)
-        await ctx.message.add_reaction("✅")
-
-
-    @commands.guild_only()
-    @commands.group()
+    @commands.group(aliases=["pinshare"])
     @checks.admin_or_permissions(manage_guild=True)
     async def setpinshare(self, ctx: commands.Context):
-        """Change the list of active pinned messages"""
+        """pinshare is now deprecated, migrate using the following steps:
+
+        [p]setpinshare list
+        [p]unload pinshare
+        [p]cog install coffee-cogs pinboard
+        [p]load pinboard
+        [p]setpinboard import THEGIANTCODEFROMTHELISTCOMMANDHERE
+        """
         if not ctx.invoked_subcommand:
             pass
-    
-    @setpinshare.command(name="add")
-    async def spsadd(self, ctx, pinnedMsgName, channel: discord.TextChannel, *, messageDescription):
-        """Create a new pinned message
-        
-        pinnedMsgName is a label for the pinned message, so that you/others can easily refer back to it later. It should be a single word and short/easy to remember."""
-        await ctx.message.add_reaction("⏳")
-        e = discord.Embed(color=(await ctx.embed_colour()), description="Pin me!")
-        messageObj = await channel.send(embed=e)
-
-        pinStore = await self.config.guild(ctx.guild).pinStore()
-        pinStore[pinnedMsgName] = {}
-        pinStore[pinnedMsgName]["channelId"] = channel.id
-        pinStore[pinnedMsgName]["messageId"] = messageObj.id
-        pinStore[pinnedMsgName]["description"] = messageDescription
-        pinStore[pinnedMsgName]["content"] = {}
-        await self.config.guild(ctx.guild).pinStore.set(pinStore)
-
-        await self.psUpdateData(ctx, pinnedMsgName, True)
-        await ctx.message.add_reaction("✅")
-    
-    @setpinshare.command(name="remove")
-    async def spsremove(self, ctx, pinnedMsgName):
-        """Remove a pinned message
-        
-        The message stays behind, but it will be removed from the tracking system, so you can't update it anymore."""
-        pinStore = await self.config.guild(ctx.guild).pinStore()
-        pinStore.pop(pinnedMsgName, None)
-        await ctx.message.add_reaction("✅")
-
-    @setpinshare.command(name="edit")
-    async def spsedit(self, ctx, pinnedMsgName, *, description):
-        """Edit description of a pinned message"""
-        pinStore = await self.config.guild(ctx.guild).pinStore()
-        pinStore[pinnedMsgName]["description"] = description
-        await self.config.guild(ctx.guild).pinStore.set(pinStore)
-        await self.psUpdateData(ctx, pinnedMsgName)
-        await ctx.message.add_reaction("✅")
-
-    @setpinshare.command(name="export")
-    async def spsexport(self, ctx):
-        """Export data"""
-        await ctx.send("```"+str(await self.config.guild(ctx.guild).pinStore())+"```")
-
-    @setpinshare.command(name="import")
-    async def spsimport(self, ctx, *, data):
-        """Import data"""
-        await self.config.guild(ctx.guild).pinStore().set(data)
-        await ctx.send("done")
 
     @setpinshare.command(name="list")
     async def spslist(self, ctx):
@@ -201,15 +124,6 @@ class Pinshare(commands.Cog):
         pinStore = await self.config.guild(ctx.guild).pinStore()
         pinStoreData = json.dumps(pinStore, sort_keys=True, indent=2, separators=(',', ': '))
         await ctx.send("```json\n"+pinStoreData+"```")
-
-    @setpinshare.command(name="update")
-    async def spsupdate(self, ctx, pinnedMsgName=None, repin=False):
-        """Update one or all pinned messages"""
-        if pinnedMsgName == None:
-            await self.psUpdateAll(ctx, repin)
-        else:
-            await self.psUpdateData(ctx, pinnedMsgName, repin)
-        await ctx.message.add_reaction("✅")
 
     @setpinshare.command(name="reset")
     async def spsreset(self, ctx, areYouSure=False):
