@@ -187,7 +187,7 @@ class Pinboard(commands.Cog):
     @setpinshare.command(name="export")
     async def spsexport(self, ctx):
         """Export data"""
-        await ctx.send(str(await self.config.guild(ctx.guild).pinStore()))
+        await ctx.send("```"+str(await self.config.guild(ctx.guild).pinStore())+"```")
 
     @setpinshare.command(name="import")
     async def spsimport(self, ctx, *, data):
