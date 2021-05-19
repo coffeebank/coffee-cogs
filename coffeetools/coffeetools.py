@@ -7,12 +7,10 @@ class Coffeetools(commands.Cog):
     def __init__(self):
         self.config = Config.get_conf(self, identifier=806715409318936616)
 
+    # This cog does not store any End User Data
     async def red_get_data_for_user(self, *, user_id: int):
-        # this cog does not story any data
         return {}
-
     async def red_delete_data_for_user(self, *, requester, user_id: int) -> None:
-        # this cog does not story any data
         pass
 
     @commands.command()

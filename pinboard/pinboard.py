@@ -42,11 +42,8 @@ class Pinboard(commands.Cog):
 
 
     async def red_get_data_for_user(self, *, user_id: int):
-        # this cog does not story any data
         return {}
-
     async def red_delete_data_for_user(self, *, requester, user_id: int) -> None:
-        # this cog does not story any data
         pass
 
 
@@ -113,6 +110,13 @@ class Pinboard(commands.Cog):
         for key, value in pinStore.items():
             await self.psUpdateData(ctx, key, repin)
         return
+
+    # async def psGetUserData(self, ctx, user):
+    #     pinStore = await self.config.guild(ctx.guild).pinStore()
+    #     returnData = "```"
+    #     for key, value in pinStore.items():
+    #         if key["content"][user.id]:
+    #             returnData += key.
 
 
     # Bot Commands
@@ -183,11 +187,6 @@ class Pinboard(commands.Cog):
         await self.config.guild(ctx.guild).pinStore.set(pinStore)
         await self.psUpdateData(ctx, pinnedMsgName)
         await ctx.message.add_reaction("✅")
-
-    @setpinboard.command(name="export")
-    async def spsexport(self, ctx):
-        """Export data"""
-        await ctx.send("```"+str(await self.config.guild(ctx.guild).pinStore())+"```")
 
     @setpinboard.command(name="import")
     async def spsimport(self, ctx, *, data):

@@ -20,6 +20,12 @@ class Emotes(commands.Cog):
         }
         self.config.register_global(**default_global)
 
+    # This cog does not store any End User Data
+    async def red_get_data_for_user(self, *, user_id: int):
+        return {}
+    async def red_delete_data_for_user(self, *, requester, user_id: int) -> None:
+        pass
+
 
     # Utility Commands
 

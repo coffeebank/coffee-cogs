@@ -17,6 +17,12 @@ class Sendhook(commands.Cog):
         }
         self.config.register_guild(**default_guild)
 
+    # This cog does not store any End User Data
+    async def red_get_data_for_user(self, *, user_id: int):
+        return {}
+    async def red_delete_data_for_user(self, *, requester, user_id: int) -> None:
+        pass
+
 
     # Utility Commands
 
