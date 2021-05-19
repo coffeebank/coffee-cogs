@@ -192,7 +192,7 @@ class Pinboard(commands.Cog):
     @setpinshare.command(name="import")
     async def spsimport(self, ctx, *, data):
         """Import data"""
-        await self.config.guild(ctx.guild).pinStore().set(data)
+        await self.config.guild(ctx.guild).pinStore.set(data)
         await ctx.send("done")
 
     @setpinshare.command(name="list")
