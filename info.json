@@ -1,8 +1,8 @@
 {
-  "author" : ["coffeebank.github.io"],
-  "install_msg" : "Hi! MY COGS ARE NOT GOOD. They are not made or checked by an experienced developer. Use my cogs with caution! Feel free to look over my code in my repo first to make sure no other cogs do what you want.",
+  "author" : ["coffeebank"],
+  "install_msg" : "Hi, thanks for dropping by! I hope my cogs are useful for something in your server :) To see the source code and documentation, visit https://github.com/coffeebank/coffee-cogs",
   "name" : "coffee-cogs",
-  "short" : "Specialized cogs that no one would ever hope to need :)",
-  "description" : "Specialized cogs that no one would ever hope to need :)",
-  "tags" : []
+  "short" : "Special cogs offering deeper Discord integration with features and services",
+  "description" : "Special cogs offering deeper Discord integration with features and services",
+  "tags" : ["integrations", "services", "webhooks"]
 }
