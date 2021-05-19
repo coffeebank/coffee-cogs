@@ -6,7 +6,7 @@ import discord
 from urllib.parse import quote
 import json
 
-class Pinshare(commands.Cog):
+class Pinboard(commands.Cog):
     """Make pinned messages communal! Users can add and remove their contributions to a pinned message at any time."""
 
     def __init__(self, bot):
