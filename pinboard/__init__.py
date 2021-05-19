@@ -1,4 +1,4 @@
-from .pinshare import Pinshare
+from .pinboard import Pinboard
 
 def setup(bot):
-    bot.add_cog(Pinshare(bot))
+    bot.add_cog(Pinboard(bot))
