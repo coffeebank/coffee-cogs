@@ -8,7 +8,7 @@ from urllib.parse import quote
 import json
 
 class Hellohook(commands.Cog):
-    """Gives you links to common search engines based on a search query."""
+    """Custom welcome message bots"""
 
     def __init__(self, bot):
         self.config = Config.get_conf(self, identifier=806715409318936616)

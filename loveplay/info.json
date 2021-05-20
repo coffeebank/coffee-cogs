@@ -4,7 +4,7 @@
   "name" : "loveplay",
   "short" : "Send love to other members of the server with hugs, kisses, etc.",
   "requirements" : [],
-  "description" : "Send love to other members of the server with hugs, kisses, and more, from Purrbot API",
+  "description" : "Send love to other members of the server with hugs, kisses, and more, from Purrbot API. To replace built-in hug command, unload 'General' cog and install 'coffeetools' cog.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
   "tags" : ["love", "hug", "kiss", "catgirls"]

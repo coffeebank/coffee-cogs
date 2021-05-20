@@ -4,8 +4,8 @@
   "name" : "emotes",
   "short" : "Custom emote solution for non-nitro users",
   "requirements" : [],
-  "description" : "Custom emote solution for non-nitro users, using emotes saved in a Google Sheets spreadsheet.",
+  "description" : "Custom emote solution for non-nitro users. See https://github.com/coffeebank/coffee-cogs/wiki for full setup.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["emotes", "google sheets", "api"]
+  "tags" : ["emotes", "info", "google sheets", "api"]
 }
