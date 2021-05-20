@@ -1,10 +1,10 @@
 {
-  "author" : ["coffee-cogs"],
-  "install_msg" : "Thanks for installing :') Come make pull requests over at my GitHub! https://github.com/coffeebank/coffee-cogs",
+  "author" : ["coffeebank"],
+  "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by the GitHub repo at https://github.com/coffeebank/coffee-cogs",
   "name" : "loveplay",
   "short" : "Send love to other members of the server with hugs, kisses, etc.",
   "requirements" : [],
-  "description" : "Send love to other members of the server with hugs, kisses, and more, from Purrbot API. To replace built-in hug command, unload 'General' cog and install 'coffeetools' cog.",
+  "description" : "Send love to other members of the server with reaction gifs from Purrbot API. Does not require a user @mention (say '=hug server' all you like!). Includes: blush, cuddle, dance, hug, kiss, lick, neko, nom, pat, poke, slap. Also includes a custom reaction gif builder that works for any gif type from the Purrbot API. To replace built-in hug command, unload 'General' cog and install 'coffeetools' cog.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
   "tags" : ["love", "hug", "kiss", "catgirls"]
