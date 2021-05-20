@@ -4,7 +4,7 @@
   "name" : "jsonrequest",
   "short" : "Send and receive a json request from Discord",
   "requirements" : [],
-  "description" : "Send and receive a json request from Discord. Can be used to supplement other cogs, and includes domain whitelisting by server.",
+  "description" : "Send and receive a json request from Discord. Includes domain whitelisting by server.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
   "tags" : ["json"]
