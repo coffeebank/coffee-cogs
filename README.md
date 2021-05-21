@@ -27,7 +27,7 @@
 
 |Name|Info|
 |---|---|
-|[coffeetools](https://github.com/coffeebank/coffee-cogs/tree/master/coffeetools)|Replacement for 'General' cog, since it needs to be disabled to override certain commands. Changes 'choose' to use | divider.|
+|[coffeetools](https://github.com/coffeebank/coffee-cogs/tree/master/coffeetools)|Replacement for 'General' cog, since it needs to be disabled to override certain commands. Changes 'choose' to use \| divider.|
 |[dmreply](https://github.com/coffeebank/coffee-cogs/tree/master/dmreply)|Replacing the built-in DM feature to be more customizable. Allows users specified as mods to send a customized DM embed to users via a User ID. Made with the goal of helping support teams responding to queries via DM, when used in conjunction with a cog that forwards received DMs to a server channel. Uses global settings, so only use this feature on bots hosted for a single server.|
 |[emotes](https://github.com/coffeebank/coffee-cogs/tree/master/emotes)|Custom emote solution for non-nitro users. See https://github.com/coffeebank/coffee-cogs/wiki for full setup.|
 |[hellohook](https://github.com/coffeebank/coffee-cogs/tree/master/hellohook)|Create your own welcome bot with a custom profile picture! Choose between a regular message or an embed welcome, with a ping option.|

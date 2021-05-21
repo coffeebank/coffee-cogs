@@ -16,8 +16,8 @@ fetch('https://raw.githubusercontent.com/Cog-Creators/Red-Index/master/index/1-m
 .then(data => {
   let coffeecogs = data["https://github.com/coffeebank/coffee-cogs"].rx_cogs;
   let repoDetails = document.getElementById("repoDetails");
-  Object.keys(coffeecogs).forEach(function(k){
-    repoDetails.innerHTML += `|[${k}](https://github.com/coffeebank/coffee-cogs/tree/master/${k})|${coffeecogs[k].description}|<br>`;
+  Object.keys(coffeecogs).forEach(function(cog){
+    repoDetails.innerHTML += `|[${cog}](https://github.com/coffeebank/coffee-cogs/tree/master/${cog})|${coffeecogs[cog].description}|<br>`;
   });
 });
 </script>
