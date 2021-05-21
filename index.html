@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>coffee-cogs Info</title>
+</head>
+<body>
+
+<div id="repoDetails"></div>
+
+<script>
+fetch('https://raw.githubusercontent.com/Cog-Creators/Red-Index/master/index/1-min.json')
+.then(resp => resp.json())
+.then(data => {
+  let coffeecogs = data["https://github.com/coffeebank/coffee-cogs"].rx_cogs;
+  let repoDetails = document.getElementById("repoDetails");
+  Object.keys(coffeecogs).forEach(function(k){
+    repoDetails.innerHTML += `|[${k}](https://github.com/coffeebank/coffee-cogs/tree/master/${k})|${coffeecogs[k].description}|<br>`;
+  });
+});
+</script>
+  
+</body>
+</html>

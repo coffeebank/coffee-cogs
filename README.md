@@ -23,20 +23,21 @@
 
 ## Cog Info
 
-See `info.json` in cog folders for the latest cog information.
+[Click here](https://index.discord.red/?filter=&ua=1) and search **`coffeebank`** to find and add my cogs!
 
 |Name|Info|
 |---|---|
-|coffeetools|Replacement for 'General' cog, with updated "roll" command|
-|dmreply|Makes the built-in DM feature more customizable. Made with the goal of helping support teams responding to queries via DM.|
-|emotes|*[Needs custom setup]* Custom emote solution for non-nitro users, using emotes saved in a Google Sheets spreadsheet.|
-|jsonrequest|Send and receive a json request from Discord. Includes domain whitelisting by server.|
-|loveplay|Send love to other members of the server with hugs, kisses, and more, from Purrbot API|
-|msgmover|Copy messages into a new channel, or link up two channels within a server/across servers! Uses webhooks with profiles and nicknames to forward messages around.|
-|pinboard|Make a bulletin board pinned message! Users can add/remove their own content to/from a shared, "bulletin board" style pinned message.|
-|quarantine|Quarantine a user easily. Set a muterole and mod log channel, and any users specified will have their roles removed and replaced with the muterole.|
-|sendhook|The comprehensive webhooks cog, with sending, listing, and creating of webhooks. Comes with support for webhook aliases and sending as your username/avatar. Perfect for users stuck on mobile Discord.|
-|websearch|A simple Discord bot feature that gives you links to search engines like Google without needing to copy-paste and search it yourself.|
+|[coffeetools](https://github.com/coffeebank/coffee-cogs/tree/master/coffeetools)|Replacement for 'General' cog, since it needs to be disabled to override certain commands. Changes 'choose' to use | divider.|
+|[dmreply](https://github.com/coffeebank/coffee-cogs/tree/master/dmreply)|Replacing the built-in DM feature to be more customizable. Allows users specified as mods to send a customized DM embed to users via a User ID. Made with the goal of helping support teams responding to queries via DM, when used in conjunction with a cog that forwards received DMs to a server channel. Uses global settings, so only use this feature on bots hosted for a single server.|
+|[emotes](https://github.com/coffeebank/coffee-cogs/tree/master/emotes)|Custom emote solution for non-nitro users. See https://github.com/coffeebank/coffee-cogs/wiki for full setup.|
+|[hellohook](https://github.com/coffeebank/coffee-cogs/tree/master/hellohook)|Create your own welcome bot with a custom profile picture! Choose between a regular message or an embed welcome, with a ping option.|
+|[jsonrequest](https://github.com/coffeebank/coffee-cogs/tree/master/jsonrequest)|Send and receive a json request from Discord. Includes domain whitelisting by server.|
+|[loveplay](https://github.com/coffeebank/coffee-cogs/tree/master/loveplay)|Send love to other members of the server with reaction gifs from Purrbot API. Does not require a user @mention (say '=hug server' all you like!). Includes: blush, cuddle, dance, hug, kiss, lick, neko, nom, pat, poke, slap. Also includes a custom reaction gif builder that works for any gif type from the Purrbot API. To replace built-in hug command, unload 'General' cog and install 'coffeetools' cog.|
+|[msgmover](https://github.com/coffeebank/coffee-cogs/tree/master/msgmover)|Make moving messages between channels and servers easy and integrated. Copy messages into a new channel, or link up two channels within a server/relay messages across servers! Uses webhooks, which also duplicates user profile pics and nicknames. Supports replies, attachments (files, images, and videos), and embeds (bot command responses). Includes timestamp spacer. Partly inspired by the old 'Relays' cog, but has no affiliation with, no codebase relations to, and integrates in a completely different way from, the old relays cog.|
+|[pinboard](https://github.com/coffeebank/coffee-cogs/tree/master/pinboard)|Make a bulletin board pinned message! Users can add/remove their own content to/from a shared, "bulletin board" style pinned message.|
+|[quarantine](https://github.com/coffeebank/coffee-cogs/tree/master/quarantine)|Quarantine a user easily. Set a muterole and mod log channel, and any users specified will have their roles removed and replaced with the muterole.|
+|[sendhook](https://github.com/coffeebank/coffee-cogs/tree/master/sendhook)|The comprehensive webhooks cog, with sending, listing, and creating of webhooks. Comes with support for webhook aliases and sending messages as your username/avatar. Perfect for users stuck on mobile Discord.|
+|[websearch](https://github.com/coffeebank/coffee-cogs/tree/master/websearch)|A simple Discord bot feature that returns links to search engines like Google without needing to copy-paste a search term into a website/app separately. Comes preset with search strings for Google, Bing, Ecosia, and DuckDuckGo. Custom search strings can be added. Works similarly to LMGTFY, but without the passive aggressiveness.|
 
 
 ## About this repo
