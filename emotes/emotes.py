@@ -4,9 +4,12 @@ from typing import Union
 import asyncio
 import aiohttp
 import discord
+from discord import Webhook, AsyncWebhookAdapter
 import requests
 import time
 import random
+import re
+from collections import OrderedDict
 
 class Emotes(commands.Cog):
     """Custom emote solution for non-nitro users"""
@@ -16,7 +19,8 @@ class Emotes(commands.Cog):
         self.config = Config.get_conf(self, identifier=806715409318936616)
         default_global = {
             "emoteGoogleSheetId": "",
-            "emotestore": []
+            "emotestore": [],
+            "cherryLocal": False,
         }
         self.config.register_global(**default_global)
 
@@ -35,27 +39,78 @@ class Emotes(commands.Cog):
             return numarray[n]
         except:
             return "🔢"
-            
+
+    async def cherryGetLocalEmote(self, ctx, guildEmotes, emoteInput):
+        # Remove the : from :emoteInput:
+        emoteName = emoteInput[1:-1]
+        for ee in guildEmotes:
+            if emoteName == ee.name and ee.animated == True:
+                return ee
+
+        # If the function got here, it means emote didn't exist
+        return False
+
+    def cherryEmoteBuilder(self, emote, buildAnimated=True, buildNormal=True):
+        if buildAnimated == True and emote.animated == True:
+            return "<a:"+str(emote.name)+":"+str(emote.id)+">"
+        elif buildNormal == True and emote.animated == False:
+            return "<:"+str(emote.name)+":"+str(emote.id)+">"
+        else:
+            return False
+
+    async def cherryWebhookFinder(self, ctx):
+        # Find a webhook that the bot made
+        whooklist = await ctx.channel.webhooks()
+        for wh in whooklist:
+            if self.bot.user == wh.user:
+                return wh.url
+
+        # If the function got here, it means there isn't one the bot made
+        try:
+            newHook = await ctx.channel.create_webhook(name="Emote Bot")
+            return newHook.url
+        # Could not create webhook, return False
+        except:
+            return False
+
 
     # Bot Commands
-
+    
     @commands.group(aliases=["se"])
     @checks.is_owner()
     async def setemote(self, ctx: commands.Context):
         """Change the configurations for Emotes cog
         
+        Allows users to use nitro-like features"""
+        if not ctx.invoked_subcommand:
+            pass
+        
+    @setemote.command(name="animated")
+    async def seteanimated(self, ctx, TrueOrFalse: bool):
+        """Enable the use of animated emotes in the server by non-nitro users"""
+        await self.config.cherryLocal.set(TrueOrFalse)
+        await ctx.message.add_reaction("✅")
+
+
+    @commands.group(aliases=["ses"])
+    @checks.is_owner()
+    async def setemotesheet(self, ctx: commands.Context):
+        """Change the configurations for Emotes Spreadsheet
+
+        For more information, see https://github.com/coffeebank/coffee-cogs/wiki
+        
         To set Google Sheets API key, use the command **`[p]set api gsheets api_key,YOURKEYHERE`**"""
         if not ctx.invoked_subcommand:
             pass
     
-    @setemote.command(name="sheet")
-    async def setesheet(self, ctx, sheetId: str):
+    @setemotesheet.command(name="sheet")
+    async def setessheet(self, ctx, sheetId: str):
         """Set Emote Google Sheet's ID, where the emote data was entered into"""
         await self.config.emoteGoogleSheetId.set(sheetId)
         await ctx.message.add_reaction("✅")
 
-    @setemote.command(name="update")
-    async def seteupdate(self, ctx):
+    @setemotesheet.command(name="update")
+    async def setesupdate(self, ctx):
         """Pull updates from Emote Google Sheet"""
         await ctx.message.add_reaction("⏳")
 
@@ -177,6 +232,52 @@ class Emotes(commands.Cog):
         e = discord.Embed(color=(await ctx.embed_colour()), title=ttl, description=desc)
         e.set_thumbnail(url=emote.url)
         await ctx.send(embed=e)
+        
 
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        if message.author.bot:
+            return
+        if message.webhook_id:
+            return
+        if message.guild is None:
+            return
+        cherryLocal = await self.config.cherryLocal()
+        if cherryLocal == False:
+            return
+        if ":" not in message.clean_content:
+            return
 
+        # Matching :emote: - (?<=^|(?<=[^<a]))(:\w{2,16}:)
+        # Matching <a:name:int> - (?<=<a:)\w{2,16}(?=:\d{16,20}>)
+        matchEmotes = re.findall(r"(?<=^|(?<=[^<a]))(:\w{2,16}:)", message.clean_content)
+        if len(matchEmotes) <= 0:
+            return
+        emoteNames = list(OrderedDict.fromkeys(matchEmotes))
+        guildEmotes = await message.guild.fetch_emojis()
 
+        emoteBank = []
+        for ee in emoteNames:
+            # Catch non-emote :text:
+            eeitem = await self.cherryGetLocalEmote(message, guildEmotes, ee)
+            if eeitem is not False:
+                emoteBank.append(eeitem)
+        if len(emoteBank) <= 0:
+            return
+
+        sendMsg = message.clean_content
+        for item in emoteBank:
+            sendMsg = re.sub(r"(^|(?<=[^<a])):{}:".format(item.name), self.cherryEmoteBuilder(item, buildNormal=False), sendMsg)
+
+        webhookUrl = await self.cherryWebhookFinder(message)
+        if webhookUrl is not False:
+            async with aiohttp.ClientSession() as session:
+                webhook = Webhook.from_url(webhookUrl, adapter=AsyncWebhookAdapter(session))
+                await webhook.send(
+                    sendMsg,
+                    username=message.author.display_name,
+                    avatar_url=message.author.avatar_url,
+                )
+
+        # Now that the sending was successful, we can delete the message
+        await message.delete()
