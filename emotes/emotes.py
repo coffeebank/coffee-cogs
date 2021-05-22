@@ -60,7 +60,11 @@ class Emotes(commands.Cog):
 
     async def cherryWebhookFinder(self, ctx):
         # Find a webhook that the bot made
-        whooklist = await ctx.channel.webhooks()
+        try:
+            whooklist = await ctx.channel.webhooks()
+        except:
+            return False
+
         for wh in whooklist:
             if self.bot.user == wh.user:
                 return wh.url
@@ -278,6 +282,7 @@ class Emotes(commands.Cog):
                     username=message.author.display_name,
                     avatar_url=message.author.avatar_url,
                 )
-
-        # Now that the sending was successful, we can delete the message
-        await message.delete()
+                # Now that the sending was successful, we can delete the message
+                await message.delete()
+        else:
+            await message.channel.send("Help! I'm missing webhook permissions!")
