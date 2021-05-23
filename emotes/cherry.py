@@ -36,7 +36,7 @@ class Cherry():
         return wh.url
     # If the function got here, it means there isn't one that the bot made
     try:
-      newHook = await ctx.channel.create_webhook(name=bot.user+" emotes")
+      newHook = await ctx.channel.create_webhook(name="Emotes")
       return newHook.url
     # Could not create webhook, return False
     except:
