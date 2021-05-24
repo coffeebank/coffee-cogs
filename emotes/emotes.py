@@ -29,9 +29,9 @@ class Emotes(commands.Cog):
         default_global = {
             "emoteGoogleSheetId": "",
             "emoteStore": [],
-            "cherryAll": False,
+            "cherryAll": True,
             "cherryServer": True,
-            "cherryRecents": True,
+            "cherryRecents": False,
         }
         self.config.register_global(**default_global)
 
