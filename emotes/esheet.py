@@ -6,10 +6,6 @@ import time
 class EmoteSheet():
   """EmoteSheet is the engine behind integrating with the Google Sheets API to create a searchable emote database inside the bot."""
 
-  # Scaffolding for splitting a single cog.py file into many smaller
-  # files is inspired by https://github.com/aikaterna/aikaterna-cogs/
-  # (MIT license, no affiliation)
-
   def __init__(self, **kwargs):
       super().__init__()
 
@@ -56,7 +52,7 @@ class EmoteSheet():
 
     # Send react if it's not page 1 results
     if page > 1:
-      await ctx.message.add_reaction(self.convertNum(page))
+      await ctx.message.add_reaction(EmoteSheet.convertNum(self, page))
 
     # Send embed for each result
     for b in emoteresults:
@@ -91,10 +87,10 @@ class EmoteSheet():
   async def emoteSheetUpdate(self, ctx, bot, gsheets_data):
     # Retrieve data from bot
     if gsheets_data == "":
-      return await ctx.send("The Google Sheets with Emotes data has not been set.")
+      return "The Google Sheets with Emotes data has not been set."
     gsheets_key = await bot.get_shared_api_tokens("gsheets")
     if gsheets_key.get("api_key") is None:
-      return await ctx.send("The Google Sheets API key has not been set.")
+      return "The Google Sheets API key has not been set."
 
     # Run REST api request to Google Sheets API
     url = "https://sheets.googleapis.com/v4/spreadsheets/"+gsheets_data+"?key="+gsheets_key.get("api_key")+"&includeGridData=True"

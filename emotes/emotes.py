@@ -30,7 +30,8 @@ class Emotes(commands.Cog):
             "emoteGoogleSheetId": "",
             "emoteStore": [],
             "cherryAll": True,
-            "cherryRecents": False,
+            "cherryEmoteSheet": False,
+            "cherryRecents": True,
             "cherryRecentsCount": 6,
             "cherryServer": True,
         }
@@ -47,10 +48,12 @@ class Emotes(commands.Cog):
     ## Cherry Emotes:
     ## Cherry Emotes is the engine behind interacting with emotes in chat for non-nitro users using webhooks.
     
-    @commands.group()
+    @commands.group(aliases=["setemotes"])
     @checks.is_owner()
     async def setemote(self, ctx: commands.Context):
-        """Change the configurations for Cherry Emotes. Allows users to use nitro-like features.
+        """Change the configurations for Cherry Emotes.
+        
+        Allows users to use nitro-like features.
         
         Only the bot owner has access to these commands, and these settings are global across all servers the bot is in.
         
@@ -58,11 +61,13 @@ class Emotes(commands.Cog):
         """
         if not ctx.invoked_subcommand:
             all = await self.config.cherryAll()
+            emotesheet = await self.config.cherryEmoteSheet()
             recents = await self.config.cherryRecents()
             recentsCount = await self.config.cherryRecentsCount()
             server = await self.config.cherryServer()
             await ctx.send("```"
                 f"all: {all}\n"
+                f"emotesheet: {emotesheet}\n"
                 f"recents: {recents}\n"
                 f"recentsCount: {recentsCount}\n"
                 f"server: {server}\n"
@@ -74,10 +79,12 @@ class Emotes(commands.Cog):
         await self.config.cherryAll.set(TrueOrFalse)
         await ctx.message.add_reaction("✅")
         
-    @setemote.command(name="server", aliases=["animated"])
-    async def seteserver(self, ctx, TrueOrFalse: bool):
-        """Enable the use of this server's animated emotes"""
-        await self.config.cherryServer.set(TrueOrFalse)
+    @setemote.command(name="emotesheet")
+    async def seteemotesheet(self, ctx, TrueOrFalse: bool):
+        """Enable pulling emotes from Emote Sheet
+        
+        Will automatically set to True when you set an Emote Sheet in `[p]setemotesheet`"""
+        await self.config.cherryEmoteSheet.set(TrueOrFalse)
         await ctx.message.add_reaction("✅")
 
     @setemote.command(name="recents")
@@ -93,6 +100,12 @@ class Emotes(commands.Cog):
         Not recommended to set higher than 6, for performance reasons."""
         await self.config.cherryRecentsCount.set(count)
         await ctx.message.add_reaction("✅")
+        
+    @setemote.command(name="server", aliases=["animated"])
+    async def seteserver(self, ctx, TrueOrFalse: bool):
+        """Enable the use of this server's animated emotes"""
+        await self.config.cherryServer.set(TrueOrFalse)
+        await ctx.message.add_reaction("✅")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -104,6 +117,9 @@ class Emotes(commands.Cog):
             return
         cherryAll = await self.config.cherryAll()
         if cherryAll == False:
+            return
+        # search is faster than match, but either work: https://stackoverflow.com/a/49710946/15923512
+        if re.search(self.RegexEmoteText, message.clean_content) == None:
             return
 
         # Message object
@@ -121,7 +137,7 @@ class Emotes(commands.Cog):
                 # Loops through emoteBank if it's not empty
                 if emoteBank is not False:
                     for item in emoteBank:
-                        sendMsg = re.sub(fr"(^|(?<=[^<a])):{item.name}:", Cherry.cherryEmoteBuilder(self, item, buildNormal=False), sendMsg)
+                        sendMsg = re.sub(fr"(^|(?<=[^<a])):{item.name}:", Cherry.cherryEmoteBuilder(self, emote=item, buildNormal=False), sendMsg)
 
         # cherryRecents
         cherryRecents = await self.config.cherryRecents()
@@ -140,6 +156,20 @@ class Emotes(commands.Cog):
                 # Only run if there's more emotes inside cherryHistEmoteBank
                 if cherryHistEmoteBank is not False:
                     sendMsg = Cherry.cherryHistInsertEmotes(self, sendMsg, cherryHistEmoteBank, emoteNames)
+
+        # cherryEmoteSheet
+        cherryEmoteSheet = await self.config.cherryEmoteSheet()
+        if cherryEmoteSheet == True:
+            # Get new list of :emote: items, after cherryServer has replaced :emotes:
+            # Only run if there's still :emote: items left
+            emoteNames = await Cherry.cherryEmoteParser(self, self.RegexEmoteText, sendMsg)
+            if emoteNames is not False:
+                emoteStore = await self.config.emoteStore()
+                # if emoteNames in emoteStore:
+                # regex parse emoteId from url
+                # if png: if gif:
+                # replace emoteNames with <(a):emotename:emoteId>
+                sendMsg = Cherry.cherryEmoteSheetProcessor(self, sendMsg, emoteNames, emoteStore)
 
         # If nothing changed between sendMsg assignment and now, it means no emotes, return
         if sendMsg == message.clean_content:
@@ -188,6 +218,7 @@ class Emotes(commands.Cog):
     async def setessheet(self, ctx, sheetId: str):
         """Set Emote Google Sheet's ID, where the emote data was entered into"""
         await self.config.emoteGoogleSheetId.set(sheetId)
+        await self.config.cherryEmoteSheet.set(True)
         await ctx.message.add_reaction("✅")
 
     @setemotesheet.command(name="update")
@@ -196,6 +227,10 @@ class Emotes(commands.Cog):
         await ctx.message.add_reaction("⏳")
         gsheets_data = await self.config.emoteGoogleSheetId()
         emotearray = await EmoteSheet.emoteSheetUpdate(self, ctx, self.bot, gsheets_data)
+        # Crude error handling, might refactor someday....
+        if isinstance(emotearray, str):
+            await ctx.message.add_reaction("❎")
+            return await ctx.send(emotearray)
         # Commit the changes
         await self.config.emoteStore.set(emotearray)
         await ctx.message.add_reaction("✅")
