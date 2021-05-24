@@ -156,10 +156,15 @@ class Emotes(commands.Cog):
                         username=message.author.display_name,
                         avatar_url=message.author.avatar_url,
                     )
-                    # Now that the sending was successful, we can delete the message
-                    await message.delete()
                 except:
                     await message.channel.send("An unknown error occured when trying to send to webhook.")
+                else:
+                    # Now that the sending was successful, we can delete the message
+                    # Silently fail if message delete fails
+                    try:
+                        await message.delete()
+                    except:
+                        pass
         else:
             await message.channel.send("Help! I'm missing webhook permissions!")
 
