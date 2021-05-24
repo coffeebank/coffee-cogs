@@ -18,6 +18,10 @@
 ```
 
 <p align="center">
+  <a href="https://github.com/coffeebank/coffee-cogs/wiki/Add-to-Discord">Add to your Discord ></a>
+</p>
+
+<p align="center">
   <a href="https://coffeebank.github.io/discord">Join the Support Discord ></a>
 </p>
 
@@ -63,7 +67,8 @@ See `LICENSE`.
 
 A shoutout to the following resources that enabled me to create all this: (No affiliation)
 
-- [The Red Discord Server](https://discord.red)
-- <https://github.com/Cog-Creators/Red-DiscordBot>
-- <https://github.com/Crossedfall/crossed-cogs>
-- <https://github.com/kyb3r/dhooks>
+- [Red Discord Server](https://discord.red) and [Red DiscordBot](https://github.com/Cog-Creators/Red-DiscordBot)
+- Flame442 and Drapersniper for helping with End User data statements
+- [Crossedfall](https://github.com/Crossedfall/crossed-cogs) and [aikaterna](https://github.com/aikaterna/aikaterna-cogs/), for MIT license, which I have used as a reference at times on how to scaffold cogs
+
+Red DiscordBot has been a staple of my Discord usage, and I sincerely thank the team who work tirelessly to maintain it, the community in Discord who are always helpful, and the many cog creators who develop all these bot features -- free and open source!
