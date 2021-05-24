@@ -178,27 +178,11 @@ class Emotes(commands.Cog):
         
         # Build webhook to send
         webhookUrl = await Cherry.webhookFinder(self, message, self.bot)
-        if webhookUrl is not False:
-            async with aiohttp.ClientSession() as session:
-                webhook = Webhook.from_url(webhookUrl, adapter=AsyncWebhookAdapter(session))
-                try:
-                    await webhook.send(
-                        sendMsg,
-                        username=message.author.display_name,
-                        avatar_url=message.author.avatar_url,
-                    )
-                except:
-                    await message.channel.send("An unknown error occured when trying to send to webhook.")
-                else:
-                    # Now that the sending was successful, we can delete the message
-                    # Silently fail if message delete fails
-                    try:
-                        await message.delete()
-                    except:
-                        pass
-        else:
-            await message.channel.send("Help! I'm missing webhook permissions!")
-
+        if webhookUrl == False:
+            return await message.channel.send("Help! I'm missing webhook permissions!")
+        webhookSender = await Cherry.webhookSender(self, message, webhookUrl, sendMsg)
+        if webhookSender is not True:
+            return await message.channel.send("An unknown error occured when trying to send to webhook.")
 
 
     ## EmoteSheet:
@@ -244,9 +228,18 @@ class Emotes(commands.Cog):
 
     @commands.command(aliases=["esend", "eee"])
     async def emotesend(self, ctx, search):
-        """Send an image-ized emote url, with first search result"""
+        """Send an emote from Emote Sheet, with first search result"""
         emoteStore = await self.config.emoteStore()
-        await EmoteSheet.send(self, ctx, search, emoteStore)
+        sendMsg = ":"+search+":"
+        emoteNames = [sendMsg]
+        sendMsg = Cherry.esheetProcessor(self, sendMsg, emoteNames, emoteStore)
+        # Build webhook to send
+        webhookUrl = await Cherry.webhookFinder(self, ctx, self.bot)
+        if webhookUrl == False:
+            return await ctx.send("Help! I'm missing webhook permissions!")
+        webhookSender = await Cherry.webhookSender(self, ctx, webhookUrl, sendMsg)
+        if webhookSender is not True:
+            return await ctx.send("An unknown error occured when trying to send to webhook.")
 
     @commands.command(aliases=["ei"])
     async def emoteinfo(self, ctx, emote: Union[discord.Emoji, discord.PartialEmoji]):

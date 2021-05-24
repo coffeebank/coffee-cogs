@@ -1,5 +1,8 @@
+import aiohttp
+import asyncio
 from collections import OrderedDict
 import discord
+from discord import Webhook, AsyncWebhookAdapter
 import re
 
 class Cherry():
@@ -49,6 +52,31 @@ class Cherry():
     # Could not create webhook, return False
     except:
       return False
+
+  async def webhookSender(self, message, webhookUrl, sendMsg):
+    async with aiohttp.ClientSession() as session:
+      webhook = Webhook.from_url(webhookUrl, adapter=AsyncWebhookAdapter(session))
+      try:
+        await webhook.send(
+            sendMsg,
+            username=message.author.display_name,
+            avatar_url=message.author.avatar_url,
+        )
+      except:
+        return False
+      else:
+        # Now that the sending was successful, we can delete the message
+        # Silently fail if message delete fails, since we've already succeeded webhook
+        try:
+          await message.delete()
+        except AttributeError:
+          try:
+            # first message = ctx
+            await message.message.delete()
+          except:
+            pass
+        finally:
+          return True
 
 
   # Utilities for 'emotesheet'
