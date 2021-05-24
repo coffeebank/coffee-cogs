@@ -130,53 +130,54 @@ class Emotes(commands.Cog):
         cherryServer = await self.config.cherryServer()
         if cherryServer == True:
             # Get list of :emote: items
-            emoteNames = await Cherry.cherryEmoteParser(self, self.RegexEmoteText, sendMsg)
+            emoteNames = await Cherry.emoteParser(self, self.RegexEmoteText, sendMsg)
             if emoteNames is not False:
                 # Retrieve guild emotes, if emoteName matches, it adds emoteObj to emoteBank
-                emoteBank = await Cherry.cherryEmoteBank(self, message, emoteNames)
+                emoteBank = await Cherry.serverBankBuilder(self, message, emoteNames)
                 # Loops through emoteBank if it's not empty
                 if emoteBank is not False:
                     for item in emoteBank:
-                        sendMsg = re.sub(fr"(^|(?<=[^<a])):{item.name}:", Cherry.cherryEmoteBuilder(self, emote=item, buildNormal=False), sendMsg)
+                        sendMsg = re.sub(fr"(^|(?<=[^<a])):{item.name}:", Cherry.emoteBuilder(self, emote=item, buildNormal=False), sendMsg)
 
         # cherryRecents
         cherryRecents = await self.config.cherryRecents()
         if cherryRecents == True:
             # Get new list of :emote: items, after cherryServer has replaced :emotes:
             # Only run if there's still :emote: items left
-            emoteNames = await Cherry.cherryEmoteParser(self, self.RegexEmoteText, sendMsg)
+            emoteNames = await Cherry.emoteParser(self, self.RegexEmoteText, sendMsg)
             if emoteNames is not False:
                 # Get previous chat history
                 cherryRecentsCount = await self.config.cherryRecentsCount()
-                cherryChatHistory = await Cherry.cherryGetChatHistory(self, message, cherryRecentsCount)
+                cherryChatHistory = await Cherry.recentsHistRetriever(self, message, cherryRecentsCount)
                 if cherryChatHistory == False:
                     return await message.channel.send("Oops, I'm missing Message History permissions....")
                 # Build emote bank out of previous chat history
-                cherryHistEmoteBank = Cherry.cherryHistEmoteBank(self, cherryChatHistory, self.RegexFullEmoteSearch)
-                # Only run if there's more emotes inside cherryHistEmoteBank
-                if cherryHistEmoteBank is not False:
-                    sendMsg = Cherry.cherryHistInsertEmotes(self, sendMsg, cherryHistEmoteBank, emoteNames)
+                recentsBankBuilder = Cherry.recentsBankBuilder(self, cherryChatHistory, self.RegexFullEmoteSearch)
+                # Only run if there's more emotes inside recentsBankBuilder
+                if recentsBankBuilder is not False:
+                    # Modifies sendMsg using given data
+                    sendMsg = Cherry.recentsProcessor(self, sendMsg, recentsBankBuilder, emoteNames)
 
         # cherryEmoteSheet
         cherryEmoteSheet = await self.config.cherryEmoteSheet()
         if cherryEmoteSheet == True:
             # Get new list of :emote: items, after cherryServer has replaced :emotes:
             # Only run if there's still :emote: items left
-            emoteNames = await Cherry.cherryEmoteParser(self, self.RegexEmoteText, sendMsg)
+            emoteNames = await Cherry.emoteParser(self, self.RegexEmoteText, sendMsg)
             if emoteNames is not False:
                 emoteStore = await self.config.emoteStore()
                 # if emoteNames in emoteStore:
                 # regex parse emoteId from url
                 # if png: if gif:
                 # replace emoteNames with <(a):emotename:emoteId>
-                sendMsg = Cherry.cherryEmoteSheetProcessor(self, sendMsg, emoteNames, emoteStore)
+                sendMsg = Cherry.esheetProcessor(self, sendMsg, emoteNames, emoteStore)
 
         # If nothing changed between sendMsg assignment and now, it means no emotes, return
         if sendMsg == message.clean_content:
             return
         
         # Build webhook to send
-        webhookUrl = await Cherry.cherryWebhookFinder(self, message, self.bot)
+        webhookUrl = await Cherry.webhookFinder(self, message, self.bot)
         if webhookUrl is not False:
             async with aiohttp.ClientSession() as session:
                 webhook = Webhook.from_url(webhookUrl, adapter=AsyncWebhookAdapter(session))
@@ -255,4 +256,3 @@ class Emotes(commands.Cog):
         e = discord.Embed(color=(await ctx.embed_colour()), title=ttl, description=desc)
         e.set_thumbnail(url=emote.url)
         await ctx.send(embed=e)
-        
