@@ -1,4 +1,5 @@
 from redbot.core import Config, commands, checks
+import discord
 import random
 
 class Coffeetools(commands.Cog):
@@ -20,4 +21,11 @@ class Coffeetools(commands.Cog):
         **`[p]choose item1 | item2 | item3`**"""
         # Split choosetext into an array, and return random choice
         choosearray = choosetext.split("|")
-        return await ctx.send(random.choice(choosearray))
+        # Wrap in an embed to prevent spam links, @mentions, etc. (Repo issue #5)
+        e = discord.Embed(color=(await ctx.embed_colour()), description=random.choice(choosearray))
+        e.set_footer(text="Sent by "+ctx.author.display_name)
+        # Catch error
+        try:
+            return await ctx.send(embed=e)
+        except:
+            return await ctx.send("Sorry, an error occurred. Are you using only alphanumeric characters?")
