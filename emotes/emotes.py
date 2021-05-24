@@ -227,7 +227,7 @@ class Emotes(commands.Cog):
         """Pull updates from Emote Google Sheet"""
         await ctx.message.add_reaction("⏳")
         gsheets_data = await self.config.emoteGoogleSheetId()
-        emotearray = await EmoteSheet.emoteSheetUpdate(self, ctx, self.bot, gsheets_data)
+        emotearray = await EmoteSheet.update(self, ctx, self.bot, gsheets_data)
         # Crude error handling, might refactor someday....
         if isinstance(emotearray, str):
             await ctx.message.add_reaction("❎")
@@ -240,13 +240,13 @@ class Emotes(commands.Cog):
     async def emotesearch(self, ctx, search, page: int=1):
         """Search for image-ized emote url"""
         emoteStore = await self.config.emoteStore()
-        await EmoteSheet.emoteSheetSearch(self, ctx, emoteStore, search, page)
+        await EmoteSheet.search(self, ctx, emoteStore, search, page)
 
     @commands.command(aliases=["esend", "eee"])
     async def emotesend(self, ctx, search):
         """Send an image-ized emote url, with first search result"""
         emoteStore = await self.config.emoteStore()
-        await EmoteSheet.emoteSheetSend(self, ctx, search, emoteStore)
+        await EmoteSheet.send(self, ctx, search, emoteStore)
 
     @commands.command(aliases=["ei"])
     async def emoteinfo(self, ctx, emote: Union[discord.Emoji, discord.PartialEmoji]):

@@ -20,7 +20,7 @@ class EmoteSheet():
           return "🔢"
 
 
-  async def emoteSheetSearch(self, ctx, emotestore, search, page):
+  async def search(self, ctx, emotestore, search, page):
     emoteresults = []
     for a in emotestore:
       # [1] is name, [3] is tags
@@ -71,7 +71,7 @@ class EmoteSheet():
       await ctx.send(embed=e)
 
 
-  async def emoteSheetSend(self, ctx, search, emotestore):
+  async def send(self, ctx, search, emotestore):
     for a in emotestore:
       # [1] is name, [3] is tags
       if search.lower() in a[1] or search.lower() in a[3]:
@@ -84,7 +84,7 @@ class EmoteSheet():
           return
 
 
-  async def emoteSheetUpdate(self, ctx, bot, gsheets_data):
+  async def update(self, ctx, bot, gsheets_data):
     # Retrieve data from bot
     if gsheets_data == "":
       return "The Google Sheets with Emotes data has not been set."
