@@ -30,8 +30,9 @@ class Emotes(commands.Cog):
             "emoteGoogleSheetId": "",
             "emoteStore": [],
             "cherryAll": True,
-            "cherryServer": True,
             "cherryRecents": False,
+            "cherryRecentsCount": 6,
+            "cherryServer": True,
         }
         self.config.register_global(**default_global)
 
@@ -49,18 +50,23 @@ class Emotes(commands.Cog):
     @commands.group()
     @checks.is_owner()
     async def setemote(self, ctx: commands.Context):
-        """Change the configurations for Cherry Emotes
+        """Change the configurations for Cherry Emotes. Allows users to use nitro-like features.
         
-        Allows users to use nitro-like features
+        Only the bot owner has access to these commands, and these settings are global across all servers the bot is in.
         
-        This section is off by default. `all` overrides all other settings to disable everything. Set `all` to True, then you can selectively enable/disable the other options.
+        `all` overrides all other settings to disable everything, for performance reasons. Setting `all` to True allows you to customize which features you want on/off.
         """
-        all = await self.config.cherryAll()
-        server = await self.config.cherryServer()
-        recents = await self.config.cherryRecents()
-        await ctx.send(f"```\nall: {all}\nserver: {server}\nrecents: {recents}"+"```")
         if not ctx.invoked_subcommand:
-            pass
+            all = await self.config.cherryAll()
+            recents = await self.config.cherryRecents()
+            recentsCount = await self.config.cherryRecentsCount()
+            server = await self.config.cherryServer()
+            await ctx.send("```"
+                f"all: {all}\n"
+                f"recents: {recents}\n"
+                f"recentsCount: {recentsCount}\n"
+                f"server: {server}\n"
+            "```")
 
     @setemote.command(name="all")
     async def seteall(self, ctx, TrueOrFalse: bool):
@@ -78,6 +84,14 @@ class Emotes(commands.Cog):
     async def seterecents(self, ctx, TrueOrFalse: bool):
         """Enable the use of searching recent messages for emotes"""
         await self.config.cherryRecents.set(TrueOrFalse)
+        await ctx.message.add_reaction("✅")
+
+    @setemote.command(name="recentscount")
+    async def seterecentscount(self, ctx, count: int):
+        """Determines how many messages back to search for emotes
+        
+        Not recommended to set higher than 6, for performance reasons."""
+        await self.config.cherryRecentsCount.set(count)
         await ctx.message.add_reaction("✅")
 
     @commands.Cog.listener()
@@ -117,7 +131,8 @@ class Emotes(commands.Cog):
             emoteNames = await Cherry.cherryEmoteParser(self, self.RegexEmoteText, sendMsg)
             if emoteNames is not False:
                 # Get previous chat history
-                cherryChatHistory = await Cherry.cherryGetChatHistory(self, message)
+                cherryRecentsCount = await self.config.cherryRecentsCount()
+                cherryChatHistory = await Cherry.cherryGetChatHistory(self, message, cherryRecentsCount)
                 if cherryChatHistory == False:
                     return await message.channel.send("Oops, I'm missing Message History permissions....")
                 # Build emote bank out of previous chat history

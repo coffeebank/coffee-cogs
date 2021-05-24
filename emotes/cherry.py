@@ -81,9 +81,9 @@ class Cherry():
   # Utilities for 'recents'
   # Searches through channel's recent messages to find a match
 
-  async def cherryGetChatHistory(self, message):
+  async def cherryGetChatHistory(self, message, cherryRecentsCount):
     try:
-      return await message.channel.history(limit=6).flatten()
+      return await message.channel.history(limit=cherryRecentsCount).flatten()
     except:
       return False
 
