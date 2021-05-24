@@ -23,7 +23,7 @@ class Coffeetools(commands.Cog):
         choosearray = choosetext.split("|")
         # Wrap in an embed to prevent spam links, @mentions, etc. (Repo issue #5)
         e = discord.Embed(color=(await ctx.embed_colour()), description=random.choice(choosearray))
-        e.set_footer(text="Sent by "+ctx.author.display_name)
+        e.set_footer(text="'choose' requested by "+ctx.author.display_name)
         # Catch error
         try:
             return await ctx.send(embed=e)
