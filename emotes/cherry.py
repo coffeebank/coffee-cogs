@@ -16,10 +16,10 @@ class Cherry():
   # General Utility Commands
 
   def emoteAnimated(self, text):
-    if re.search(r"(gif)", text) == False:
-      return False
-    else:
+    if re.search(r"(gif)", text):
       return True
+    else:
+      return False
 
   def emoteBuilder(self, emote=None, emoteName=None, emoteId=None, emoteAnimated=None, buildAnimated=True, buildNormal=True):
     if emote is not None:
