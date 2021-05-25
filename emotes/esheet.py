@@ -71,6 +71,14 @@ class EmoteSheet():
       await ctx.send(embed=e)
 
 
+  def searchsingle(self, search, emotestore):
+    for a in emotestore:
+      # [1] is name, [3] is tags
+      if search.lower() in a[1] or search.lower() in a[3]:
+        return a
+    return False
+
+
   async def send(self, ctx, search, emotestore):
     for a in emotestore:
       # [1] is name, [3] is tags

@@ -272,9 +272,19 @@ class Emotes(commands.Cog):
     async def emotesend(self, ctx, search):
         """Send an emote from Emote Sheet, with first search result"""
         emoteStore = await self.config.emoteStore()
-        sendMsg = ":"+search+":"
-        emoteNames = [sendMsg]
-        sendMsg = Cherry.esheetProcessor(self, sendMsg, emoteNames, emoteStore)
+        searchObj = EmoteSheet.searchsingle(self, search, emoteStore)
+        if searchObj == False:
+            return await ctx.message.add_reaction("💨")
+        # [1] is emote name
+        emoteName = searchObj[1]
+        # [2] is emote url
+        emoteId = re.findall(r"(?<=emojis/)(\d{16,20})(?=\.)", searchObj[2])[0]
+        # Build emote object
+        sendMsg = Cherry.emoteBuilder(self,
+          emoteName=emoteName,
+          emoteId=emoteId,
+          emoteAnimated=Cherry.emoteAnimated(self, searchObj[2])
+        )
         # Build webhook to send
         webhookUrl = await Cherry.webhookFinder(self, ctx, self.bot)
         if webhookUrl == False:

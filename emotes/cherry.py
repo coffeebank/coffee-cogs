@@ -15,6 +15,12 @@ class Cherry():
 
   # General Utility Commands
 
+  def emoteAnimated(self, text):
+    if re.search(r"(gif)", text) == False:
+      return False
+    else:
+      return True
+
   def emoteBuilder(self, emote=None, emoteName=None, emoteId=None, emoteAnimated=None, buildAnimated=True, buildNormal=True):
     if emote is not None:
       emoteName = emote.name
@@ -98,10 +104,11 @@ class Cherry():
         # [2] is emote url
         emoteId = re.findall(r"(?<=emojis/)(\d{16,20})(?=\.)", es[2])[0]
         # Build emote object
-        if re.search(r"(gif)", es[2]):
-          emoteStr = Cherry.emoteBuilder(self, emoteName=es[1], emoteId=emoteId, emoteAnimated=True)
-        else:
-          emoteStr = Cherry.emoteBuilder(self, emoteName=es[1], emoteId=emoteId, emoteAnimated=False)
+        emoteStr = Cherry.emoteBuilder(self,
+          emoteName=es[1],
+          emoteId=emoteId,
+          emoteAnimated=Cherry.emoteAnimated(self, es[2])
+        )
         sendMsg = re.sub(fr"({en})", emoteStr, sendMsg)
     return sendMsg
 
