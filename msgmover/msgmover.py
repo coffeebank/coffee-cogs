@@ -134,6 +134,24 @@ class Msgmover(commands.Cog):
         embed.set_footer(text='\u200b')
         return embed
 
+    async def webhookFinder(self, channel):
+        # Find a webhook that the bot made
+        try:
+            whooklist = await channel.webhooks()
+        except:
+            return False
+        # Return if match
+        for wh in whooklist:
+            if self.bot.user == wh.user:
+                return wh.url
+        # If the function got here, it means there isn't one that the bot made
+        try:
+            newHook = await channel.create_webhook(name="Bot msgmover")
+            return newHook.url
+        # Could not create webhook, return False
+        except:
+            return False
+
 
     # Bot Commands
 
@@ -212,12 +230,16 @@ class Msgmover(commands.Cog):
 
     @commands.command()
     @checks.mod()
-    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toWebhook, maxMessages: int=10):
+    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: discord.TextChannel, maxMessages: int=10):
         """Copies messages from one channel to another
         
         Uses a webhook to represent users
         Do not request more than 20 maxMessages"""
         await ctx.message.add_reaction("⏳")
+
+        toWebhook = await self.webhookFinder(toChannel)
+        if toWebhook == False:
+            return await ctx.send("Error trying to create webhook at destination channel.")
 
         # Start webhook session
         async with aiohttp.ClientSession() as session:
@@ -226,7 +248,6 @@ class Msgmover(commands.Cog):
             # Retrieve messages, sorted by oldest first
             msgList = await fromChannel.history(limit=maxMessages).flatten()
             msgList.reverse()
-
 
             # Send them via webhook
             msgItemLast = msgList[0].created_at
@@ -239,15 +260,12 @@ class Msgmover(commands.Cog):
                         avatar_url='https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/0-Background.svg/300px-0-Background.svg.png',
                         embed=await self.timestampEmbed(ctx, msgItem.created_at)
                     )
-
                 try:
                     await self.msgFormatter(webhook, msgItem)
                 except:
                     await ctx.send("Failed to send: "+str(msgItem))
-
                 # Save timestamp to msgItemLast
                 msgItemLast = msgItem.created_at
 
         # Add react on complete
         await ctx.message.add_reaction("✅")
-
