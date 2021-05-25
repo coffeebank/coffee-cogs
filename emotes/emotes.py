@@ -73,7 +73,7 @@ class Emotes(commands.Cog):
             await ctx.send(embed=eo)
             # Server settings
             eg = discord.Embed(color=(await ctx.embed_colour()), title="Server", description="*[ Guild settings ]*")
-            eg.add_field(name="All", value=(await self.config.cherryGuildAll()), inline=False)
+            eg.add_field(name="All", value=(await self.config.guild(ctx.guild).cherryGuildAll()), inline=False)
             await ctx.send(embed=eg)
 
     @setemotes.command(name="all")
@@ -87,7 +87,7 @@ class Emotes(commands.Cog):
     @checks.guildowner_or_permissions()
     async def seteall(self, ctx, TrueOrFalse: bool):
         """The power switch for Cherry Emotes in this server"""
-        await self.config.cherryGuildAll.set(TrueOrFalse)
+        await self.config.guild(ctx.guild).cherryGuildAll.set(TrueOrFalse)
         await ctx.message.add_reaction("✅")
 
     @setemotes.command(name="recents")
@@ -189,7 +189,7 @@ class Emotes(commands.Cog):
         cherryAll = await self.config.cherryAll()
         if cherryAll is not True:
             return
-        cherryGuildAll = await self.config.cherryGuildAll()
+        cherryGuildAll = await self.config.guild(message.guild).cherryGuildAll()
         if cherryGuildAll is not True:
             return
         # search is faster than match, but either work: https://stackoverflow.com/a/49710946/15923512
