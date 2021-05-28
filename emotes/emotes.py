@@ -37,6 +37,7 @@ class Emotes(commands.Cog):
             "cherryServer": True,
         }
         self.config.register_global(**default_global)
+
         # Server owner configs
         default_guild = {
             "cherryGuildAll": True,
@@ -258,6 +259,13 @@ class Emotes(commands.Cog):
         if webhookSender is not True:
             return await message.channel.send("An unknown error occured when trying to send to webhook.")
 
+        # Now that the sending was successful, we can delete the message
+        # Silently fail if message delete fails, since we've already succeeded webhook
+        try:
+            await message.delete()
+        except:
+            pass
+
 
     ## EmoteSheet:
     ## EmoteSheet is the engine behind integrating with the Google Sheets API to create a searchable emote database inside the bot.
@@ -293,6 +301,14 @@ class Emotes(commands.Cog):
         if webhookSender is not True:
             return await ctx.send("An unknown error occured when trying to send to webhook.")
 
+        # Now that the sending was successful, we can delete the message
+        # Silently fail if message delete fails, since we've already succeeded webhook
+        try:
+            await ctx.message.delete()
+        except:
+            pass
+
+
     @commands.command(aliases=["ei"])
     async def emoteinfo(self, ctx, emote: Union[discord.Emoji, discord.PartialEmoji]):
         """Send info about an emote"""
@@ -301,3 +317,23 @@ class Emotes(commands.Cog):
         e = discord.Embed(color=(await ctx.embed_colour()), title=ttl, description=desc)
         e.set_thumbnail(url=emote.url)
         await ctx.send(embed=e)
+
+    @commands.command()
+    async def showemote(self, ctx, emoteUrl: str):
+        """Show an emote you have an URL for"""
+        emoteName = "showemote"
+        if isinstance(emoteUrl, str):
+            try:
+                emoteId = re.findall(r"(?<=emojis/)(\d{16,20})(?=\.)", emoteUrl)[0]
+            except:
+                return await ctx.send("Invalid emote")
+
+        sendMsg = Cherry.emoteBuilder(self, emoteName=emoteName, emoteId=emoteId, emoteAnimated=Cherry.emoteAnimated(self, emoteUrl))
+
+        # Build webhook to send
+        webhookUrl = await Cherry.webhookFinder(self, ctx, self.bot)
+        if webhookUrl == False:
+            return await ctx.send("Help! I'm missing webhook permissions!")
+        webhookSender = await Cherry.webhookSender(self, ctx, webhookUrl, sendMsg)
+        if webhookSender is not True:
+            return await ctx.send("An unknown error occured when trying to send to webhook.")

@@ -71,18 +71,7 @@ class Cherry():
       except:
         return False
       else:
-        # Now that the sending was successful, we can delete the message
-        # Silently fail if message delete fails, since we've already succeeded webhook
-        try:
-          await message.delete()
-        except AttributeError:
-          try:
-            # first message = ctx
-            await message.message.delete()
-          except:
-            pass
-        finally:
-          return True
+        return True
 
 
   # Utilities for 'emotesheet'
