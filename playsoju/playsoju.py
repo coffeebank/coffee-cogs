@@ -77,7 +77,7 @@ class Playsoju(commands.Cog):
         """Disable Soju Player"""
         await self.config.sojuEnabled.set(False)
 
-    @setsoju.command(name="disable")
+    @setsoju.command(name="instance")
     async def setsojuinstance(self, ctx, instanceDomain):
         """Set Soju Player instance
         
