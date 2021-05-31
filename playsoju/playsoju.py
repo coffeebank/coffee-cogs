@@ -33,7 +33,7 @@ class Playsoju(commands.Cog):
                 return wh.url
         # If the function got here, it means there isn't one that the bot made
         try:
-            newHook = await ctx.channel.create_webhook(name="Emotes")
+            newHook = await ctx.channel.create_webhook(name="Playsoju")
             return newHook.url
         # Could not create webhook, return False
         except:
@@ -122,7 +122,7 @@ class Playsoju(commands.Cog):
         sojuInstance = await self.config.guild(message.guild).sojuInstance()
         regex = r"https\:\/\/open\.spotify\.com\/\w{4,12}\/\w{14,26}(?=\?|$)"
         matches = re.finditer(regex, message.clean_content)
-        sendMsg = ""
+        sendMsg = message.clean_content+"\n"
 
         for matchNum, match in enumerate(matches, start=1):
             print(matchNum)
@@ -134,3 +134,8 @@ class Playsoju(commands.Cog):
         webhookSender = await self.webhookSender(message, webhookUrl, sendMsg)
         if webhookSender is not True:
             return await message.channel.send(sendMsg)
+        else:
+            try:
+                message.delete()
+            except:
+                pass
