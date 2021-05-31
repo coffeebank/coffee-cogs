@@ -70,13 +70,13 @@ class Playsoju(commands.Cog):
     @setsoju.command(name="enable")
     async def setsojuenable(self, ctx):
         """Enable Soju Player"""
-        await self.config.sojuEnabled.set(True)
+        await self.config.guild(ctx.guild).sojuEnabled.set(True)
         await ctx.message.add_reaction("✅")
 
     @setsoju.command(name="disable")
     async def setsojudisable(self, ctx):
         """Disable Soju Player"""
-        await self.config.sojuEnabled.set(False)
+        await self.config.guild(ctx.guild).sojuEnabled.set(False)
         await ctx.message.add_reaction("✅")
 
     @setsoju.command(name="instance")
@@ -84,7 +84,7 @@ class Playsoju(commands.Cog):
         """Set Soju Player instance
         
         Default: playsoju.netlify.app"""
-        await self.config.sojuInstance.set(instanceDomain)
+        await self.config.guild(ctx.guild).sojuInstance.set(instanceDomain)
         await ctx.message.add_reaction("✅")
 
     @commands.Cog.listener()
@@ -95,11 +95,11 @@ class Playsoju(commands.Cog):
             return
         if message.guild is None:
             return
-        sojuEnabled = await self.config.sojuEnabled()
+        sojuEnabled = await self.config.guild(message.guild).sojuEnabled()
         if sojuEnabled is not True:
             return
 
-        sojuInstance = await self.config.sojuInstance()
+        sojuInstance = await self.config.guild(message.guild).sojuInstance()
         regex = r"https\:\/\/open\.spotify\.com\/\w{4,12}\/\w{14,26}(?=\?|$)"
         matches = re.finditer(regex, message.clean_content)
         sendMsg = ""
