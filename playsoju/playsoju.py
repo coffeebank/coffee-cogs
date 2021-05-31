@@ -122,7 +122,7 @@ class Playsoju(commands.Cog):
         sojuInstance = await self.config.guild(message.guild).sojuInstance()
         regex = r"https\:\/\/open\.spotify\.com\/\w{4,12}\/\w{14,26}(?=\?|$)"
         matches = re.finditer(regex, message.clean_content)
-        sendMsg = message.clean_content+"\n"
+        sendMsg = ""
 
         for matchNum, match in enumerate(matches, start=1):
             print(matchNum)
