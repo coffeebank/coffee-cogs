@@ -87,6 +87,26 @@ class Playsoju(commands.Cog):
         await self.config.guild(ctx.guild).sojuInstance.set(instanceDomain)
         await ctx.message.add_reaction("✅")
 
+    @commands.command()
+    async def playsoju(self, ctx, spotifyLink, asMyself: bool=False):
+        """Return a Soju link
+        
+        Can set asMyself to true/false, for sending as webhook"""
+        sojuInstance = await self.config.guild(ctx.guild).sojuInstance()
+        sendMsg = "https://{sojuInstance}?s={spotifyLink}\n".format(sojuInstance, spotifyLink)
+
+        if asMyself == False:
+            return await ctx.send(sendMsg)
+        elif asMyself == True:
+            webhookUrl = await self.webhookFinder(ctx, self.bot)
+            if webhookUrl == False:
+                return await ctx.send(sendMsg)
+            webhookSender = await self.webhookSender(ctx, webhookUrl, sendMsg)
+            if webhookSender is not True:
+                return await ctx.send(sendMsg)
+        else:
+            return await ctx.send("An error occurred.")
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.author.bot:
