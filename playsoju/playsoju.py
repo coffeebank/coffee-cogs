@@ -93,7 +93,7 @@ class Playsoju(commands.Cog):
         
         Can set asMyself to true/false, for sending as webhook"""
         sojuInstance = await self.config.guild(ctx.guild).sojuInstance()
-        sendMsg = "https://{sojuInstance}?s={spotifyLink}\n".format(sojuInstance, spotifyLink)
+        sendMsg = f"https://{sojuInstance}?s={spotifyLink}\n"
 
         if asMyself == False:
             return await ctx.send(sendMsg)
