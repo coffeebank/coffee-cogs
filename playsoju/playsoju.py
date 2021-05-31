@@ -71,11 +71,13 @@ class Playsoju(commands.Cog):
     async def setsojuenable(self, ctx):
         """Enable Soju Player"""
         await self.config.sojuEnabled.set(True)
+        await ctx.message.add_reaction("✅")
 
     @setsoju.command(name="disable")
     async def setsojudisable(self, ctx):
         """Disable Soju Player"""
         await self.config.sojuEnabled.set(False)
+        await ctx.message.add_reaction("✅")
 
     @setsoju.command(name="instance")
     async def setsojuinstance(self, ctx, instanceDomain):
@@ -83,6 +85,7 @@ class Playsoju(commands.Cog):
         
         Default: playsoju.netlify.app"""
         await self.config.sojuInstance.set(instanceDomain)
+        await ctx.message.add_reaction("✅")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
