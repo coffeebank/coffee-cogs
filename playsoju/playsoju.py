@@ -18,43 +18,6 @@ class Playsoju(commands.Cog):
         }
         self.config.register_guild(**default_guild)
 
-    
-    # Utility Commands
-
-    async def webhookFinder(self, ctx, bot):
-        # Find a webhook that the bot made
-        try:
-            whooklist = await ctx.channel.webhooks()
-        except:
-            return False
-        # Return if match
-        for wh in whooklist:
-            if bot.user == wh.user:
-                return wh.url
-        # If the function got here, it means there isn't one that the bot made
-        try:
-            newHook = await ctx.channel.create_webhook(name="Playsoju")
-            return newHook.url
-        # Could not create webhook, return False
-        except:
-            return False
-
-    async def webhookSender(self, message, webhookUrl, sendMsg):
-        async with aiohttp.ClientSession() as session:
-            webhook = Webhook.from_url(webhookUrl, adapter=AsyncWebhookAdapter(session))
-        try:
-            await webhook.send(
-                sendMsg,
-                username=message.author.display_name,
-                avatar_url=message.author.avatar_url,
-            )
-        except:
-            return False
-        else:
-            return True
-
-    
-    # Bot Commands
 
     @commands.group()
     @checks.guildowner_or_permissions()
@@ -118,26 +81,37 @@ class Playsoju(commands.Cog):
         sojuEnabled = await self.config.guild(message.guild).sojuEnabled()
         if sojuEnabled is not True:
             return
-        regexString = r"https\:\/\/open\.spotify\.com\/\w{4,12}\/\w{14,26}(?=\?|$)"
-        matches = re.finditer(regexString, message.clean_content)
+        sojuFinder = r"https\:\/\/open\.spotify\.com\/\w{4,12}\/\w{14,26}(?=\?|$)"
+        matches = re.findall(sojuFinder, message.clean_content)
         if len(matches) <= 0:
             return
 
         sojuInstance = await self.config.guild(message.guild).sojuInstance()
         sendMsg = ""
 
-        for matchNum, match in enumerate(matches, start=1):
-            print(matchNum)
-            sendMsg += "https://{sojuInstance}?s={match}\n".format(sojuInstance = sojuInstance, match = match.group())
-        
-        webhookUrl = await self.webhookFinder(message, self.bot)
-        if webhookUrl == False:
+        for match in matches:
+            sendMsg += "https://"+sojuInstance+"?s="+match+"\n"
+
+        # Find a webhook that the bot made
+        try:
+            whooklist = await message.channel.webhooks()
+            whurl = ""
+            # Return if match
+            for wh in whooklist:
+                if self.bot.user == wh.user:
+                    whurl = wh.url
+            # Make new webhook if one didn't exist
+            if whurl == "":
+                newHook = await message.channel.create_webhook(name="Webhook")
+                whurl = newHook.url
+
+            async with aiohttp.ClientSession() as session:
+                webhook = Webhook.from_url(whurl, adapter=AsyncWebhookAdapter(session))
+                await webhook.send(
+                    sendMsg,
+                    username=message.author.display_name,
+                    avatar_url=message.author.avatar_url,
+                )
+        except discord.errors.Forbidden:
             return await message.channel.send(sendMsg)
-        webhookSender = await self.webhookSender(message, webhookUrl, sendMsg)
-        if webhookSender is not True:
-            return await message.channel.send(sendMsg)
-        else:
-            try:
-                message.delete()
-            except:
-                pass
+
