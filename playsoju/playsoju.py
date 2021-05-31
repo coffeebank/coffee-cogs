@@ -118,10 +118,12 @@ class Playsoju(commands.Cog):
         sojuEnabled = await self.config.guild(message.guild).sojuEnabled()
         if sojuEnabled is not True:
             return
+        regexString = r"https\:\/\/open\.spotify\.com\/\w{4,12}\/\w{14,26}(?=\?|$)"
+        matches = re.finditer(regexString, message.clean_content)
+        if len(matches) <= 0:
+            return
 
         sojuInstance = await self.config.guild(message.guild).sojuInstance()
-        regex = r"https\:\/\/open\.spotify\.com\/\w{4,12}\/\w{14,26}(?=\?|$)"
-        matches = re.finditer(regex, message.clean_content)
         sendMsg = ""
 
         for matchNum, match in enumerate(matches, start=1):
