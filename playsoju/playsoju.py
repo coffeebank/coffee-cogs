@@ -63,8 +63,8 @@ class Playsoju(commands.Cog):
         if not ctx.invoked_subcommand:
             # Global settings
             e = discord.Embed(color=(await ctx.embed_colour()), title="Guild Settings", description="")
-            e.add_field(name="sojuEnabled", value=(await self.config.sojuEnabled()), inline=False)
-            e.add_field(name="sojuInstance", value=(await self.config.sojuInstance()), inline=False)
+            e.add_field(name="sojuEnabled", value=(await self.config.guild(ctx.guild).sojuEnabled()), inline=False)
+            e.add_field(name="sojuInstance", value=(await self.config.guild(ctx.guild).sojuInstance()), inline=False)
             await ctx.send(embed=e)
 
     @setsoju.command(name="enable")
