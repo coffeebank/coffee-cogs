@@ -18,7 +18,7 @@ class Spotifyembed(commands.Cog):
         self.config.register_guild(**default_guild)
 
 
-    @commands.group(aliases=["setspembed"])
+    @commands.group(aliases=["setspembed", "setspe"])
     @checks.guildowner_or_permissions()
     async def setspotifyembed(self, ctx: commands.Context):
         """Set Spotify Embed settings"""
