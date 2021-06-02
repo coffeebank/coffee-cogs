@@ -1,5 +1,5 @@
 {
-  "author" : ["coffee-cogs"],
+  "author" : ["coffeebank"],
   "install_msg" : "Thanks for installing :') Come make pull requests over at my GitHub! <https://github.com/coffeebank/coffee-cogs>\n\nFirst, load the cog using `[p]load spotifyembed`\n\nThen, enable auto-Spotify-embed-ing links using `[p]setspotifyembed enable`\n\nTo make links manually, use `[p]spotifyembed SPOTIFYLINKHERE`",
   "name" : "spotifyembed",
   "short" : "Automatically send replies to Spotify links with the embed preview, for mobile users",
