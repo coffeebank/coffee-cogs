@@ -87,14 +87,20 @@ class Spotifyembed(commands.Cog):
         spotifyembedEnabled = await self.config.guild(message.guild).spotifyembedEnabled()
         if spotifyembedEnabled is not True:
             return
+        # Ignore if we find [p]spotifyembed in the trigger message
+        spembedCommandIgnore = r"^\S{1,9}(spotifyembed|spembed|spe)(?=\s|$)"
+        spembedCommands = re.findall(spembedCommandIgnore, message.clean_content)
+        if len(spembedCommands) > 0:
+            return
+        # Ignore if we find no spotify links in the trigger message
         spembedFinder = r"https\:\/\/open\.spotify\.com\/\w{4,12}\/\w{14,26}(?=\?|$|\s)"
-        matches = re.findall(spembedFinder, message.clean_content)
-        if len(matches) <= 0:
+        spembedMatches = re.findall(spembedFinder, message.clean_content)
+        if len(spembedMatches) <= 0:
             return
 
         sendMsg = ""
 
-        for match in matches:
+        for match in spembedMatches:
             spembedSplit = match.split('.com/')
             sendMsg += spembedSplit[0] + ".com/embed/" + spembedSplit[1] + "\n"
 
