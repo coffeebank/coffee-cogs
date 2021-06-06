@@ -228,13 +228,16 @@ class Msgmover(commands.Cog):
             return
 
 
-    @commands.command()
+    @commands.command(aliases=["msgmove"])
     @checks.mod()
-    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: discord.TextChannel, maxMessages: int=10):
+    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: discord.TextChannel, maxMessages:int, skipMessages:int=0):
         """Copies messages from one channel to another
         
-        Uses a webhook to represent users
-        Do not request more than 20 maxMessages"""
+        Retrieve 'maxMessages' number of messages from history, and optionally discard 'skipMessages' number of messages from the retrieved list.
+        
+        Retrieving more than 10 messages will result in Discord ratelimit throttling, so please be patient.
+        
+        Requires webhook permissions."""
         await ctx.message.add_reaction("⏳")
 
         toWebhook = await self.webhookFinder(toChannel)
@@ -248,6 +251,11 @@ class Msgmover(commands.Cog):
             # Retrieve messages, sorted by oldest first
             msgList = await fromChannel.history(limit=maxMessages).flatten()
             msgList.reverse()
+            if skipMessages > 0:
+                if skipMessages >= maxMessages:
+                    return await ctx.send("Cannot skip more messages than the max number of messages you are retrieving.")
+                # https://stackoverflow.com/a/37105499
+                msgList = msgList[:-skipMessages or None]
 
             # Send them via webhook
             msgItemLast = msgList[0].created_at
