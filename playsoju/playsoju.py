@@ -15,7 +15,7 @@ class Playsoju(commands.Cog):
         default_guild = {
             "sojuEnabled": True,
             "sojuInstance": "playsoju.netlify.app",
-            "sojuOptions": ""
+            "sojuOptions": "&sa=true"
         }
         self.config.register_guild(**default_guild)
 
@@ -29,6 +29,7 @@ class Playsoju(commands.Cog):
             e = discord.Embed(color=(await ctx.embed_colour()), title="Guild Settings", description="")
             e.add_field(name="sojuEnabled", value=(await self.config.guild(ctx.guild).sojuEnabled()), inline=False)
             e.add_field(name="sojuInstance", value=(await self.config.guild(ctx.guild).sojuInstance()), inline=False)
+            e.add_field(name="sojuOptions", value=(await self.config.guild(ctx.guild).sojuOptions()), inline=False)
             await ctx.send(embed=e)
 
     @setsoju.command(name="enable")
