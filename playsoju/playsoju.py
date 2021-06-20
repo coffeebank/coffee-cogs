@@ -51,7 +51,7 @@ class Playsoju(commands.Cog):
         await self.config.guild(ctx.guild).sojuInstance.set(instanceDomain)
         await ctx.message.add_reaction("✅")
 
-    @setsoju.command(name="instance")
+    @setsoju.command(name="options")
     async def setsojuoptions(self, ctx, queryParamString):
         """Set Soju Player query parameters
 
