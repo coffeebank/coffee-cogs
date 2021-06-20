@@ -15,6 +15,7 @@ class Playsoju(commands.Cog):
         default_guild = {
             "sojuEnabled": True,
             "sojuInstance": "playsoju.netlify.app",
+            "sojuOptions": ""
         }
         self.config.register_guild(**default_guild)
 
@@ -50,23 +51,51 @@ class Playsoju(commands.Cog):
         await self.config.guild(ctx.guild).sojuInstance.set(instanceDomain)
         await ctx.message.add_reaction("✅")
 
+    @setsoju.command(name="instance")
+    async def setsojuoptions(self, ctx, queryParamString):
+        """Set Soju Player query parameters
+
+        Type them all together using &
+        
+        Default: &sa=true
+
+        [See here for the full list](https://github.com/coffeebank/soju#instances)"""
+        await self.config.guild(ctx.guild).sojuOptions.set(queryParamString)
+        await ctx.message.add_reaction("✅")
+
     @commands.command()
     async def playsoju(self, ctx, spotifyLink, asMyself: bool=False):
         """Return a Soju link
         
         Can set asMyself to true/false, for sending as webhook"""
         sojuInstance = await self.config.guild(ctx.guild).sojuInstance()
-        sendMsg = f"https://{sojuInstance}?s={spotifyLink}\n"
+        sojuOptions = await self.config.guild(ctx.guild).sojuOptions()
+        sendMsg = f"https://{sojuInstance}?s={spotifyLink}{sojuOptions}\n"
 
         if asMyself == False:
             return await ctx.send(sendMsg)
         elif asMyself == True:
-            webhookUrl = await self.webhookFinder(ctx, self.bot)
-            if webhookUrl == False:
-                return await ctx.send(sendMsg)
-            webhookSender = await self.webhookSender(ctx, webhookUrl, sendMsg)
-            if webhookSender is not True:
-                return await ctx.send(sendMsg)
+            try:
+                whooklist = await ctx.channel.webhooks()
+                whurl = ""
+                # Return if match
+                for wh in whooklist:
+                    if self.bot.user == wh.user:
+                        whurl = wh.url
+                # Make new webhook if one didn't exist
+                if whurl == "":
+                    newHook = await ctx.channel.create_webhook(name="Webhook")
+                    whurl = newHook.url
+
+                async with aiohttp.ClientSession() as session:
+                    webhook = Webhook.from_url(whurl, adapter=AsyncWebhookAdapter(session))
+                    await webhook.send(
+                        sendMsg,
+                        username=ctx.author.display_name,
+                        avatar_url=ctx.author.avatar_url,
+                    )
+            except discord.errors.Forbidden:
+                return await ctx.channel.send(sendMsg)
         else:
             return await ctx.send("An error occurred.")
 
@@ -87,10 +116,11 @@ class Playsoju(commands.Cog):
             return
 
         sojuInstance = await self.config.guild(message.guild).sojuInstance()
+        sojuOptions = await self.config.guild(message.guild).sojuOptions()
         sendMsg = ""
 
         for match in matches:
-            sendMsg += "https://"+sojuInstance+"?s="+match+"\n"
+            sendMsg += "https://"+sojuInstance+"?s="+match+sojuOptions+"\n"
 
         # Find a webhook that the bot made
         try:
