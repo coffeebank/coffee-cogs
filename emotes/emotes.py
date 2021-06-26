@@ -22,9 +22,9 @@ class Emotes(commands.Cog):
         self.config = Config.get_conf(self, identifier=806715409318936616)
 
         # :emotetext: but not <a:emotetext:123456789> 
-        self.RegexEmoteText = r"(?<=^|(?<=[^<a]))(:\w{2,16}:)"
+        self.RegexEmoteText = r"(?<=^|(?<=[^<a]))(:\w{2,32}:)"
         # the full <(a):emotetext:123456789>
-        self.RegexFullEmoteSearch = r"(<a?:\w{2,16}:\d{14,20}>)"
+        self.RegexFullEmoteSearch = r"(<a?:\w{2,32}:\d{14,22}>)"
 
         # Bot owner configs
         default_global = {
