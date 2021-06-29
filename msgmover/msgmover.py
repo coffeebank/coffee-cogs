@@ -1,4 +1,6 @@
 from redbot.core import Config, commands, checks
+from redbot.core.utils.predicates import ReactionPredicate
+from redbot.core.utils.menus import start_adding_reactions
 from urllib.request import urlopen
 import mimetypes
 import discord
@@ -26,6 +28,19 @@ class Msgmover(commands.Cog):
         }
         self.config.register_global(**default_global)
 
+        # Add server-level configs
+        default_guild = {
+            "msgrelayStoreV2": {},
+            # {
+            #     'chanId': {
+            #         'option': bool,
+            #         'toChanId': str,
+            #         'toWebhook': str,
+            #     },
+            # }
+        }
+        self.config.register_guild(**default_guild)
+
     # This cog does not store any End User Data
     async def red_get_data_for_user(self, *, user_id: int):
         return {}
@@ -35,10 +50,11 @@ class Msgmover(commands.Cog):
 
     # Utility Commands
 
-    async def msgFormatter(self, webhook, message, attachsAsUrl=False):
+    async def msgFormatter(self, webhook, message, attachsAsUrl=False, userProfiles=True):
         # webhook: A webhook object from discord.py
         # message: A message object from discord.py
         # attachsAsUrl: Sets whether attachments should be linked using URLS, or re-uploaded as an independent file
+        # userProfiles: Sets whether messages use the sender's user avatars
 
         msgContent = message.clean_content
 
@@ -74,12 +90,20 @@ class Msgmover(commands.Cog):
             for msgAttach in message.attachments:
                 msgContent = msgContent+str(msgAttach.url)+"\n"
 
+        # Settings
+        if userProfiles == True:
+            userProfilesName = message.author.display_name
+            userProfilesAvatar = message.author.avatar_url
+        else:
+            userProfilesName = None
+            userProfilesAvatar = None
+
         # Send core message
         try:
             await webhook.send(
                 msgContent,
-                username=message.author.display_name,
-                avatar_url=message.author.avatar_url,
+                username=userProfilesName,
+                avatar_url=userProfilesAvatar,
                 embeds=msgEmbed
             )
         except:
@@ -106,27 +130,27 @@ class Msgmover(commands.Cog):
         return
 
 
-    async def relayAddChannel(self, channel, webhookUrl):
+    async def relayAddChannel(self, ctx, channel, toChanId, webhookUrl, userProfiles):
         # Retrieve stored data
-        msgrelayChannels = await self.config.msgrelayChannels()
-        msgrelayStore = await self.config.msgrelayStore()
+        msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
         # Append to data
-        msgrelayChannels.append(channel.id)
-        msgrelayStore[str(channel.id)] = str(webhookUrl)
+        msgrelayStoreV2[str(channel.id)] = {
+            "toWebhook": str(webhookUrl),
+            # "toChanId": str(toChanId),
+            "userProfiles": bool(userProfiles),
+        }
         # Push changes
-        await self.config.msgrelayChannels.set(msgrelayChannels)
-        await self.config.msgrelayStore.set(msgrelayStore)
+        await self.config.guild(ctx.guild).msgrelayStoreV2.set(msgrelayStoreV2)
+        return True
 
-    async def relayRemoveChannel(self, channel):
+    async def relayRemoveChannel(self, ctx, channel):
         # Retrieve stored data
-        msgrelayChannels = await self.config.msgrelayChannels()
-        msgrelayStore = await self.config.msgrelayStore()
+        msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
         # Remove from data
-        msgrelayChannels.remove(channel.id)
-        msgrelayStore.pop(str(channel.id), None)
+        msgrelayStoreV2.pop(str(channel.id), None)
         # Push changes
-        await self.config.msgrelayChannels.set(msgrelayChannels)
-        await self.config.msgrelayStore.set(msgrelayStore)
+        await self.config.guild(ctx.guild).msgrelayStoreV2.set(msgrelayStoreV2)
+        return True
 
     async def timestampEmbed(self, ctx, utcTimeObj):
         embedColor = await ctx.embed_colour()
@@ -146,7 +170,7 @@ class Msgmover(commands.Cog):
                 return wh.url
         # If the function got here, it means there isn't one that the bot made
         try:
-            newHook = await channel.create_webhook(name="Bot msgmover")
+            newHook = await channel.create_webhook(name="Webhook")
             return newHook.url
         # Could not create webhook, return False
         except:
@@ -156,77 +180,52 @@ class Msgmover(commands.Cog):
     # Bot Commands
 
     @commands.group()
-    @checks.is_owner()
+    @checks.guildowner_or_permissions()
     async def msgrelay(self, ctx: commands.Context):
         """Set message relays
 
         Message relays allow you to forward messages to another server via a webhook.
 
-        (TODO: Automatically create the webhook if it doesn't exist)"""
+        v2 released 29 Jun 2021 with breaking changes.
+        v1 data is saved but no longer works.
+        *[Join the Support Discord for announcements and more info](https://coffeebank.github.io/discord)*"""
         if not ctx.invoked_subcommand:
-            pass
+            msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
+            relayList = ""
+            for relayId in msgrelayStoreV2:
+                relayList += f"**<#{relayId}>**\n{msgrelayStoreV2[relayId]}\n\n"
+            eg = discord.Embed(color=(await ctx.embed_colour()), title="Message Relays in this Server", description=relayList)
+            await ctx.send(embed=eg)
 
-    @msgrelay.command(name="list")
-    async def mmmrlist(self, ctx, fromChannel: discord.TextChannel=None):
-        """List current settings"""
-        if fromChannel == None:
-            fromChannel = ctx.channel
-
-        hooks = await fromChannel.webhooks()
-
-        msgrelayChannels = await self.config.msgrelayChannels()
-        msgrelayStore = await self.config.msgrelayStore()
-        
-        await ctx.send(str(fromChannel)+"'s webhooks: "+str(hooks)+"\n"+str(msgrelayChannels)+"\n"+str(msgrelayStore))
-
-    @msgrelay.command(name="add")
-    async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toWebhook):
+    @msgrelay.command(name="add", aliases=["edit"])
+    async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toWebhook: str):
         """Create a message relay"""
-        await self.relayAddChannel(fromChannel, toWebhook)
-        await ctx.message.add_reaction("✅")
+        if "https://" not in toWebhook:
+            return await ctx.send("Invalid webhook URL. Create a webhook for the channel you want to send to. https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png")
 
+        # toChannel support coming soon(tm), help is welcome
+        # if "https://" not in toWebhook:
+        #     toWebhook = await self.webhookFinder(toWebhook)
+        #     if toWebhook == False:
+        #         return await ctx.send("Error creating webhook. Do I have \"Manage Webhooks\" permissions?")
+
+        # Set userProfiles
+        userProfiles = await ctx.send("Do you want messages to be forwarded with usernames and profile pics?")
+        start_adding_reactions(userProfiles, ReactionPredicate.YES_OR_NO_EMOJIS)
+        userProfilesPred = ReactionPredicate.yes_or_no(userProfiles, ctx.author)
+        await ctx.bot.wait_for("reaction_add", check=userProfilesPred)
+        # Save
+        await self.relayAddChannel(ctx, fromChannel, toChanId=None, webhookUrl=toWebhook, userProfiles=userProfilesPred.result)
+        try:
+            await fromChannel.send("**This channel's contents are now being forwarded!**\nThis is a sample message.")
+        except:
+            return await ctx.send("Setup was completed, but some permissions may be missing.")
+        await ctx.message.add_reaction("✅")
     @msgrelay.command(name="delete", aliases=["remove"])
     async def mmmrdelete(self, ctx, fromChannel: discord.TextChannel):
         """Delete a message relay"""
-        await self.relayRemoveChannel(fromChannel)
+        await self.relayRemoveChannel(ctx, fromChannel)
         await ctx.message.add_reaction("✅")
-
-    @msgrelay.command(name="reset")
-    async def mmmrreset(self, ctx, areYouSure: bool):
-        """⚠️ Deletes all relays
-        
-        Type **`[p]msgrelay reset True`** if you're absolutely sure."""
-        if areYouSure == True:
-            await self.config.msgrelayChannels.set([])
-            await self.config.msgrelayStore.set({})
-            await ctx.message.add_reaction("✅")
-
-    @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
-        # Ignore message if it's a webhook
-        # REQUIRED IF TWO-WAY CHAT REDIRECTS
-        # TO STOP A TWO-WAY REDIRECT, USE [p]msgrelay delete #channel
-        if message.webhook_id:
-            return
-        # only do anything if message is sent in a guild
-        if message.guild:
-            # Retrieve channel list and check channel ID
-            channelList = await self.config.msgrelayChannels()
-            channelId = message.channel.id
-            # If channel is in channel list
-            if channelId in channelList:
-                # Retrieve webhook info from channel store
-                channelStore = await self.config.msgrelayStore()
-                toWebhook = channelStore[str(channelId)]
-                # Send along webhook
-                async with aiohttp.ClientSession() as session:
-                    webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
-                    await self.msgFormatter(webhook, message, attachsAsUrl=True)
-            else:
-                return
-        else:
-            return
-
 
     @commands.command(aliases=["msgmove"])
     @checks.mod()
@@ -277,3 +276,57 @@ class Msgmover(commands.Cog):
 
         # Add react on complete
         await ctx.message.add_reaction("✅")
+
+    # Listeners
+
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        # Ignore message if it's a webhook
+        # REQUIRED IF TWO-WAY CHAT REDIRECTS
+        # TO STOP A TWO-WAY REDIRECT, USE [p]msgrelay delete #channel
+        if message.webhook_id:
+            return
+        # only do anything if message is sent in a guild
+        if message.guild:
+            relayStore = await self.config.guild(message.guild).msgrelayStoreV2()
+            # Retrieve webhook info from channel store
+            if str(message.channel.id) in relayStore:
+                toWebhook = relayStore[str(message.channel.id)]["toWebhook"]
+                userProfiles = relayStore[str(message.channel.id)]["userProfiles"]
+                # Send along webhook
+                async with aiohttp.ClientSession() as session:
+                    webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
+                    await self.msgFormatter(webhook, message, attachsAsUrl=True, userProfiles=userProfiles)
+            else:
+                return
+        else:
+            return
+
+
+    # Legacy Commands
+    @msgrelay.group(name="v1")
+    @checks.is_owner()
+    async def msgrelayV1(self, ctx: commands.Context):
+        """Legacy settings
+
+        Settings will not be modifiable, and it is encouraged to migrate to v2.
+
+        The new v2 shifts data from being under the Bot Owner to separate guilds, and allows guild owners to create their own relays.
+        
+        Because of this change, the old settings are incompatible with the new settings."""
+        if not ctx.invoked_subcommand:
+            msgrelayStore = await self.config.msgrelayStore()
+            relayList = ""
+            for relayId in msgrelayStore:
+                relayList += f"**<#{relayId}>**\n{msgrelayStore[relayId]}\n\n"
+            eg = discord.Embed(color=(await ctx.embed_colour()), title="Legacy Relays (no longer work)", description=relayList)
+            await ctx.send(embed=eg)
+    @msgrelayV1.command(name="reset")
+    async def mmmrV1reset(self, ctx, areYouSure: bool):
+        """⚠️ Deletes all V1 relays
+        
+        Type **`[p]msgrelay reset True`** if you're absolutely sure."""
+        if areYouSure == True:
+            await self.config.msgrelayChannels.set([])
+            await self.config.msgrelayStore.set({})
+            await ctx.message.add_reaction("✅")
