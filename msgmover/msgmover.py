@@ -180,7 +180,7 @@ class Msgmover(commands.Cog):
     # Bot Commands
 
     @commands.group()
-    @checks.guildowner_or_permissions()
+    @checks.guildowner_or_permissions(administrator=True)
     async def msgrelay(self, ctx: commands.Context):
         """Set message relays
 
