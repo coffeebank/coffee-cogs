@@ -36,6 +36,7 @@ class Msgmover(commands.Cog):
             #         'option': bool,
             #         'toChanId': str,
             #         'toWebhook': str,
+            #         'attachsAsUrl': bool,
             #     },
             # }
         }
@@ -130,13 +131,14 @@ class Msgmover(commands.Cog):
         return
 
 
-    async def relayAddChannel(self, ctx, channel, toChanId, webhookUrl, userProfiles):
+    async def relayAddChannel(self, ctx, channel, toChanId, webhookUrl, attachsAsUrl, userProfiles):
         # Retrieve stored data
         msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
         # Append to data
         msgrelayStoreV2[str(channel.id)] = {
             "toWebhook": str(webhookUrl),
             # "toChanId": str(toChanId),
+            "attachsAsUrl": bool(attachsAsUrl),
             "userProfiles": bool(userProfiles),
         }
         # Push changes
@@ -186,8 +188,8 @@ class Msgmover(commands.Cog):
 
         Message relays allow you to forward messages to another server via a webhook.
 
-        v2 released 29 Jun 2021 with breaking changes.
-        v1 data is saved but no longer works.
+        *v2 released with breaking changes on 29 Jun 2021.*
+        *Old data saved under `v1` command.*
         *[Join the Support Discord for announcements and more info](https://coffeebank.github.io/discord)*"""
         if not ctx.invoked_subcommand:
             msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
@@ -199,7 +201,10 @@ class Msgmover(commands.Cog):
 
     @msgrelay.command(name="add", aliases=["edit"])
     async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toWebhook: str):
-        """Create a message relay"""
+        """Create a message relay
+        
+        Currently only supports webhook urls. [How to create webhooks.](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)
+        *[Help us develop support for #channels >](https://coffeebank.github.io/discord)*"""
         if "https://" not in toWebhook:
             return await ctx.send("Invalid webhook URL. Create a webhook for the channel you want to send to. https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png")
 
@@ -214,16 +219,26 @@ class Msgmover(commands.Cog):
         start_adding_reactions(userProfiles, ReactionPredicate.YES_OR_NO_EMOJIS)
         userProfilesPred = ReactionPredicate.yes_or_no(userProfiles, ctx.author)
         await ctx.bot.wait_for("reaction_add", check=userProfilesPred)
+
+        # Set attachsAsUrl
+        attachsAsUrl = await ctx.send("Do you want attachments (images) to be forwarded as image links? (is faster, but deleted images will fail to load)")
+        start_adding_reactions(attachsAsUrl, ReactionPredicate.YES_OR_NO_EMOJIS)
+        attachsAsUrlPred = ReactionPredicate.yes_or_no(attachsAsUrl, ctx.author)
+        await ctx.bot.wait_for("reaction_add", check=attachsAsUrlPred)
+
         # Save
-        await self.relayAddChannel(ctx, fromChannel, toChanId=None, webhookUrl=toWebhook, userProfiles=userProfilesPred.result)
+        await self.relayAddChannel(ctx, fromChannel, toChanId=None, webhookUrl=toWebhook, userProfiles=userProfilesPred.result, attachsAsUrl=attachsAsUrlPred.result)
         try:
             await fromChannel.send("**This channel's contents are now being forwarded!**\nThis is a sample message.")
         except:
             return await ctx.send("Setup was completed, but some permissions may be missing.")
         await ctx.message.add_reaction("✅")
+
     @msgrelay.command(name="delete", aliases=["remove"])
     async def mmmrdelete(self, ctx, fromChannel: discord.TextChannel):
-        """Delete a message relay"""
+        """Delete a message relay
+        
+        Input: #channels"""
         await self.relayRemoveChannel(ctx, fromChannel)
         await ctx.message.add_reaction("✅")
 
@@ -292,11 +307,12 @@ class Msgmover(commands.Cog):
             # Retrieve webhook info from channel store
             if str(message.channel.id) in relayStore:
                 toWebhook = relayStore[str(message.channel.id)]["toWebhook"]
+                attachsAsUrl = relayStore[str(message.channel.id)]["attachsAsUrl"]
                 userProfiles = relayStore[str(message.channel.id)]["userProfiles"]
                 # Send along webhook
                 async with aiohttp.ClientSession() as session:
                     webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
-                    await self.msgFormatter(webhook, message, attachsAsUrl=True, userProfiles=userProfiles)
+                    await self.msgFormatter(webhook, message, attachsAsUrl=attachsAsUrl, userProfiles=userProfiles)
             else:
                 return
         else:
@@ -307,7 +323,7 @@ class Msgmover(commands.Cog):
     @msgrelay.group(name="v1")
     @checks.is_owner()
     async def msgrelayV1(self, ctx: commands.Context):
-        """Legacy settings
+        """View legacy data
 
         Settings will not be modifiable, and it is encouraged to migrate to v2.
 
