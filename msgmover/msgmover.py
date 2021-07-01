@@ -164,6 +164,8 @@ class Msgmover(commands.Cog):
         # Retrieve stored data
         msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
         # Append to data
+        if str(channel.id) in msgrelayStoreV2 == False:
+            msgrelayStoreV2[str(channel.id)] = []
         msgrelayStoreV2[str(channel.id)].append({
             "toWebhook": str(webhookUrl),
             # "toChanId": str(toChanId),
