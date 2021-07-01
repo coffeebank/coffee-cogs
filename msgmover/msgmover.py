@@ -30,14 +30,16 @@ class Msgmover(commands.Cog):
 
         # Add server-level configs
         default_guild = {
-            "msgrelayStoreV2": {},
+            "msgrelayStoreV2": [],
             # {
-            #     'chanId': {
-            #         'option': bool,
-            #         'toChanId': str,
-            #         'toWebhook': str,
-            #         'attachsAsUrl': bool,
+            #   'chanId': [
+            #     {
+            #       'toChanId': str,
+            #       'toWebhook': str,
+            #       'attachsAsUrl': bool,
+            #       'userProfiles': bool,
             #     },
+            #   ],
             # }
         }
         self.config.register_guild(**default_guild)
@@ -131,25 +133,56 @@ class Msgmover(commands.Cog):
         return
 
 
+    async def fixMsgrelayStoreV2alpha(self, ctx):
+        oldData = await self.config.guild(ctx.guild).msgrelayStoreV2()
+        if isinstance(oldData[str(ctx.channel.id)], list) == False:
+            newData = [oldData[str(ctx.channel.id)]]
+            oldData[str(ctx.channel.id)] = newData
+            await self.config.guild(ctx.guild).msgrelayStoreV2.set(oldData)
+            return newData
+        else:
+            return oldData[str(ctx.channel.id)]
+
+    async def relayAddBase(self, ctx):
+        # Set userProfiles
+        userProfiles = await ctx.send("Do you want messages to be forwarded with usernames and profile pics?")
+        start_adding_reactions(userProfiles, ReactionPredicate.YES_OR_NO_EMOJIS)
+        userProfilesPred = ReactionPredicate.yes_or_no(userProfiles, ctx.author)
+        await ctx.bot.wait_for("reaction_add", check=userProfilesPred)
+        # Set attachsAsUrl
+        attachsAsUrl = await ctx.send("Do you want attachments (images) to be forwarded as image links? (is faster, but deleted images will fail to load)")
+        start_adding_reactions(attachsAsUrl, ReactionPredicate.YES_OR_NO_EMOJIS)
+        attachsAsUrlPred = ReactionPredicate.yes_or_no(attachsAsUrl, ctx.author)
+        await ctx.bot.wait_for("reaction_add", check=attachsAsUrlPred)
+        # Output
+        return {
+            "userProfiles": userProfilesPred.result,
+            "attachsAsUrl": attachsAsUrlPred.result
+        }
+
     async def relayAddChannel(self, ctx, channel, toChanId, webhookUrl, attachsAsUrl, userProfiles):
         # Retrieve stored data
         msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
         # Append to data
-        msgrelayStoreV2[str(channel.id)] = {
+        msgrelayStoreV2[str(channel.id)].append({
             "toWebhook": str(webhookUrl),
             # "toChanId": str(toChanId),
             "attachsAsUrl": bool(attachsAsUrl),
             "userProfiles": bool(userProfiles),
-        }
+        })
         # Push changes
         await self.config.guild(ctx.guild).msgrelayStoreV2.set(msgrelayStoreV2)
         return True
 
-    async def relayRemoveChannel(self, ctx, channel):
+    async def relayRemoveChannel(self, ctx, channel, itemToDelete):
         # Retrieve stored data
         msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
         # Remove from data
-        msgrelayStoreV2.pop(str(channel.id), None)
+        if itemToDelete <= 0:
+            msgrelayStoreV2.pop(str(channel.id), None)
+        else:
+            # Zero-indexed
+            msgrelayStoreV2[str(channel.id)].pop(itemToDelete-1)
         # Push changes
         await self.config.guild(ctx.guild).msgrelayStoreV2.set(msgrelayStoreV2)
         return True
@@ -195,11 +228,11 @@ class Msgmover(commands.Cog):
             msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
             relayList = ""
             for relayId in msgrelayStoreV2:
-                relayList += f"**<#{relayId}>**\n{msgrelayStoreV2[relayId]}\n\n"
+                relayList += f"**<#{relayId}>**\n{str(msgrelayStoreV2[relayId])}\n\n"
             eg = discord.Embed(color=(await ctx.embed_colour()), title="Message Relays in this Server", description=relayList)
             await ctx.send(embed=eg)
 
-    @msgrelay.command(name="add", aliases=["edit"])
+    @msgrelay.command(name="add")
     async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toWebhook: str):
         """Create a message relay
         
@@ -207,39 +240,50 @@ class Msgmover(commands.Cog):
         *[Help us develop support for #channels >](https://coffeebank.github.io/discord)*"""
         if "https://" not in toWebhook:
             return await ctx.send("Invalid webhook URL. Create a webhook for the channel you want to send to. https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png")
-
-        # toChannel support coming soon(tm), help is welcome
-        # if "https://" not in toWebhook:
-        #     toWebhook = await self.webhookFinder(toWebhook)
-        #     if toWebhook == False:
-        #         return await ctx.send("Error creating webhook. Do I have \"Manage Webhooks\" permissions?")
-
-        # Set userProfiles
-        userProfiles = await ctx.send("Do you want messages to be forwarded with usernames and profile pics?")
-        start_adding_reactions(userProfiles, ReactionPredicate.YES_OR_NO_EMOJIS)
-        userProfilesPred = ReactionPredicate.yes_or_no(userProfiles, ctx.author)
-        await ctx.bot.wait_for("reaction_add", check=userProfilesPred)
-
-        # Set attachsAsUrl
-        attachsAsUrl = await ctx.send("Do you want attachments (images) to be forwarded as image links? (is faster, but deleted images will fail to load)")
-        start_adding_reactions(attachsAsUrl, ReactionPredicate.YES_OR_NO_EMOJIS)
-        attachsAsUrlPred = ReactionPredicate.yes_or_no(attachsAsUrl, ctx.author)
-        await ctx.bot.wait_for("reaction_add", check=attachsAsUrlPred)
-
-        # Save
-        await self.relayAddChannel(ctx, fromChannel, toChanId=None, webhookUrl=toWebhook, userProfiles=userProfilesPred.result, attachsAsUrl=attachsAsUrlPred.result)
         try:
-            await fromChannel.send("**This channel's contents are now being forwarded!**\nThis is a sample message.")
+            relayBase = await self.relayAddBase(ctx)
+        except:
+            return await ctx.send("An error occurred. Setup was not completed.")
+        # Create entry
+        await self.relayAddChannel(ctx, fromChannel, toChanId=None, webhookUrl=toWebhook, userProfiles=relayBase["userProfiles"], attachsAsUrl=relayBase["attachsAsUrl"])
+        # Test
+        try:
+            await fromChannel.send("**Channels are now linked!**\nThis is a sample message.")
+        except:
+            return await ctx.send("Setup was completed, but some permissions may be missing.")
+        await ctx.message.add_reaction("✅")
+
+    @msgrelay.command(name="edit")
+    async def mmmredit(self, ctx, fromChannel: discord.TextChannel, itemToEdit: int, toWebhook: str):
+        """Edit a message relay
+        
+        Currently only supports webhook urls. [How to create webhooks.](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)
+        *[Help us develop support for #channels >](https://coffeebank.github.io/discord)*"""
+        # Ask for info
+        try:
+            relayBase = await self.relayAddBase(ctx)
+        except:
+            return await ctx.send("An error occurred. Setup was not completed.")
+        # Delete old entry
+        await self.relayRemoveChannel(ctx, fromChannel, itemToEdit)
+        # Create new entry
+        await self.relayAddChannel(ctx, fromChannel, toChanId=None, webhookUrl=toWebhook, userProfiles=relayBase["userProfiles"], attachsAsUrl=relayBase["attachsAsUrl"])
+        # Test
+        try:
+            await fromChannel.send("**Channels are now linked!**\nThis is a sample message.")
         except:
             return await ctx.send("Setup was completed, but some permissions may be missing.")
         await ctx.message.add_reaction("✅")
 
     @msgrelay.command(name="delete", aliases=["remove"])
-    async def mmmrdelete(self, ctx, fromChannel: discord.TextChannel):
+    async def mmmrdelete(self, ctx, fromChannel: discord.TextChannel, itemToDelete: int):
         """Delete a message relay
         
-        Input: #channels"""
-        await self.relayRemoveChannel(ctx, fromChannel)
+        fromChannel: the originating #channel
+        itemToDelete: put 1, 2, ... for which one you want to delete.
+        
+        To delete all relays for a fromChannel, set itemToDelete to 0 (zero)."""
+        await self.relayRemoveChannel(ctx, fromChannel, itemToDelete)
         await ctx.message.add_reaction("✅")
 
     @commands.command(aliases=["msgmove"])
@@ -306,13 +350,17 @@ class Msgmover(commands.Cog):
             relayStore = await self.config.guild(message.guild).msgrelayStoreV2()
             # Retrieve webhook info from channel store
             if str(message.channel.id) in relayStore:
-                toWebhook = relayStore[str(message.channel.id)]["toWebhook"]
-                attachsAsUrl = relayStore[str(message.channel.id)]["attachsAsUrl"]
-                userProfiles = relayStore[str(message.channel.id)]["userProfiles"]
-                # Send along webhook
-                async with aiohttp.ClientSession() as session:
-                    webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
-                    await self.msgFormatter(webhook, message, attachsAsUrl=attachsAsUrl, userProfiles=userProfiles)
+                hookData = relayStore[str(message.channel.id)]
+                # Migrate data to multi-hook support if needed
+                try:
+                    assert isinstance(hookData, list)
+                except AssertionError:
+                    hookData = await self.fixMsgrelayStoreV2alpha(message)
+                # Send along webhook for each in array
+                for wh in hookData:
+                    async with aiohttp.ClientSession() as session:
+                        webhook = Webhook.from_url(wh["toWebhook"], adapter=AsyncWebhookAdapter(session))
+                        await self.msgFormatter(webhook, message, attachsAsUrl=wh["attachsAsUrl"], userProfiles=wh["userProfiles"])
             else:
                 return
         else:
