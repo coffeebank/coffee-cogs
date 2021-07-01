@@ -253,7 +253,7 @@ class Msgmover(commands.Cog):
         except:
             return await ctx.send("An error occurred. Setup was not completed.")
         # Create entry
-        await self.relayAddChannel(ctx, fromChannel, toChanId=None, webhookUrl=toWebhook, userProfiles=relayBase["userProfiles"], attachsAsUrl=relayBase["attachsAsUrl"])
+        await self.relayAddChannel(ctx, fromChannel, toChanId=None, webhookUrl=toWebhook, userProfiles=relayBase.get("userProfiles", True), attachsAsUrl=relayBase.get("attachsAsUrl", True))
         # Test
         try:
             await fromChannel.send("**Channels are now linked!**\nThis is a sample message.")
@@ -275,7 +275,7 @@ class Msgmover(commands.Cog):
         # Delete old entry
         await self.relayRemoveChannel(ctx, fromChannel, itemToEdit)
         # Create new entry
-        await self.relayAddChannel(ctx, fromChannel, toChanId=None, webhookUrl=toWebhook, userProfiles=relayBase["userProfiles"], attachsAsUrl=relayBase["attachsAsUrl"])
+        await self.relayAddChannel(ctx, fromChannel, toChanId=None, webhookUrl=toWebhook, userProfiles=relayBase.get("userProfiles", True), attachsAsUrl=relayBase.get("attachsAsUrl", True))
         # Test
         try:
             await fromChannel.send("**Channels are now linked!**\nThis is a sample message.")
@@ -368,7 +368,7 @@ class Msgmover(commands.Cog):
                 for wh in hookData:
                     async with aiohttp.ClientSession() as session:
                         webhook = Webhook.from_url(wh["toWebhook"], adapter=AsyncWebhookAdapter(session))
-                        await self.msgFormatter(webhook, message, attachsAsUrl=wh["attachsAsUrl"], userProfiles=wh["userProfiles"])
+                        await self.msgFormatter(webhook, message, attachsAsUrl=wh.get("attachsAsUrl", True), userProfiles=wh.get("userProfiles", True))
             else:
                 return
         else:
