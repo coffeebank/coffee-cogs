@@ -30,7 +30,7 @@ class Msgmover(commands.Cog):
 
         # Add server-level configs
         default_guild = {
-            "msgrelayStoreV2": [],
+            "msgrelayStoreV2": {},
             # {
             #   'chanId': [
             #     {
