@@ -22,26 +22,20 @@ class Msgmover(commands.Cog):
     def __init__(self, bot):
         self.config = Config.get_conf(self, identifier=806715409318936616)
         self.bot = bot
-        default_global = {
-            "msgrelayChannels": [],
-            "msgrelayStore": {}
-        }
-        self.config.register_global(**default_global)
-
-        # Add server-level configs
         default_guild = {
             "msgrelayStoreV2": {},
-            # {
-            #   'chanId': [
-            #     {
-            #       'toChanId': str,
-            #       'toWebhook': str,
-            #       'attachsAsUrl': bool,
-            #       'userProfiles': bool,
-            #     },
-            #   ],
-            # }
         }
+        """
+            "msgrelayStoreV2": {
+                "chanId": [
+                    {
+                        "toWebhook": str,
+                        "pref": bool,
+                        "pref": bool,
+                    },
+                ],
+            }
+        """
         self.config.register_guild(**default_guild)
 
     # This cog does not store any End User Data
@@ -53,147 +47,79 @@ class Msgmover(commands.Cog):
 
     # Utility Commands
 
-    async def msgFormatter(self, webhook, message, attachsAsUrl=False, userProfiles=True):
-        # webhook: A webhook object from discord.py
-        # message: A message object from discord.py
-        # attachsAsUrl: Sets whether attachments should be linked using URLS, or re-uploaded as an independent file
-        # userProfiles: Sets whether messages use the sender's user avatars
+    def relayGetData(self, json):
+        relayInfo = {
+            "toWebhook": json.get("toWebhook", ""),
+            "attachsAsUrl": json.get("attachsAsUrl", True),
+            "userProfiles": json.get("userProfiles", True),
+        }
+        return relayInfo
 
-        msgContent = message.clean_content
-
-        # Add reply if it exists
-        if message.reference:
-            # Retrieve replied-to message
-            refObj = message.reference.resolved
-            replyEmbed = discord.Embed(color=discord.Color(value=0x25c059), description="")
-            # Check whether message is empty
-            if refObj.clean_content:
-                replyBody = (refObj.clean_content[:56] + '...') if len(refObj.clean_content) > 56 else refObj.clean_content
-            else:
-                replyBody = "Click to see attachment 🖼️"
-            # Create link to message
-            replyTitle = f"↪️ {replyBody}"
-            replyEmbed.set_author(name=replyTitle, icon_url=refObj.author.avatar_url, url=refObj.jump_url)
-            # Send this before the original message so that the embed appears above the message in chat
-            await webhook.send(
-                username=message.author.display_name,
-                avatar_url=message.author.avatar_url,
-                embed=replyEmbed
-            )
-
-        # Add embed if exists
-        # Do not set the embed if it came from a http link in the message (fixes repo issue #4)
-        if message.embeds and "http" not in msgContent:
-            msgEmbed = message.embeds
-        else:
-            msgEmbed = None
-
-        # Add attachment if exists
-        if message.attachments and attachsAsUrl == True:
-            for msgAttach in message.attachments:
-                msgContent = msgContent+str(msgAttach.url)+"\n"
-
-        # Settings
-        if userProfiles == True:
-            userProfilesName = message.author.display_name
-            userProfilesAvatar = message.author.avatar_url
-        else:
-            userProfilesName = None
-            userProfilesAvatar = None
-
-        # Send core message
-        try:
-            await webhook.send(
-                msgContent,
-                username=userProfilesName,
-                avatar_url=userProfilesAvatar,
-                embeds=msgEmbed
-            )
-        except:
-            pass
+    async def relayAddChannel(self, ctx, chanObj, toWebhook):
+        msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
         
-        # Send full attachments
-        if message.attachments and attachsAsUrl == False:
-            for msgAttach in message.attachments:
-                try:
-                    await webhook.send(
-                        username=message.author.display_name,
-                        avatar_url=message.author.avatar_url,
-                        file=await msgAttach.to_file()
-                    )
-                except:
-                    # Couldn't send, retry sending file as url only
-                    await webhook.send(
-                        "File: "+str(msgAttach.url), 
-                        username=message.author.display_name,
-                        avatar_url=message.author.avatar_url
-                    )
-
-        # Need to tell endpoint that function ended, so that sent message order is enforceable by await
-        return
-
-
-    async def fixMsgrelayStoreV2alpha(self, ctx):
-        oldData = await self.config.guild(ctx.guild).msgrelayStoreV2()
-        if isinstance(oldData[str(ctx.channel.id)], list) == False:
-            newData = [oldData[str(ctx.channel.id)]]
-            oldData[str(ctx.channel.id)] = newData
-            await self.config.guild(ctx.guild).msgrelayStoreV2.set(oldData)
-            return newData
-        else:
-            return oldData[str(ctx.channel.id)]
-
-    async def relayAddBase(self, ctx):
-        # Set userProfiles
-        userProfiles = await ctx.send("Do you want messages to be forwarded with usernames and profile pics?")
-        start_adding_reactions(userProfiles, ReactionPredicate.YES_OR_NO_EMOJIS)
-        userProfilesPred = ReactionPredicate.yes_or_no(userProfiles, ctx.author)
-        await ctx.bot.wait_for("reaction_add", check=userProfilesPred)
         # Set attachsAsUrl
-        attachsAsUrl = await ctx.send("Do you want attachments (images) to be forwarded as image links? (is faster, but deleted images will fail to load)")
+        attachsAsUrl = await ctx.send("Do you want attachments (images) to be forwarded as links?\n> **Yes:** Images will be sent as links\n> **No:** Images will be re-uploaded as a new file")
         start_adding_reactions(attachsAsUrl, ReactionPredicate.YES_OR_NO_EMOJIS)
         attachsAsUrlPred = ReactionPredicate.yes_or_no(attachsAsUrl, ctx.author)
         await ctx.bot.wait_for("reaction_add", check=attachsAsUrlPred)
-        # Output
-        return {
-            "userProfiles": userProfilesPred.result,
-            "attachsAsUrl": attachsAsUrlPred.result
-        }
 
-    async def relayAddChannel(self, ctx, channel, toChanId, webhookUrl, attachsAsUrl, userProfiles):
-        # Retrieve stored data
-        msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
+        # Set userProfiles
+        userProfiles = await ctx.send("Do you want messages to be forwarded with profiles?\n> **Yes:** Messages will be forwarded with usernames and profile pics\n> **No:** Messages will use the webhook's name and image instead")
+        start_adding_reactions(userProfiles, ReactionPredicate.YES_OR_NO_EMOJIS)
+        userProfilesPred = ReactionPredicate.yes_or_no(userProfiles, ctx.author)
+        await ctx.bot.wait_for("reaction_add", check=userProfilesPred)
+
+        # Create data store
+        try:
+            relayInfo = {
+                "toWebhook": str(toWebhook),
+                "attachsAsUrl": attachsAsUrlPred.result,
+                "userProfiles": userProfilesPred.result,
+            }
+        except:
+            return False
+
         # Append to data
         try:
-            msgrelayStoreV2[str(channel.id)].append({
-                "toWebhook": str(webhookUrl),
-                # "toChanId": str(toChanId),
-                "attachsAsUrl": bool(attachsAsUrl),
-                "userProfiles": bool(userProfiles),
-            })
+            msgrelayStoreV2[str(chanObj.id)].append(relayInfo)
         except KeyError:
-            msgrelayStoreV2[str(channel.id)] = [{
-                "toWebhook": str(webhookUrl),
-                # "toChanId": str(toChanId),
-                "attachsAsUrl": bool(attachsAsUrl),
-                "userProfiles": bool(userProfiles),
-            }]
-        # Push changes
-        await self.config.guild(ctx.guild).msgrelayStoreV2.set(msgrelayStoreV2)
-        return True
+            msgrelayStoreV2[str(chanObj.id)] = [relayInfo]
+        except:
+            return False
+
+        # Return changes
+        return msgrelayStoreV2
 
     async def relayRemoveChannel(self, ctx, channel, itemToDelete):
         # Retrieve stored data
         msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
+
         # Remove from data
         if itemToDelete <= 0:
             msgrelayStoreV2.pop(str(channel.id), None)
         else:
             # Zero-indexed
             msgrelayStoreV2[str(channel.id)].pop(itemToDelete-1)
+
         # Push changes
         await self.config.guild(ctx.guild).msgrelayStoreV2.set(msgrelayStoreV2)
         return True
+
+    async def relayCheckInput(self, ctx, toChannel):
+        # Find/create webhook at destination if input is a channel
+        if type(toChannel) == discord.TextChannel:
+            toWebhook = await self.webhookFinder(toChannel)
+            if toWebhook == False:
+                await ctx.send("An error occurred: could not create webook. Am I missing permissions?")
+                return False
+            return toWebhook
+        # Use webhook url as-is if there is https link (doesn't have to be Discord)
+        if "https://" in toChannel:
+            return str(toChannel)
+        # Error likely occurred, return False
+        await ctx.send("Invalid webhook URL. Create a webhook for the channel you want to send to. https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png")
+        return False
 
     async def timestampEmbed(self, ctx, utcTimeObj):
         embedColor = await ctx.embed_colour()
@@ -223,6 +149,80 @@ class Msgmover(commands.Cog):
     # Bot Commands
 
     @commands.group()
+    @checks.guildowner_or_permissions(manage_messages=True)
+    async def msgmover(self, ctx: commands.Context):
+        """Hi! Thanks for installing msgmover!
+
+        Msgmover comes with two key features, both of which use webhooks to move messages from one place to another with a close-to-native feel:
+
+        **`[p]msgcopy`** - Copies messages from one channel to another
+        **`[p]msgrelay`** - Forward messages to other channels/servers
+
+        To get started:
+
+        **`[p]msgcopy`** can be used by users with **Manage Messages** permissions.
+        **`[p]msgrelay`** can only be used by server admins with **Administrator** permissions.
+
+        Need help? [Reach us in our Support Discord >](https://coffeebank.github.io/discord)
+        """
+        if not ctx.invoked_subcommand:
+            pass
+
+    @commands.command(aliases=["msgmove"])
+    @checks.guildowner_or_permissions(manage_messages=True)
+    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: discord.TextChannel, maxMessages:int, skipMessages:int=0):
+        """Copies messages from one channel to another
+        
+        Retrieve 'maxMessages' number of messages from history, and optionally discard 'skipMessages' number of messages from the retrieved list.
+        
+        Retrieving more than 10 messages will result in Discord ratelimit throttling, so please be patient.
+        
+        Requires webhook permissions."""
+        await ctx.message.add_reaction("⏳")
+
+        toWebhook = await self.webhookFinder(toChannel)
+        if toWebhook == False:
+            return await ctx.send("Error trying to create webhook at destination channel.")
+
+        if skipMessages >= maxMessages:
+            return await ctx.send("Cannot skip more messages than the max number of messages you are retrieving.")
+
+        # Start webhook session
+        async with aiohttp.ClientSession() as session:
+            webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
+
+            # Retrieve messages, sorted by oldest first
+            msgList = await fromChannel.history(limit=maxMessages).flatten()
+            msgList.reverse()
+            if skipMessages > 0:
+                # https://stackoverflow.com/a/37105499
+                msgList = msgList[:-skipMessages or None]
+
+            # Send them via webhook
+            msgItemLast = msgList[0].created_at
+            for msgItem in msgList:
+                # Send timestamp if it's been more than 10mins time difference
+                # If they equal, it means it's the first item, so send timestamp
+                if msgItemLast == msgItem.created_at or (msgItem.created_at-msgItemLast).total_seconds() > 600:
+                    await webhook.send(
+                        username="\u17b5\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u17b5",
+                        avatar_url='https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/0-Background.svg/300px-0-Background.svg.png',
+                        embed=await self.timestampEmbed(ctx, msgItem.created_at)
+                    )
+                configJson = self.relayGetData({"attachsAsUrl": False, "userProfiles": True})
+                try:
+                    status = await self.msgFormatter(webhook, msgItem, configJson)
+                    if status is not True:
+                        await ctx.send("Failed to send: "+str(msgItem))
+                except:
+                    await ctx.send("Failed to send: "+str(msgItem))
+                # Save timestamp to msgItemLast
+                msgItemLast = msgItem.created_at
+
+        # Add react on complete
+        await ctx.message.add_reaction("✅")
+
+    @commands.group()
     @checks.guildowner_or_permissions(administrator=True)
     async def msgrelay(self, ctx: commands.Context):
         """Set message relays
@@ -241,46 +241,57 @@ class Msgmover(commands.Cog):
             await ctx.send(embed=eg)
 
     @msgrelay.command(name="add")
-    async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toWebhook: str):
+    async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toChannel):
         """Create a message relay
         
         Currently only supports webhook urls. [How to create webhooks.](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)
         *[Help us develop support for #channels >](https://coffeebank.github.io/discord)*"""
-        if "https://" not in toWebhook:
-            return await ctx.send("Invalid webhook URL. Create a webhook for the channel you want to send to. https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png")
-        try:
-            relayBase = await self.relayAddBase(ctx)
-        except:
-            return await ctx.send("An error occurred. Setup was not completed.")
+
+        # Error catching
+        relayCheckInput = await self.relayCheckInput(ctx, toChannel)
+        if relayCheckInput == False:
+            return
+
         # Create entry
-        await self.relayAddChannel(ctx, fromChannel, toChanId=None, webhookUrl=toWebhook, userProfiles=relayBase.get("userProfiles", True), attachsAsUrl=relayBase.get("attachsAsUrl", True))
+        relayAdd = await self.relayAddChannel(ctx, fromChannel, relayCheckInput)
+        if relayAdd == False:
+            return await ctx.send("Setup was stopped. Exited.")
+        else:
+            await self.config.guild(ctx.guild).msgrelayStoreV2.set(relayAdd)
+
         # Test
         try:
             await fromChannel.send("**Channels are now linked!**\nThis is a sample message.")
         except:
-            return await ctx.send("Setup was completed, but some permissions may be missing.")
+            return await ctx.send("Setup was successfully completed, but some permissions may be missing.")
         await ctx.message.add_reaction("✅")
 
     @msgrelay.command(name="edit")
-    async def mmmredit(self, ctx, fromChannel: discord.TextChannel, itemToEdit: int, toWebhook: str):
+    async def mmmredit(self, ctx, fromChannel: discord.TextChannel, itemToEdit: int, toChannel):
         """Edit a message relay
         
         Currently only supports webhook urls. [How to create webhooks.](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)
         *[Help us develop support for #channels >](https://coffeebank.github.io/discord)*"""
-        # Ask for info
-        try:
-            relayBase = await self.relayAddBase(ctx)
-        except:
-            return await ctx.send("An error occurred. Setup was not completed.")
-        # Delete old entry
-        await self.relayRemoveChannel(ctx, fromChannel, itemToEdit)
-        # Create new entry
-        await self.relayAddChannel(ctx, fromChannel, toChanId=None, webhookUrl=toWebhook, userProfiles=relayBase.get("userProfiles", True), attachsAsUrl=relayBase.get("attachsAsUrl", True))
+        # Error catching
+        relayCheckInput = await self.relayCheckInput(ctx, toChannel)
+        if relayCheckInput == False:
+            return
+
+        # Ask for input and have it successfully complete before deleting old entry
+        relayAdd = await self.relayAddChannel(ctx, fromChannel, relayCheckInput)
+        if relayAdd == False:
+            return await ctx.send("Setup was stopped. Exited.")
+        else:
+            # Create new entry
+            await self.config.guild(ctx.guild).msgrelayStoreV2.set(relayAdd)
+            # Delete old entry
+            await self.relayRemoveChannel(ctx, fromChannel, itemToEdit)
+
         # Test
         try:
             await fromChannel.send("**Channels are now linked!**\nThis is a sample message.")
         except:
-            return await ctx.send("Setup was completed, but some permissions may be missing.")
+            return await ctx.send("Setup was successfully completed, but some permissions may be missing.")
         await ctx.message.add_reaction("✅")
 
     @msgrelay.command(name="delete", aliases=["remove"])
@@ -291,58 +302,11 @@ class Msgmover(commands.Cog):
         itemToDelete: put 1, 2, ... for which one you want to delete.
         
         To delete all relays for a fromChannel, set itemToDelete to 0 (zero)."""
-        await self.relayRemoveChannel(ctx, fromChannel, itemToDelete)
+        result = await self.relayRemoveChannel(ctx, fromChannel, itemToDelete)
+        if result == False:
+            return await ctx.send("Deletion failed. Please report this error to the support server at <https://coffeebank.github.io/discord>.")
         await ctx.message.add_reaction("✅")
 
-    @commands.command(aliases=["msgmove"])
-    @checks.mod()
-    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: discord.TextChannel, maxMessages:int, skipMessages:int=0):
-        """Copies messages from one channel to another
-        
-        Retrieve 'maxMessages' number of messages from history, and optionally discard 'skipMessages' number of messages from the retrieved list.
-        
-        Retrieving more than 10 messages will result in Discord ratelimit throttling, so please be patient.
-        
-        Requires webhook permissions."""
-        await ctx.message.add_reaction("⏳")
-
-        toWebhook = await self.webhookFinder(toChannel)
-        if toWebhook == False:
-            return await ctx.send("Error trying to create webhook at destination channel.")
-
-        # Start webhook session
-        async with aiohttp.ClientSession() as session:
-            webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
-
-            # Retrieve messages, sorted by oldest first
-            msgList = await fromChannel.history(limit=maxMessages).flatten()
-            msgList.reverse()
-            if skipMessages > 0:
-                if skipMessages >= maxMessages:
-                    return await ctx.send("Cannot skip more messages than the max number of messages you are retrieving.")
-                # https://stackoverflow.com/a/37105499
-                msgList = msgList[:-skipMessages or None]
-
-            # Send them via webhook
-            msgItemLast = msgList[0].created_at
-            for msgItem in msgList:
-                # Send timestamp if it's been more than 10mins time difference
-                # If they equal, it means it's the first item, so send timestamp
-                if msgItemLast == msgItem.created_at or (msgItem.created_at-msgItemLast).total_seconds() > 600:
-                    await webhook.send(
-                        username="\u17b5\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u17b5",
-                        avatar_url='https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/0-Background.svg/300px-0-Background.svg.png',
-                        embed=await self.timestampEmbed(ctx, msgItem.created_at)
-                    )
-                try:
-                    await self.msgFormatter(webhook, msgItem)
-                except:
-                    await ctx.send("Failed to send: "+str(msgItem))
-                # Save timestamp to msgItemLast
-                msgItemLast = msgItem.created_at
-
-        # Add react on complete
-        await ctx.message.add_reaction("✅")
 
     # Listeners
 
@@ -366,16 +330,130 @@ class Msgmover(commands.Cog):
                     hookData = await self.fixMsgrelayStoreV2alpha(message)
                 # Send along webhook for each in array
                 for wh in hookData:
+                    configJson = self.relayGetData(wh)
                     async with aiohttp.ClientSession() as session:
                         webhook = Webhook.from_url(wh["toWebhook"], adapter=AsyncWebhookAdapter(session))
-                        await self.msgFormatter(webhook, message, attachsAsUrl=wh.get("attachsAsUrl", True), userProfiles=wh.get("userProfiles", True))
+                        await self.msgFormatter(webhook, message, configJson)
             else:
                 return
         else:
             return
 
+    async def msgFormatter(self, webhook, message, json):
+        # webhook: A webhook object from discord.py
+        # message: A message object from discord.py
+        # json: A {dict} with config variables
+
+        # Check for system messages, Set up user profile
+        userProfilesName = None
+        userProfilesAvatar = None
+        if message.type == discord.MessageType.default:
+            msgContent = message.clean_content
+            if json["userProfiles"] == True:
+                userProfilesName = message.author.display_name
+                userProfilesAvatar = message.author.avatar_url
+        else:
+            msgContent = "**Discord:** "+str(message.type)
+            if json["userProfiles"] == True:
+                userProfilesName = "\u17b5\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u17b5"
+                userProfilesAvatar = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/0-Background.svg/300px-0-Background.svg.png'
+
+        # Add reply if exists
+        if message.reference and message.type == discord.MessageType.default:
+            # Retrieve replied-to message
+            refObj = message.reference.resolved
+            replyEmbed = discord.Embed(color=discord.Color(value=0x25c059), description="")
+            # Check whether message is empty
+            if refObj.clean_content:
+                replyBody = (refObj.clean_content[:56] + '...') if len(refObj.clean_content) > 56 else refObj.clean_content
+            else:
+                replyBody = "Click to see attachment 🖼️"
+            # Create link to message
+            replyTitle = f"↪️ {replyBody}"
+            if json["userProfiles"] == True:
+                replyEmbed.set_author(name=replyTitle, icon_url=refObj.author.avatar_url, url=refObj.jump_url)
+            else:
+                replyEmbed.set_author(name=replyTitle, url=refObj.jump_url)
+            # Send this before the original message so that the embed appears above the message in chat
+            await webhook.send(
+                username=userProfilesName,
+                avatar_url=userProfilesAvatar,
+                embed=replyEmbed
+            )
+
+        # Add embed if exists
+        msgEmbed = None
+        # Do not set the embed if it came from a http link in the message (fixes repo issue #4)
+        if message.embeds and "http" not in msgContent:
+            msgEmbed = message.embeds
+
+        # Add attachment if exists
+        msgAttach = None
+        if message.attachments:
+            attachSuccess = False
+            if json["attachsAsUrl"] == False:
+                try:
+                    # 8MB upload limit
+                    totalSize = 0
+                    for mm in message.attachments:
+                        totalSize += mm.size
+                    assert totalSize < 8000000
+                except AssertionError:
+                    pass
+                else:
+                    msgAttach = [await msgA.to_file() for msgA in message.attachments]
+                    attachSuccess = True
+            # Fallback if uploads don't work
+            if json["attachsAsUrl"] == True or attachSuccess == False:
+                for msgB in message.attachments:
+                    msgContent += "\n"+str(msgB.url)
+
+        # Add sticker if exists
+        if message.stickers:
+            for msgSticker in message.stickers:
+                msgStickerItem = await msgSticker.image_url_as(size=128)
+                if msgStickerItem is not None:
+                    msgContent += "\n"+str(msgStickerItem)
+                else:
+                    msgContent += "\n**Sticker:** "+str(msgSticker.name)+", "+str(msgSticker.pack_id)
+
+        # Send core message
+        try:
+            await webhook.send(
+                msgContent,
+                username=userProfilesName,
+                avatar_url=userProfilesAvatar,
+                embeds=msgEmbed,
+                files=msgAttach
+            )
+        except discord.HTTPException:
+            # catch HTTPException: 400 Bad Request (error code: 50006): Cannot send an empty message
+            await webhook.send(
+                "**Discord:** Unsupported content\n"+str(msgContent),
+                username=userProfilesName,
+                avatar_url=userProfilesAvatar,
+                embeds=msgEmbed,
+                files=msgAttach
+            )
+        except:
+            pass
+        
+        # Need to tell endpoint that function ended, so that sent message order is enforceable by await
+        return True
+
 
     # Legacy Commands
+
+    async def fixMsgrelayStoreV2alpha(self, ctx):
+        oldData = await self.config.guild(ctx.guild).msgrelayStoreV2()
+        if isinstance(oldData[str(ctx.channel.id)], list) == False:
+            newData = [oldData[str(ctx.channel.id)]]
+            oldData[str(ctx.channel.id)] = newData
+            await self.config.guild(ctx.guild).msgrelayStoreV2.set(oldData)
+            return newData
+        else:
+            return oldData[str(ctx.channel.id)]
+
     @msgrelay.group(name="v1")
     @checks.is_owner()
     async def msgrelayV1(self, ctx: commands.Context):
