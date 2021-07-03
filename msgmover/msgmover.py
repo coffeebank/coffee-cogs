@@ -24,7 +24,7 @@ class Msgmover(commands.Cog):
         self.bot = bot
         default_guild = {
             "msgrelayStoreV2": {},
-            "relayTimer": 30,
+            "relayTimer": 20,
         }
         """
             "msgrelayStoreV2": {
