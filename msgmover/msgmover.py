@@ -399,7 +399,24 @@ class Msgmover(commands.Cog):
                         totalSize += mm.size
                     assert totalSize < 8000000
                 except AssertionError:
-                    pass
+                    # See if each file is under 8MB, maybe we can send individually
+                    for mm in message.attachments:
+                        try:
+                            assert mm.size < 8000000
+                            await webhook.send(
+                                username=userProfilesName,
+                                avatar_url=userProfilesAvatar,
+                                files=[await mm.to_file()],
+                                wait=True
+                            )
+                        except AssertionError:
+                            await webhook.send(
+                                "**Discord:** File too large\n"+str(mm.url),
+                                username=userProfilesName,
+                                avatar_url=userProfilesAvatar,
+                                wait=True
+                            )
+                    attachSuccess = True
                 else:
                     msgAttach = [await msgA.to_file() for msgA in message.attachments]
                     attachSuccess = True
@@ -418,28 +435,31 @@ class Msgmover(commands.Cog):
                     msgContent += "\n**Sticker:** "+str(msgSticker.name)+", "+str(msgSticker.pack_id)
 
         # Send core message
+        whMsg = False
         try:
-            await webhook.send(
+            whMsg = await webhook.send(
                 msgContent,
                 username=userProfilesName,
                 avatar_url=userProfilesAvatar,
                 embeds=msgEmbed,
-                files=msgAttach
+                files=msgAttach,
+                wait=True
             )
         except discord.HTTPException:
             # catch HTTPException: 400 Bad Request (error code: 50006): Cannot send an empty message
-            await webhook.send(
+            whMsg = await webhook.send(
                 "**Discord:** Unsupported content\n"+str(msgContent),
                 username=userProfilesName,
                 avatar_url=userProfilesAvatar,
                 embeds=msgEmbed,
-                files=msgAttach
+                files=msgAttach,
+                wait=True
             )
         except:
             pass
         
         # Need to tell endpoint that function ended, so that sent message order is enforceable by await
-        return True
+        return whMsg
 
 
     # Legacy Commands
