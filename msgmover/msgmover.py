@@ -211,12 +211,13 @@ class Msgmover(commands.Cog):
                         embed=await self.timestampEmbed(ctx, msgItem.created_at)
                     )
                 configJson = self.relayGetData({"attachsAsUrl": False, "userProfiles": True})
-                try:
-                    status = await self.msgFormatter(webhook, msgItem, configJson)
-                    if status is not True:
-                        await ctx.send("Failed to send: "+str(msgItem))
-                except:
+                whMsg = await self.msgFormatter(webhook, msgItem, configJson)
+                if whMsg == False:
                     await ctx.send("Failed to send: "+str(msgItem))
+                else:
+                    # Trigger edited tag if it was edited
+                    if msgItem.edited_at:
+                        await self.msgFormatter(webhook, msgItem, configJson, editMsgId=whMsg.id)
                 # Save timestamp to msgItemLast
                 msgItemLast = msgItem.created_at
 
@@ -401,7 +402,6 @@ class Msgmover(commands.Cog):
                     content="**Discord:** Unsupported content\n"+str(message.clean_content)
                 )
             except:
-                print("failed at webhook")
                 return False
 
         # Check for system messages, Set up user profile
@@ -522,7 +522,7 @@ class Msgmover(commands.Cog):
                 wait=True
             )
         except:
-            pass
+            return False
         
         # Need to tell endpoint that function ended, so that sent message order is enforceable by await
         return whMsg
