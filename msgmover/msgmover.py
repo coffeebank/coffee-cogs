@@ -425,6 +425,12 @@ class Msgmover(commands.Cog):
                 for msgB in message.attachments:
                     msgContent += "\n"+str(msgB.url)
 
+        # Add activity if exists
+        if message.activity:
+            msgContent += f"\n**Discord:** Activity\n"+str(message.activity)
+        if message.application:
+            msgContent += f"\n**Discord:** {message.application.name}\n{message.application.description}"
+
         # Add sticker if exists
         if message.stickers:
             for msgSticker in message.stickers:
@@ -432,7 +438,7 @@ class Msgmover(commands.Cog):
                 if msgStickerItem is not None:
                     msgContent += "\n"+str(msgStickerItem)
                 else:
-                    msgContent += "\n**Sticker:** "+str(msgSticker.name)+", "+str(msgSticker.pack_id)
+                    msgContent += "\n**Discord:** Sticker\n"+str(msgSticker.name)+", "+str(msgSticker.pack_id)
 
         # Send core message
         whMsg = False
