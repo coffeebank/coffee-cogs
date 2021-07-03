@@ -24,6 +24,7 @@ class Msgmover(commands.Cog):
         self.bot = bot
         default_guild = {
             "msgrelayStoreV2": {},
+            "relayTimer": 30,
         }
         """
             "msgrelayStoreV2": {
@@ -233,12 +234,17 @@ class Msgmover(commands.Cog):
         *Old data saved under `v1` command.*
         *[Join the Support Discord for announcements and more info](https://coffeebank.github.io/discord)*"""
         if not ctx.invoked_subcommand:
+            # Message Relays
             msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
             relayList = ""
             for relayId in msgrelayStoreV2:
                 relayList += f"**<#{relayId}>**\n{str(msgrelayStoreV2[relayId])}\n\n"
             eg = discord.Embed(color=(await ctx.embed_colour()), title="Message Relays in this Server", description=relayList)
             await ctx.send(embed=eg)
+            # Relay settings
+            es = discord.Embed(color=(await ctx.embed_colour()), title="Message Relay Settings in this Server")
+            es.add_field(name="Relay Timer", value=await self.config.guild(ctx.guild).relayTimer(), inline=True)
+            await ctx.send(embed=es)
 
     @msgrelay.command(name="add")
     async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toChannel):
@@ -307,6 +313,15 @@ class Msgmover(commands.Cog):
             return await ctx.send("Deletion failed. Please report this error to the support server at <https://coffeebank.github.io/discord>.")
         await ctx.message.add_reaction("✅")
 
+    @msgrelay.command(name="settimer")
+    async def mmmrsettimer(self, ctx, seconds: int):
+        """Seconds after the relay checks for edited/deleted messages
+        
+        To disable checking for edits/deleted messages after sending, set seconds to 0 (zero)."""
+        await self.config.guild(ctx.guild).relayTimer.set(seconds)
+        await ctx.message.add_reaction("✅")
+
+
 
     # Listeners
 
@@ -323,6 +338,7 @@ class Msgmover(commands.Cog):
             # Retrieve webhook info from channel store
             if str(message.channel.id) in relayStore:
                 hookData = relayStore[str(message.channel.id)]
+                relayTimer = await self.config.guild(message.guild).relayTimer()
                 # Migrate data to multi-hook support if needed
                 try:
                     assert isinstance(hookData, list)
@@ -333,16 +349,60 @@ class Msgmover(commands.Cog):
                     configJson = self.relayGetData(wh)
                     async with aiohttp.ClientSession() as session:
                         webhook = Webhook.from_url(wh["toWebhook"], adapter=AsyncWebhookAdapter(session))
-                        await self.msgFormatter(webhook, message, configJson)
+                        whResult = await self.msgFormatter(webhook, message, configJson)
+                        wh["whResult"] = whResult.id
+                # Wait, then check for edits/deletes
+                if relayTimer <= 0:
+                    return
+                else:
+                    await asyncio.sleep(relayTimer)
+                    try:
+                        endMsg = await message.channel.fetch_message(message.id)
+                    except discord.errors.NotFound:
+                        for wf in hookData:
+                            configJson = self.relayGetData(wh)
+                            async with aiohttp.ClientSession() as session:
+                                webhook = Webhook.from_url(wf["toWebhook"], adapter=AsyncWebhookAdapter(session))
+                                await self.msgFormatter(webhook, message, configJson, deleteMsgId=wf.get("whResult", None))
+                    else:
+                        if endMsg.edited_at:
+                            for wf in hookData:
+                                configJson = self.relayGetData(wh)
+                                async with aiohttp.ClientSession() as session:
+                                    webhook = Webhook.from_url(wf["toWebhook"], adapter=AsyncWebhookAdapter(session))
+                                    await self.msgFormatter(webhook, endMsg, configJson, editMsgId=wf.get("whResult", None))
             else:
                 return
         else:
             return
 
-    async def msgFormatter(self, webhook, message, json):
+    async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId=None):
         # webhook: A webhook object from discord.py
         # message: A message object from discord.py
         # json: A {dict} with config variables
+
+        # Delete the message if it's delete
+        if deleteMsgId is not None:
+            try:
+                return await webhook.delete_message(deleteMsgId)
+            except:
+                return False
+
+        # Edit the message if it's edit
+        if editMsgId is not None:
+            try:
+                return await webhook.edit_message(
+                    message_id=editMsgId,
+                    content=message.clean_content
+                )
+            except discord.HTTPException:
+                return await webhook.edit_message(
+                    message_id=editMsgId,
+                    content="**Discord:** Unsupported content\n"+str(message.clean_content)
+                )
+            except:
+                print("failed at webhook")
+                return False
 
         # Check for system messages, Set up user profile
         userProfilesName = None
