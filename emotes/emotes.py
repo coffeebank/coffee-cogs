@@ -33,7 +33,7 @@ class Emotes(commands.Cog):
             "cherryAll": True,
             "cherryEmoteSheet": False,
             "cherryRecents": True,
-            "cherryRecentsMax": 6,
+            "cherryRecentsMax": 20,
             "cherryServer": True,
         }
         self.config.register_global(**default_global)
@@ -43,6 +43,7 @@ class Emotes(commands.Cog):
             "cherryGuildAll": True,
             # "cherryGuildEmoteSheet": True,
             # "cherryGuildRecents": True,
+            "cherryGuildRecentsMax": 10,
             # "cherryGuildServer": True,
         }
         self.config.register_guild(**default_guild)
@@ -70,11 +71,12 @@ class Emotes(commands.Cog):
             eo.add_field(name="Emote Sheet", value=(await self.config.cherryEmoteSheet()))
             eo.add_field(name="Recents", value=(await self.config.cherryRecents()))
             eo.add_field(name="Recents max", value=(await self.config.cherryRecentsMax()))
-            eo.add_field(name="Server", value=(await self.config.cherryServer()))
+            eo.add_field(name="Server Emotes", value=(await self.config.cherryServer()))
             await ctx.send(embed=eo)
             # Server settings
             eg = discord.Embed(color=(await ctx.embed_colour()), title="Server", description="*[ Guild settings ]*")
             eg.add_field(name="All", value=(await self.config.guild(ctx.guild).cherryGuildAll()), inline=False)
+            eg.add_field(name="Recents max", value=(await self.config.guild(ctx.guild).cherryGuildRecentsMax()))
             await ctx.send(embed=eg)
 
     @setemotes.command(name="all")
@@ -85,7 +87,7 @@ class Emotes(commands.Cog):
         await ctx.message.add_reaction("✅")
 
     @setemotes.command(name="guildall")
-    @checks.guildowner_or_permissions()
+    @checks.guildowner_or_permissions(administrator=True)
     async def seteall(self, ctx, TrueOrFalse: bool):
         """The power switch for Cherry Emotes in this server"""
         await self.config.guild(ctx.guild).cherryGuildAll.set(TrueOrFalse)
@@ -103,13 +105,24 @@ class Emotes(commands.Cog):
     async def seteorecentscount(self, ctx, count: int):
         """Determines how many messages back to search for emotes
         
-        Not recommended to set higher than 6, for performance reasons."""
+        Not recommended to set higher than 20, for performance reasons."""
+        await self.config.cherryRecentsMax.set(count)
+        await ctx.message.add_reaction("✅")
+
+    @setemotes.command(name="guildrecentsmax")
+    @checks.guildowner_or_permissions(administrator=True)
+    async def seterecentscount(self, ctx, count: int):
+        """Determines how many messages back to search for emotes in this server
+        
+        Not recommended to set higher than 20, for performance reasons."""
         await self.config.cherryRecentsMax.set(count)
         # Make sure guild setting doesn't exceed bot owner setting
-        # guildVal = await self.config.cherryRecentsMax()
-        # if guildVal > count:
-        #     await self.config.cherryGuildRecentsCount.set(count)
-        await ctx.message.add_reaction("✅")
+        botMax = await self.config.cherryRecentsMax()
+        if botMax >= count:
+            await self.config.guild(ctx.guild).cherryGuildRecentsCount.set(count)
+            return await ctx.message.add_reaction("✅")
+        else:
+            return await ctx.send(f"Error: Please set a number lower than {botMax}.") 
         
     @setemotes.command(name="server", aliases=["animated"])
     @checks.is_owner()
