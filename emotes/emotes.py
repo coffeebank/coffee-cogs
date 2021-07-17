@@ -21,10 +21,14 @@ class Emotes(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=806715409318936616)
 
-        # :emotetext: but not <a:emotetext:123456789> 
+        # select for :emotetext: but not <a:emotetext:123456789>
         self.RegexEmoteText = r"(?<=^|(?<=[^<a]))(:\w{2,32}:)"
-        # the full <(a):emotetext:123456789>
+        # select for the full <(a):emotetext:123456789>
         self.RegexFullEmoteSearch = r"(<a?:\w{2,32}:\d{14,22}>)"
+        # parse emotetext from <a:emotetext:123456789>
+        self.RegexGetEmoteText = r"(?<=:)\w{2,32}(?=:)"
+        # parse 123456789 from <a:emotetext:123456789>
+        self.RegexGetEmoteId = r"(?<=:)\d{14,22}(?=>)"
 
         # Bot owner configs
         default_global = {
@@ -323,13 +327,35 @@ class Emotes(commands.Cog):
 
 
     @commands.command(aliases=["ei"])
-    async def emoteinfo(self, ctx, emote: Union[discord.Emoji, discord.PartialEmoji]):
+    async def emoteinfo(self, ctx, emote: Union[discord.Emoji, discord.PartialEmoji]=None):
         """Send info about an emote"""
-        ttl = str(emote.id)
-        desc = str(emote.url)
-        e = discord.Embed(color=(await ctx.embed_colour()), title=ttl, description=desc)
-        e.set_thumbnail(url=emote.url)
-        await ctx.send(embed=e)
+        if emote:
+            ttl = str(emote.id)
+            desc = str(emote.url)
+            e = discord.Embed(color=(await ctx.embed_colour()), title=ttl, description=desc)
+            e.set_thumbnail(url=emote.url)
+            return await ctx.send(embed=e)
+        else:
+            if ctx.message.reference and ctx.message.type == discord.MessageType.default:
+                # Build emote bank out of previous chat history
+                recentsBankBuilder = Cherry.recentsBankBuilder(self, [ctx.message.reference.resolved], self.RegexFullEmoteSearch)
+                # Only run if there's more emotes inside recentsBankBuilder
+                if recentsBankBuilder is not False:
+                    for ee in recentsBankBuilder:
+                        eeText = re.findall(self.RegexGetEmoteText, ee)
+                        eeId = re.findall(self.RegexGetEmoteId, ee)
+                        if "a:" in ee:
+                            desc = "https://cdn.discordapp.com/emojis/"+str(eeId[0])+".gif"
+                        else:
+                            desc = "https://cdn.discordapp.com/emojis/"+str(eeId[0])+".png"
+                        eeSend = discord.Embed(color=(await ctx.embed_colour()), title=str(eeText[0]), description=str(desc))
+                        eeSend.set_thumbnail(url=desc)
+                        await ctx.send(embed=eeSend)
+                    return await ctx.message.add_reaction("✅")
+                else:
+                    return await ctx.message.add_reaction("💨")
+            else:
+                return await ctx.message.add_reaction("💨")
 
     @commands.command()
     async def showemote(self, ctx, emoteUrl: str):
