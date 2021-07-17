@@ -119,7 +119,6 @@ class Emotes(commands.Cog):
         """Determines how many messages back to search for emotes in this server
         
         Not recommended to set higher than 20, for performance reasons."""
-        await self.config.cherryRecentsMax.set(count)
         # Make sure guild setting doesn't exceed bot owner setting
         botMax = await self.config.cherryRecentsMax()
         if botMax >= count:
