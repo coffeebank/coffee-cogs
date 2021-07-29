@@ -93,7 +93,7 @@ class Loveplay(commands.Cog):
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
-    @commands.command(name="hug")
+    @commands.command(name="hugs", aliases=["hug"])
     async def lphug(self, ctx, *, user):
         """Send a hug"""
         desc = "hug"
