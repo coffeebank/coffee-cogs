@@ -193,8 +193,7 @@ class Msgmover(commands.Cog):
             webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
 
             # Retrieve messages, sorted by oldest first
-            msgList = await fromChannel.history(limit=maxMessages).flatten()
-            msgList.reverse()
+            msgList = await fromChannel.history(limit=maxMessages, oldest_first=True).flatten()
             if skipMessages > 0:
                 # https://stackoverflow.com/a/37105499
                 msgList = msgList[:-skipMessages or None]
