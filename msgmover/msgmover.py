@@ -193,7 +193,9 @@ class Msgmover(commands.Cog):
             webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
 
             # Retrieve messages, sorted by oldest first
-            msgList = await fromChannel.history(limit=maxMessages, oldest_first=True).flatten()
+            # Can't use oldest_first= since that will only return earliest messages in channel, instead of what we want
+            msgList = await fromChannel.history(limit=maxMessages).flatten()
+            msgList.reverse()
             if skipMessages > 0:
                 # https://stackoverflow.com/a/37105499
                 msgList = msgList[:-skipMessages or None]
@@ -221,7 +223,10 @@ class Msgmover(commands.Cog):
                 msgItemLast = msgItem.created_at
 
         # Add react on complete
-        await ctx.message.add_reaction("✅")
+        try:
+            await ctx.message.add_reaction("✅")
+        except discord.errors.NotFound:
+            await ctx.send("Done!")
 
     @commands.group()
     @checks.guildowner_or_permissions(administrator=True)
@@ -321,6 +326,18 @@ class Msgmover(commands.Cog):
         await self.config.guild(ctx.guild).relayTimer.set(seconds)
         await ctx.message.add_reaction("✅")
 
+    @commands.command()
+    async def msgcount(self, ctx):
+        """Find how many messages it has been after a message
+        
+        Reply to a message to use this command."""
+        if ctx.message.reference:
+            await ctx.message.add_reaction("⏳")
+            messages = await ctx.channel.history(limit=None, after=ctx.message.reference.resolved).flatten()
+            await ctx.message.add_reaction("✅")
+            return await ctx.send(len(messages))
+        else:
+            return await ctx.send("Please reply to a message to use this command!")
 
 
     # Listeners
