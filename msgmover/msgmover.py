@@ -171,7 +171,7 @@ class Msgmover(commands.Cog):
 
     @commands.command(aliases=["msgmove"])
     @checks.guildowner_or_permissions(manage_messages=True)
-    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: discord.TextChannel, maxMessages:int, skipMessages:int=0):
+    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: discord.TextChannel, maxMessages:int, skipMessages:int=0, toWebhookUrl:str=None):
         """Copies messages from one channel to another
         
         Retrieve 'maxMessages' number of messages from history, and optionally discard 'skipMessages' number of messages from the retrieved list.
@@ -181,9 +181,12 @@ class Msgmover(commands.Cog):
         Requires webhook permissions."""
         await ctx.message.add_reaction("⏳")
 
-        toWebhook = await self.webhookFinder(toChannel)
-        if toWebhook == False:
-            return await ctx.send("Error trying to create webhook at destination channel.")
+        if toWebhookUrl == None:
+            toWebhook = await self.webhookFinder(toChannel)
+            if toWebhook == False:
+                return await ctx.send("Error trying to create webhook at destination channel.")
+        else:
+            toWebhook = toWebhookUrl
 
         if skipMessages >= maxMessages:
             return await ctx.send("Cannot skip more messages than the max number of messages you are retrieving.")
