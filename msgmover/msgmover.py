@@ -9,6 +9,7 @@ import aiohttp
 import asyncio
 import random
 import requests
+import typing
 import json
 import base64
 from io import BytesIO
@@ -109,17 +110,17 @@ class Msgmover(commands.Cog):
 
     async def relayCheckInput(self, ctx, toChannel):
         # Find/create webhook at destination if input is a channel
-        if type(toChannel) == discord.TextChannel:
+        if isinstance(toChannel, discord.TextChannel):
             toWebhook = await self.webhookFinder(toChannel)
             if toWebhook == False:
-                await ctx.send("An error occurred: could not create webook. Am I missing permissions?")
+                await ctx.send("An error occurred: could not create webhook. Am I missing permissions?")
                 return False
             return toWebhook
         # Use webhook url as-is if there is https link (doesn't have to be Discord)
         if "https://" in toChannel:
             return str(toChannel)
         # Error likely occurred, return False
-        await ctx.send("Invalid webhook URL. Create a webhook for the channel you want to send to. https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png")
+        await ctx.send("Error: Invalid webhook URL.\n\nIf you're trying to move messages across servers, please create a Webhook in the channel you want to send to: https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png")
         return False
 
     async def timestampEmbed(self, ctx, utcTimeObj):
@@ -171,27 +172,25 @@ class Msgmover(commands.Cog):
 
     @commands.command(aliases=["msgmove"])
     @checks.guildowner_or_permissions(manage_messages=True)
-    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: discord.TextChannel, maxMessages:int, skipMessages:int=0, toWebhookUrl:str=None):
+    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, str], maxMessages:int, skipMessages:int=0):
         """Copies messages from one channel to another
+
+        toChannel can either be a #channel or a webhook URL.
         
         Retrieve 'maxMessages' number of messages from history, and optionally discard 'skipMessages' number of messages from the retrieved list.
         
-        Retrieving more than 10 messages will result in Discord ratelimit throttling, so please be patient.
-        
-        Requires webhook permissions."""
-        await ctx.message.add_reaction("⏳")
+        Retrieving more than 10 messages will result in Discord ratelimit throttling, so please be patient."""
 
-        if toWebhookUrl == None:
-            toWebhook = await self.webhookFinder(toChannel)
-            if toWebhook == False:
-                return await ctx.send("Error trying to create webhook at destination channel.")
-        else:
-            toWebhook = toWebhookUrl
+        # Error catching
+        toWebhook = await self.relayCheckInput(ctx, toChannel)
+        if toWebhook == False:
+            return
 
         if skipMessages >= maxMessages:
             return await ctx.send("Cannot skip more messages than the max number of messages you are retrieving.")
 
         # Start webhook session
+        await ctx.message.add_reaction("⏳")
         async with aiohttp.ClientSession() as session:
             webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
 
@@ -255,11 +254,10 @@ class Msgmover(commands.Cog):
             await ctx.send(embed=es)
 
     @msgrelay.command(name="add")
-    async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toChannel):
+    async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, str]):
         """Create a message relay
         
-        Currently only supports webhook urls. [How to create webhooks.](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)
-        *[Help us develop support for #channels >](https://coffeebank.github.io/discord)*"""
+        Cross-server relays must be a webhook. [How to create webhooks >](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)"""
 
         # Error catching
         relayCheckInput = await self.relayCheckInput(ctx, toChannel)
