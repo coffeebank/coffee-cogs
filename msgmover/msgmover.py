@@ -120,7 +120,7 @@ class Msgmover(commands.Cog):
         if "https://" in toChannel:
             return str(toChannel)
         # Error likely occurred, return False
-        await ctx.send("Error: Invalid webhook URL.\n\nIf you're trying to move messages across servers, please create a Webhook in the channel you want to send to: https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png")
+        await ctx.send("Error: Channel is not in this server, or webhook URL is invalid.\n\nIf you're trying to move messages across servers, please create a Webhook in the channel you want to send to: https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png")
         return False
 
     async def timestampEmbed(self, ctx, utcTimeObj):
