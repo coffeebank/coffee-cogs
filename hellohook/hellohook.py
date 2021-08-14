@@ -75,7 +75,7 @@ class Hellohook(commands.Cog):
     async def hellohook(self, ctx: commands.Context):
         """Hellohook settings
         
-        **For old users only:** Data has been upgraded to V2 system. Your data is saved. Greet Message will show as empty until a new user joins, which will activate the data migration process automatically. See **`[p]hellohook set`** for more info."""
+        ***Note for old users:** Data has been upgraded to V2 system. Your data is saved. Greet Message will show as empty until a new user joins, which will activate the data migration process automatically. See **`[p]hellohook set`** for more info.*"""
         if not ctx.invoked_subcommand:
             guildData = await self.config.guild(ctx.guild).all()
             e = discord.Embed(color=(await ctx.embed_colour()), title="Hellohook Settings")
