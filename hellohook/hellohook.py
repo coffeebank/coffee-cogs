@@ -89,7 +89,7 @@ class Hellohook(commands.Cog):
     async def hellohooksetchannel(self, ctx, webhookUrl):
         """Set the webhook URL to send the welcome message to
         
-        Must be webhook URL. A recent Discord update has removed the ability for you to edit webhooks auto-created by the bot.
+        Must be webhook URL. A recent Discord update has removed the ability for you to edit webhooks auto-created by the bot, so the bot cannot auto-create one for you anymore.
         
         [How to create a webhook >](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)"""
         await self.config.guild(ctx.guild).greetWebhook.set(webhookUrl)
