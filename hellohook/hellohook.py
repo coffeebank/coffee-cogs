@@ -193,11 +193,12 @@ class Hellohook(commands.Cog):
         if hellohookEnabled == False:
             return
 
-        greetWebhook = await self.config.guild(userGuild).greetWebhook()
-        if not greetWebhook:
+        greetMessage = await self.config.guild(userGuild).greetMessage()
+        if not greetMessage:
             updatev1data = await self.updatev1data(userObj.guild)
             if updatev1data == False:
                 return
+        greetWebhook = await self.config.guild(userGuild).greetWebhook()
         async with aiohttp.ClientSession() as session:
             webhook = Webhook.from_url(greetWebhook, adapter=AsyncWebhookAdapter(session))
             await self.hellohookSender(webhook, userObj)
