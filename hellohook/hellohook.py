@@ -66,39 +66,6 @@ class Hellohook(commands.Cog):
         else:
             return None
 
-    async def webhookCheckInput(self, ctx, toChannel):
-        # Find/create webhook at destination if input is a channel
-        if isinstance(toChannel, discord.TextChannel):
-            toWebhook = await self.webhookFinder(toChannel)
-            if toWebhook == False:
-                await ctx.send("An error occurred: could not create webhook. Am I missing permissions?")
-                return False
-            return toWebhook
-        # Use webhook url as-is if there is https link (doesn't have to be Discord)
-        if "https://" in toChannel:
-            return str(toChannel)
-        # Error likely occurred, return False
-        await ctx.send("Error: Channel is not in this server, or webhook URL is invalid.")
-        return False
-
-    async def webhookFinder(self, channel):
-        # Find a webhook that the bot made
-        try:
-            whooklist = await channel.webhooks()
-        except:
-            return False
-        # Return if match
-        for wh in whooklist:
-            if self.bot.user == wh.user:
-                return wh.url
-        # If the function got here, it means there isn't one that the bot made
-        try:
-            newHook = await channel.create_webhook(name="Webhook")
-            return newHook.url
-        # Could not create webhook, return False
-        except:
-            return False
-
 
     # Bot Commands
 
@@ -119,17 +86,13 @@ class Hellohook(commands.Cog):
             # pass
     
     @hellohook.command(name="setchannel")
-    async def hellohooksetchannel(self, ctx, channel: typing.Union[discord.TextChannel, str]):
-        """Set the channel to send the welcome message to
+    async def hellohooksetchannel(self, ctx, webhookUrl):
+        """Set the webhook URL to send the welcome message to
         
-        #channel or webhook URL accepted."""
-        # Error catching
-        toWebhook = await self.webhookCheckInput(ctx, channel)
-        if toWebhook == False:
-            return
-        await self.config.guild(ctx.guild).greetWebhook.set(toWebhook)
-        if isinstance(channel, discord.TextChannel):
-            await ctx.send("Webhook successfully created. Be sure to go into channel settings and edit `Webhook` created by the bot, to add a custom Name and Profile Picture!")
+        Must be webhook URL. A recent Discord update has removed the ability for you to edit webhooks auto-created by the bot.
+        
+        [How to create a webhook >](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)"""
+        await self.config.guild(ctx.guild).greetWebhook.set(webhookUrl)
         await ctx.message.add_reaction("✅")
         
     @hellohook.command(name="toggle")
