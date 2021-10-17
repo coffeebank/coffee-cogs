@@ -42,9 +42,9 @@ class Hellohook(commands.Cog):
         # Replace with content
         greetMessageStr = str(json.dumps(greetMessage))
         if "https://&&USERAVATAR&&" in greetMessageStr:
-            greetMessageStr = greetMessageStr.replace("https://&&USERAVATAR&&", userObj.avatar_url)
+            greetMessageStr = greetMessageStr.replace("https://&&USERAVATAR&&", str(userObj.avatar_url))
         if "https://&&USERMENTION&&" in greetMessageStr:
-            greetMessageStr = greetMessageStr.replace("https://&&USERMENTION&&", userObj.mention)
+            greetMessageStr = greetMessageStr.replace("https://&&USERMENTION&&", str(userObj.mention))
         if "https://&&USERNAME&&" in greetMessageStr:
             greetMessageStr = greetMessageStr.replace("https://&&USERNAME&&", str(userObj.name))
         if "https://&&USERNAME1234&&" in greetMessageStr:
