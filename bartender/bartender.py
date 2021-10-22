@@ -70,7 +70,7 @@ class Bartender(commands.Cog):
     # Bot Commands
 
     @commands.command(aliases=["serve"])
-    async def barserve(self, ctx, drink=None, user=None):
+    async def barserve(self, ctx, drink=None, *, user=None):
         """Serve a drink to a user"""
         drinks = await self.config.guild(ctx.guild).bartenderDrinks()
         if drink is not None and user is not None:
