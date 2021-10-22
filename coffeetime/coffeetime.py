@@ -110,7 +110,7 @@ class Coffeetime(commands.Cog):
             if timemsg4:
               await ctx.send(timemsg4)
         else:
-            await ctx.send(f"{user.display_name} hasn't set their timezone yet. Tell them to set it by typing `{ctx.prefix}timeset`!")
+            await ctx.send(f"{user.display_name} hasn't set a timezone yet. Set one by typing `{ctx.prefix}timeset` !")
 
     @commands.command()
     async def timeset(self, ctx, *, city_name_here):
