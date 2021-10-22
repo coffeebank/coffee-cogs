@@ -91,21 +91,21 @@ class Coffeetime(commands.Cog):
                     timemsg4 = f"You haven't set your timezone yet 👀 Do `{ctx.prefix}timeset` to share your timezone!"
                 if not othertime:
                     pass
+                else:
+                    user_now = datetime.now(user_tz)
+                    user_diff = user_now.utcoffset().total_seconds() / 60 / 60
+                    other_now = datetime.now(other_tz)
+                    other_diff = other_now.utcoffset().total_seconds() / 60 / 60
+                    time_diff = abs(user_diff - other_diff)
+                    time_diff_text = f"{time_diff:g}"
+                    fmt = "**%H:%M %Z (UTC %z)**"
+                    other_time = other_now.strftime(fmt)
+                    plural = "" if time_diff_text == "1" else "s"
+                    time_amt = "the same as yours" if time_diff_text == "0" else f"{time_diff_text} hour{plural}"
+                    position = "ahead of" if user_diff < other_diff else "behind"
+                    position_text = "" if time_diff_text == "0" else f" {position} you"
 
-                user_now = datetime.now(user_tz)
-                user_diff = user_now.utcoffset().total_seconds() / 60 / 60
-                other_now = datetime.now(other_tz)
-                other_diff = other_now.utcoffset().total_seconds() / 60 / 60
-                time_diff = abs(user_diff - other_diff)
-                time_diff_text = f"{time_diff:g}"
-                fmt = "**%H:%M %Z (UTC %z)**"
-                other_time = other_now.strftime(fmt)
-                plural = "" if time_diff_text == "1" else "s"
-                time_amt = "the same as yours" if time_diff_text == "0" else f"{time_diff_text} hour{plural}"
-                position = "ahead of" if user_diff < other_diff else "behind"
-                position_text = "" if time_diff_text == "0" else f" {position} you"
-
-                timemsg2 = f" **{time_amt}{position_text}**"
+                    timemsg2 = f" **{time_amt}{position_text}**"
 
             await ctx.send(timemsg1+timemsg2+timemsg3)
             if timemsg4:
