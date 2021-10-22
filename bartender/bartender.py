@@ -11,7 +11,7 @@ class Bartender(commands.Cog):
         self.config = Config.get_conf(self, identifier=822775204043948063)
         default_guild = {
             "bartenderDrinks": {
-              "coffee": {
+              "latte": {
                 "intro": "",
                 "body": "",
                 "images": [
