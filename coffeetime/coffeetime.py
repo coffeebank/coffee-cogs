@@ -7,10 +7,6 @@ from redbot.core import Config, commands
 from redbot.core.utils.chat_formatting import pagify
 from redbot.core.utils.menus import close_menu, menu, DEFAULT_CONTROLS
 
-
-__version__ = "2.1.1"
-
-
 class Coffeetime(commands.Cog):
     """Gets times across the world..."""
     def __init__(self, bot):
