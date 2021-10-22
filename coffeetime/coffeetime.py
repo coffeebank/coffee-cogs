@@ -134,19 +134,19 @@ class Coffeetime(commands.Cog):
         pass
 
     @timetools.command()
-    async def tz(self, ctx, *, timezone_name: Optional[str] = None):
-        """Gets the time in any timezone."""
-        if timezone_name is None:
-            time = datetime.now()
-            fmt = "**%H:%M** %d-%B-%Y"
-            await ctx.send(f"Current system time: {time.strftime(fmt)}")
-        else:
-            tz_results = self.fuzzy_timezone_search(timezone_name)
-            tz_resp = await self.format_results(ctx, tz_results)
-            if tz_resp:
-                time = datetime.now(pytz.timezone(tz_resp[0][0]))
-                fmt = "**%H:%M** %d-%B-%Y **%Z (UTC %z)**"
-                await ctx.send(time.strftime(fmt))
+    async def city(self, ctx, *, city_name: str):
+        """Gets the time in any timezone.
+
+        Most big cities near you should work....
+
+        Not working? [See the full list of cities here >](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List)
+        """
+        tz_results = self.fuzzy_timezone_search(city_name)
+        tz_resp = await self.format_results(ctx, tz_results)
+        if tz_resp:
+            time = datetime.now(pytz.timezone(tz_resp[0][0]))
+            fmt = "**%H:%M** *(%I:%M %p)*\n**%A, %d %B %Y**\n*%Z (UTC %z)"
+            await ctx.send(">>> "+time.strftime(fmt)+f", {tz_resp[0][0]}*")
 
     @timetools.command()
     async def iso(self, ctx, *, iso_code=None):
