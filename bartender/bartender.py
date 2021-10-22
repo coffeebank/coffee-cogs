@@ -74,10 +74,11 @@ class Bartender(commands.Cog):
         """Serve a drink to a user"""
         drinks = await self.config.guild(ctx.guild).bartenderDrinks()
         if drink is not None and user is not None:
-            e = await self.bartenderEmbed(ctx, drink, user)
-            await ctx.send(embed=e)
-        elif not drinks[drink]:
-            return await ctx.send(f"Sorry, we don't serve this drink! Type **{ctx.prefix}serve** to see our menu....")
+            try:
+                e = await self.bartenderEmbed(ctx, drink, user)
+                await ctx.send(embed=e)
+            except KeyError:
+                return await ctx.send(f"Sorry, we don't serve this drink! Type **{ctx.prefix}serve** to see our menu....")
         else:
             botcolor = await ctx.embed_colour()
             desc = ""
