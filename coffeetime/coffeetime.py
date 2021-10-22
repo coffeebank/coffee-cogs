@@ -89,9 +89,7 @@ class Coffeetime(commands.Cog):
 
                 if not usertime:
                     timemsg4 = f"You haven't set your timezone yet 👀 Do `{ctx.prefix}timeset` to share your timezone!"
-                if not othertime:
-                    pass
-                else:
+                if othertime:
                     user_now = datetime.now(user_tz)
                     user_diff = user_now.utcoffset().total_seconds() / 60 / 60
                     other_now = datetime.now(other_tz)
@@ -106,6 +104,8 @@ class Coffeetime(commands.Cog):
                     position_text = "" if time_diff_text == "0" else f" {position} you"
 
                     timemsg2 = f" **{time_amt}{position_text}**"
+                else:
+                    pass
 
             await ctx.send(timemsg1+timemsg2+timemsg3)
             if timemsg4:
