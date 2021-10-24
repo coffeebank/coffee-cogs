@@ -123,19 +123,9 @@ class Coffeetime(commands.Cog):
             await self.config.user(ctx.author).usertime.set(tz_resp[0][0])
             await ctx.send(f"Successfully set your timezone to **{tz_resp[0][0]}**!")
 
-    @commands.guild_only()
-    @commands.group()
-    async def timetools(self, ctx):
-        """
-        Checks the time.
-        For the list of supported timezones, see here:
-        https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-        """
-        pass
-
-    @timetools.command()
-    async def city(self, ctx, *, city_name: str):
-        """Gets the time in any timezone.
+    @commands.command()
+    async def timein(self, ctx, *, city_name: str):
+        """Gets the time in a timezone.
 
         Most big cities near you should work....
 
@@ -147,6 +137,16 @@ class Coffeetime(commands.Cog):
             time = datetime.now(pytz.timezone(tz_resp[0][0]))
             fmt = "**%H:%M** *(%I:%M %p)*\n**%A, %d %B %Y**\n*%Z (UTC %z)"
             await ctx.send(">>> "+time.strftime(fmt)+f", {tz_resp[0][0]}*")
+
+    @commands.guild_only()
+    @commands.group()
+    async def timetools(self, ctx):
+        """
+        Checks the time.
+        For the list of supported timezones, see here:
+        https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        """
+        pass
 
     @timetools.command()
     async def iso(self, ctx, *, iso_code=None):
