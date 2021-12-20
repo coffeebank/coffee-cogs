@@ -6,13 +6,17 @@ import mimetypes
 import discord
 from discord import Webhook, AsyncWebhookAdapter
 import aiohttp
-import asyncio
-import random
 import requests
-import typing
-import json
+
+# default modules
+import asyncio
 import base64
 from io import BytesIO
+import json
+import random
+import textwrap
+import typing
+
 
 class Msgmover(commands.Cog):
     """Move messages around, cross-channels, cross-server!
@@ -533,15 +537,29 @@ class Msgmover(commands.Cog):
                 wait=True
             )
         except discord.HTTPException:
+            # catch HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+            #     In content: Must be 2000 or fewer in length.
+            if len(msgContent) > 1964:
+                msgLines = textwrap.wrap(msgContent, 2000, break_long_words=True)
+                for msgLineItem in msgLines:
+                    whMsg = await webhook.send(
+                        str(msgLineItem),
+                        username=userProfilesName,
+                        avatar_url=userProfilesAvatar,
+                        embeds=msgEmbed,
+                        files=msgAttach,
+                        wait=True
+                    )
             # catch HTTPException: 400 Bad Request (error code: 50006): Cannot send an empty message
-            whMsg = await webhook.send(
-                "**Discord:** Unsupported content\n"+str(msgContent),
-                username=userProfilesName,
-                avatar_url=userProfilesAvatar,
-                embeds=msgEmbed,
-                files=msgAttach,
-                wait=True
-            )
+            else:
+                whMsg = await webhook.send(
+                    "**Discord:** Unsupported content\n" + str(msgContent[:1964]) + (str(msgContent[1964:]) and '…'),
+                    username=userProfilesName,
+                    avatar_url=userProfilesAvatar,
+                    embeds=msgEmbed,
+                    files=msgAttach,
+                    wait=True
+                )
         except:
             return False
         
