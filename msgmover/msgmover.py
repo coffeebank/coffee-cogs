@@ -336,7 +336,7 @@ class Msgmover(commands.Cog):
             await ctx.message.add_reaction("⏳")
             messages = await ctx.channel.history(limit=None, after=ctx.message.reference.resolved).flatten()
             await ctx.message.add_reaction("✅")
-            return await ctx.send(len(messages)+" + 2 (your bot command and this message)")
+            return await ctx.send(str(len(messages))+" + 2 (your bot command and this message)")
         else:
             return await ctx.send("Please reply to a message to use this command!")
 
