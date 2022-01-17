@@ -327,7 +327,10 @@ class Emotes(commands.Cog):
 
     @commands.command(aliases=["ei"])
     async def emoteinfo(self, ctx, emote: Union[discord.Emoji, discord.PartialEmoji]=None):
-        """Send info about an emote"""
+        """Send info about an emote
+
+        If you don't have access to the emote (ie. no Nitro, or can't send the emote because it's from another server), you can reply to the message with the emote you want and the `[p]emoteinfo` command will pick up the emote."""
+
         if emote:
             ttl = str(emote.id)
             desc = str(emote.url)
