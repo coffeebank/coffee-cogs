@@ -75,7 +75,10 @@ class Hellohook(commands.Cog):
     async def hellohook(self, ctx: commands.Context):
         """Hellohook settings
         
-        ***Note for old users:** Data has been upgraded to V2 system. Your data is saved. Greet Message will show as empty until a new user joins, which will activate the data migration process automatically. See **`[p]hellohook set`** for more info.*"""
+        Set a welcome message using **`[p]hellohook set`**.
+        
+        [See Documentation >](https://github.com/coffeebank/coffee-cogs/wiki/Hellohook)
+        """
         if not ctx.invoked_subcommand:
             guildData = await self.config.guild(ctx.guild).all()
             e = discord.Embed(color=(await ctx.embed_colour()), title="Hellohook Settings")
@@ -120,10 +123,11 @@ class Hellohook(commands.Cog):
     async def hellohooksetwelcome(self, ctx, *, DiscohookJSON: str):
         """Set the hellohook welcome
 
-        Welcome message must be a `{"embeds":[{}]}` object. Discohook is a website for drafting webhooks, and is not affiliated with this cog.
+        Welcome message must be a `{ "content": …, "embeds": [{}] }` object.
         
-        [Click here to create your webhook message using Discohook >](https://discohook.org/?data=eyJtZXNzYWdlcyI6W3siZGF0YSI6eyJjb250ZW50IjpudWxsLCJlbWJlZHMiOlt7InRpdGxlIjoiVGl0bGUgU2FtcGxlIiwiZGVzY3JpcHRpb24iOiJEZXNjcmlwdGlvbiBTYW1wbGUiLCJjb2xvciI6MTAwNjYzNjMsImF1dGhvciI6eyJuYW1lIjoiQXV0aG9yIFNhbXBsZSJ9LCJmb290ZXIiOnsidGV4dCI6IkZvb3RlciBTYW1wbGUifSwiaW1hZ2UiOnsidXJsIjoiaHR0cHM6Ly9jZG4uZGlzY29yZGFwcC5jb20vYXR0YWNobWVudHMvODc1OTA3MTU3ODUyMjk5Mjc0Lzg3NTkwNzQ3NzIzNTk4MjM1Ni91bnNwbGFzaC5jb20tcGhvdG9zLVg0NUd5SXBqcFpjLmpwZyJ9fV19fV19)
-        [Click here to see user variables >](https://github.com/coffeebank/coffee-cogs/wiki/Hellohook)
+        You can use variables to put the info of new users into the welcome message automatically.
+        
+        [Create a webhook message here >\nSee Hellohook help documentation >](https://github.com/coffeebank/coffee-cogs/wiki/Hellohook)
 
         When you are done on Discohook:
         - Scroll to the bottom
