@@ -77,6 +77,8 @@ class Hellohook(commands.Cog):
         
         Set a welcome message using **`[p]hellohook set`**.
         
+        Due to Discord limitations, you will have to create a webhook yourself in the channel you want the welcome message in. See **`[p]hellohook setwebhook`** for more details. 
+        
         [See Documentation >](https://github.com/coffeebank/coffee-cogs/wiki/Hellohook)
         """
         if not ctx.invoked_subcommand:
@@ -88,13 +90,18 @@ class Hellohook(commands.Cog):
             await ctx.send(embed=e)
             # pass
     
-    @hellohook.command(name="setchannel")
+    @hellohook.command(name="setwebhook", aliases=["setchannel"])
     async def hellohooksetchannel(self, ctx, webhookUrl):
         """Set the webhook URL to send the welcome message to
         
-        Must be webhook URL. A recent Discord update has removed the ability for you to edit webhooks auto-created by the bot, so the bot cannot auto-create one for you anymore.
+        Must be webhook URL. Due to Discord limitations, you will have to make the webhook yourself. You can create a webhook in your desired channel by:
         
-        [How to create a webhook >](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)"""
+        #channel ⚙ settings > Integrations > Webhooks > New Webhook
+
+        [How to create a webhook (image) >](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)
+
+        After you create the webhook, you can customize the profile picture and name of the "bot", which will be used when Hellohook sends a welcome message.
+        """
         await self.config.guild(ctx.guild).greetWebhook.set(webhookUrl)
         await ctx.message.add_reaction("✅")
         
