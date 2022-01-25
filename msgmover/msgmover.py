@@ -443,28 +443,32 @@ class Msgmover(commands.Cog):
         if message.reference and message.type == discord.MessageType.default:
             # Retrieve replied-to message
             refObj = message.reference.resolved
-            # Check for NoneType
-            if refObj is None:
-                pass
+            replyEmbed = discord.Embed(color=discord.Color(value=0x25c059), description="")
+
+            # Fallback
+            if hasattr(refObj, "clean_content") is False:
+                refObj = message
+                refContent = "Message not found"
+                refUrl = ""
+            
+            # Fill content
+            if refContent:
+                replyBody = (refContent[:56] + '...') if len(refContent) > 56 else refContent
             else:
-                replyEmbed = discord.Embed(color=discord.Color(value=0x25c059), description="")
-                # Check whether message is empty
-                if refObj.clean_content:
-                    replyBody = (refObj.clean_content[:56] + '...') if len(refObj.clean_content) > 56 else refObj.clean_content
-                else:
-                    replyBody = "Click to see attachment 🖼️"
-                # Create link to message
-                replyTitle = f"↪️ {replyBody}"
-                if json["userProfiles"] == True:
-                    replyEmbed.set_author(name=replyTitle, icon_url=refObj.author.avatar_url, url=refObj.jump_url)
-                else:
-                    replyEmbed.set_author(name=replyTitle, url=refObj.jump_url)
-                # Send this before the original message so that the embed appears above the message in chat
-                await webhook.send(
-                    username=userProfilesName,
-                    avatar_url=userProfilesAvatar,
-                    embed=replyEmbed
-                )
+                replyBody = "Click to see attachment 🖼️"
+            # Create link to message
+            replyTitle = f"↪️ {replyBody}"
+            if json["userProfiles"] == True:
+                replyEmbed.set_author(name=replyTitle, icon_url=refObj.author.avatar_url, url=refUrl)
+            else:
+                replyEmbed.set_author(name=replyTitle, url=refUrl)
+            # Send this before the original message so that the embed appears above the message in chat
+            await webhook.send(
+                username=userProfilesName,
+                avatar_url=userProfilesAvatar,
+                embed=replyEmbed
+            )
+              
 
         # Add embed if exists
         msgEmbed = None
