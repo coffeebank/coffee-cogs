@@ -448,6 +448,9 @@ class Msgmover(commands.Cog):
                 refObj = message
                 refContent = "Message not found"
                 refUrl = ""
+            else:
+                refContent = refObj.clean_content
+                refUrl = refObj.jump_url
             
             # Fill content
             if refContent:
