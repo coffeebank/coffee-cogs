@@ -161,13 +161,11 @@ class Msgmover(commands.Cog):
 
         Msgmover comes with two key features, both of which use webhooks to move messages from one place to another with a close-to-native feel:
 
-        **`[p]msgcopy`** - Copies messages from one channel to another
-        **`[p]msgrelay`** - Forward messages to other channels/servers
+        **`[p]msgcopy`** - Copies messages from one channel to another *(single-use)*
+        - *Requires users with **Manage Messages** permissions*
 
-        To get started:
-
-        **`[p]msgcopy`** can be used by users with **Manage Messages** permissions.
-        **`[p]msgrelay`** can only be used by server admins with **Administrator** permissions.
+        **`[p]msgrelay`** - Forward messages to other channels/servers *(continuous)*
+        - *Requires server admins with **Administrator** permissions*
 
         Need help? [Reach us in our Support Discord >](https://coffeebank.github.io/discord)
         """
@@ -183,7 +181,9 @@ class Msgmover(commands.Cog):
         
         Retrieve 'maxMessages' number of messages from history, and optionally discard 'skipMessages' number of messages from the retrieved list.
         
-        Retrieving more than 10 messages will result in Discord ratelimit throttling, so please be patient."""
+        Retrieving more than 10 messages will result in Discord ratelimit throttling, so please be patient.
+        
+        *Errors? Please [help us by reporting them in our Support Discord >](https://coffeebank.github.io/discord)*"""
 
         # Error catching
         toWebhook = await self.relayCheckInput(ctx, toChannel)
@@ -241,8 +241,6 @@ class Msgmover(commands.Cog):
 
         Message relays allow you to forward messages to another server via a webhook.
 
-        *v2 released with breaking changes on 29 Jun 2021.*
-        *Old data saved under `v1` command.*
         *[Join the Support Discord for announcements and more info](https://coffeebank.github.io/discord)*"""
         if not ctx.invoked_subcommand:
             # Message Relays
