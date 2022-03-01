@@ -14,6 +14,7 @@ class Spotifyembed(commands.Cog):
         self.config = Config.get_conf(self, identifier=806715409318936616)
         default_guild = {
             "spotifyembedEnabled": False,
+            "spotifyembedNote": ">>> Play sample: \n"
         }
         self.config.register_guild(**default_guild)
 
@@ -21,11 +22,14 @@ class Spotifyembed(commands.Cog):
     @commands.group(aliases=["setspembed", "setspe"])
     @checks.guildowner_or_permissions()
     async def setspotifyembed(self, ctx: commands.Context):
-        """Set Spotify Embed settings"""
+        """Set Spotify Embed settings
+        
+        Automatically send a reply to Spotify links with a link to the embed preview. Convenient for mobile users who can finally listen to music samples from Discord, without needing an account."""
         if not ctx.invoked_subcommand:
             # Guild settings
             e = discord.Embed(color=(await ctx.embed_colour()), title="Guild Settings", description="")
             e.add_field(name="spotifyembedEnabled", value=(await self.config.guild(ctx.guild).spotifyembedEnabled()), inline=False)
+            e.add_field(name="spotifyembedNote", value=(await self.config.guild(ctx.guild).spotifyembedNote()), inline=False)
             await ctx.send(embed=e)
 
     @setspotifyembed.command(name="enable")
@@ -40,11 +44,19 @@ class Spotifyembed(commands.Cog):
         await self.config.guild(ctx.guild).spotifyembedEnabled.set(False)
         await ctx.message.add_reaction("✅")
 
+    @setspotifyembed.command(name="note")
+    async def setspembednote(self, ctx, *, text):
+        """Change the text that appears before auto-responses"""
+        await self.config.guild(ctx.guild).spotifyembedNote.set(text)
+        await ctx.message.add_reaction("✅")
+
     @commands.command(aliases=["spembed", "spe"])
     async def spotifyembed(self, ctx, spotifyLink, asMyself: bool=False):
         """Return a Spotify embed link
         
-        Can set asMyself to true/false, for sending as webhook"""
+        Can set asMyself to true/false, for sending as webhook
+        
+        *Admins: To edit auto-reply and other settings, use  `[p]setspotifyembed`*"""
         spembedSplit = spotifyLink.split('.com/')
         sendMsg = spembedSplit[0] + ".com/embed/" + spembedSplit[1]
 
@@ -98,7 +110,7 @@ class Spotifyembed(commands.Cog):
         if len(spembedMatches) <= 0:
             return
 
-        sendMsg = ""
+        sendMsg = await self.config.guild(message.guild).spotifyembedNote()
 
         for match in spembedMatches:
             spembedSplit = match.split('.com/')
