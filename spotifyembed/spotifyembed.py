@@ -48,9 +48,12 @@ class Spotifyembed(commands.Cog):
     async def setspembednote(self, ctx, *, text):
         """Change the text that appears before auto-responses
         
-        Type "0" to reset to default."""
+        Type "0" to reset to default.
+        Type "1" to disable this feature. (show no text)"""
         if text == "0":
           await self.config.guild(ctx.guild).spotifyembedNote.clear()
+        elif text == "1":
+          await self.config.guild(ctx.guild).spotifyembedNote.set("")
         else:
           await self.config.guild(ctx.guild).spotifyembedNote.set(text)
         await ctx.message.add_reaction("✅")
