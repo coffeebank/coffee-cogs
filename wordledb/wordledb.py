@@ -36,7 +36,7 @@ class Wordledb(commands.Cog):
         client = pymongo.MongoClient(mongoUrl, serverSelectionTimeoutMS=5000)
         db = client[dbName]
         coll = db[collectionName]
-        post = coll.insert_one({"date": date, "wordle": repr(wordle).replace('\n','\\n')[1:-1], "answer": answer[2:-2] })
+        post = coll.insert_one({"date": date, "wordle": wordle.replace('\n','\\n'), "answer": answer[2:-2] })
         try:
           await ctx.send("✅\n"+str(post.inserted_id)[:1984])
         except Exception as e:
