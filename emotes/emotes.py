@@ -359,6 +359,38 @@ class Emotes(commands.Cog):
             else:
                 return await ctx.message.add_reaction("💨")
 
+    @commands.command(aliases=["el"])
+    async def emotelist(self, ctx, msg=None):
+        """List all emotes in message
+
+        Shows a list of names and urls for all emotes in a message. Useful for Emote Spreadsheet.
+        """
+        if msg and msg.type == discord.MessageType.default:
+          msgObj = msg
+        else:
+          if ctx.message.reference and ctx.message.type == discord.MessageType.default:
+            msgObj = msg
+          else:
+            return await ctx.message.add_reaction("💨")
+
+        # Build emote bank out of previous chat history
+        recentsBankBuilder = Cherry.recentsBankBuilder(self, [ctx.message.reference.resolved], self.RegexFullEmoteSearch)
+        # Only run if there's more emotes inside recentsBankBuilder
+        if recentsBankBuilder is not False:
+            finalList = ""
+            for ee in recentsBankBuilder:
+                eeText = re.findall(self.RegexGetEmoteText, ee)
+                eeId = re.findall(self.RegexGetEmoteId, ee)
+                if "a:" in ee:
+                    desc = "https://cdn.discordapp.com/emojis/"+str(eeId[0])+".gif?v=1"
+                else:
+                    desc = "https://cdn.discordapp.com/emojis/"+str(eeId[0])+".png?v=1"
+                finalList += str(eeText[0]).lower()+","+str(desc)+"\n"
+            await ctx.send("```\n"+str(finalList)+"```")
+            return await ctx.message.add_reaction("✅")
+        else:
+            return await ctx.message.add_reaction("💨")
+
     @commands.command()
     async def showemote(self, ctx, emoteUrl: str):
         """Show an emote you have an URL for"""
