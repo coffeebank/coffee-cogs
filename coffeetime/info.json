@@ -1,6 +1,7 @@
 {
   "author": ["coffeebank", "aikaterna", "fishyfing"],
   "description": "Check timezones, user times, or times in specific places. Forked from aikaterna's improvements, cog originally by Fishyfing.",
+  "name" : "coffeetime",
   "short": "Check times for users and places.",
   "tags": ["time", "timezone"],
   "requirements": ["pytz"],
