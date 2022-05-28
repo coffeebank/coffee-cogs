@@ -64,7 +64,7 @@ class Kyarutail(commands.Cog):
           return await ctx.send("Error: No saved Kyarutail emotes.")
 
         # split into array and replace
-        msgArray = list(msgBody)
+        msgArray = list(msgBody.lower())
         sendMsg = ""
         for i in msgArray:
           ktLetter = ktData.get(str(i), None)
