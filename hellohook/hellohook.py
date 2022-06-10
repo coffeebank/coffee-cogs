@@ -50,6 +50,9 @@ class Hellohook(commands.Cog):
         if "https://&&USERNAME1234&&" in greetMessageStr:
             greetMessageStr = greetMessageStr.replace("https://&&USERNAME1234&&", str(userObj.name)+"#"+str(userObj.discriminator))
         greetMessageJson = json.loads(str(greetMessageStr))
+        # Patch fix: send() got an unexpected keyword argument 'attachments'
+        if "attachments" in greetMessageJson:
+            greetMessageJson.pop("attachments")
         # Create embed
         if greetMessageJson["embeds"]:
             e = discord.Embed.from_dict(greetMessageJson["embeds"][0])
