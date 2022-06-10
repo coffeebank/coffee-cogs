@@ -49,6 +49,10 @@ class Hellohook(commands.Cog):
             greetMessageStr = greetMessageStr.replace("https://&&USERNAME&&", str(userObj.name))
         if "https://&&USERNAME1234&&" in greetMessageStr:
             greetMessageStr = greetMessageStr.replace("https://&&USERNAME1234&&", str(userObj.name)+"#"+str(userObj.discriminator))
+        if "https://&&SERVERCOUNT&&" in greetMessageStr:
+            greetMessageStr = greetMessageStr.replace("https://&&SERVERCOUNT&&", str(userObj.guild.member_count))
+        if "https://&&SERVERCOUNTORD&&" in greetMessageStr:
+            greetMessageStr = greetMessageStr.replace("https://&&SERVERCOUNTORD&&", str(self.ordinalize_num(userObj.guild.member_count)))
         greetMessageJson = json.loads(str(greetMessageStr))
         # Patch fix: send() got an unexpected keyword argument 'attachments'
         if "attachments" in greetMessageJson:
@@ -62,6 +66,15 @@ class Hellohook(commands.Cog):
             return await webhook.send(**greetMessageJson)
         except Exception as e:
             return print(e)
+
+    def ordinalize_num(self, n):
+        # https://stackoverflow.com/a/50992575/15923512 CC BY-SA 4.0
+        n = int(n)
+        if 11 <= (n % 100) <= 13:
+            suffix = 'th'
+        else:
+            suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
+        return str(n) + suffix
 
     def validChecker(self, item):
         if item:
