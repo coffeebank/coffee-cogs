@@ -93,6 +93,16 @@ class Loveplay(commands.Cog):
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
+    @commands.command(name="feed", aliases=["cookie"])
+    async def lpfeed(self, ctx, *, user):
+        """Send some food/cookie
+        
+        Formerly the `[p]nom` command"""
+        desc = "feed"
+        src = self.purrbotApi(desc, 1, 18, "gif", "gif")
+        e = await self.buildEmbed(ctx, "yummy cookie", src, user)
+        await ctx.send(embed=e)
+        
     @commands.command(name="hugs", aliases=["hug"])
     async def lphug(self, ctx, *, user):
         """Send a hug"""
@@ -125,12 +135,14 @@ class Loveplay(commands.Cog):
         e = await self.buildEmbed(ctx, desc, src, user)
         await ctx.send(embed=e)
         
-    @commands.command(name="nom", aliases=["cookie"])
+    @commands.command(name="nom")
     async def lpnom(self, ctx, *, user):
-        """Send a nom/cookie"""
-        desc = "feed"
-        src = self.purrbotApi(desc, 1, 20, "gif", "gif")
-        e = await self.buildEmbed(ctx, "yummy cookie", src, user)
+        """Send a nom
+        
+        The old command for feeding a user has moved to `[p]feed`"""
+        desc = "bite"
+        src = self.purrbotApi(desc, 1, 24, "gif", "gif")
+        e = await self.buildEmbed(ctx, "yummy nom <a:vampynom:815998604945653771>", src, user)
         await ctx.send(embed=e)
         
     @commands.command(name="pat")
