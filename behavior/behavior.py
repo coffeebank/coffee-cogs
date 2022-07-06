@@ -16,9 +16,14 @@ class Behavior(commands.Cog):
     @commands.command(aliases=["behaviour"])
     async def behavior(self, ctx, emoji: str, *, behaviorText: str):
         """Behavior detected"""
+        emoji = emoji.replace("@", "~")
+        behaviorText = behaviorText.replace("@", "~")
         return await ctx.send(f"🚨 🚨 🚨  {emoji} {behaviorText.upper()} BEHAVIOR DETECTED 🚨 🚨 🚨")
 
     @commands.command()
     async def behaviorcustom(self, ctx, alertEmoji: str, emoji: str, *, behaviorText: str):
         """Behavior detected"""
+        alertEmoji = alertEmoji.replace("@", "~")
+        emoji = emoji.replace("@", "~")
+        behaviorText = behaviorText.replace("@", "~")
         return await ctx.send(f"{alertEmoji} {alertEmoji} {alertEmoji}  {emoji} {behaviorText.upper()} DETECTED {alertEmoji} {alertEmoji} {alertEmoji}")
