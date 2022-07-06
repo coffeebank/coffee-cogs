@@ -20,7 +20,7 @@ class Behavior(commands.Cog):
         behaviorText = behaviorText.replace("@", "~")
         return await ctx.send(f"🚨 🚨 🚨  {emoji} {behaviorText.upper()} BEHAVIOR DETECTED 🚨 🚨 🚨")
 
-    @commands.command()
+    @commands.command(aliases=["behaviourcustom"])
     async def behaviorcustom(self, ctx, alertEmoji: str, emoji: str, *, behaviorText: str):
         """Behavior detected"""
         alertEmoji = alertEmoji.replace("@", "~")
