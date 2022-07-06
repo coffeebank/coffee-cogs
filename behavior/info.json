@@ -1,0 +1,12 @@
+{
+  "author" : ["coffee-cogs"],
+  "install_msg" : "Thanks for installing :') Come make pull requests over at my GitHub! https://github.com/coffeebank/coffee-cogs",
+  "name" : "behavior",
+  "short" : "behavior",
+  "hidden" : true,
+  "requirements" : [],
+  "description" : "behavior",
+  "permissions" : [],
+  "end_user_data_statement" : "This cog does not store any End User Data.",
+  "tags" : ["behavior"]
+}
