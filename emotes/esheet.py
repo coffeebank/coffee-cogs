@@ -1,5 +1,6 @@
 import discord
 import json
+import asyncio
 import aiohttp
 import time
 
@@ -103,8 +104,10 @@ class EmoteSheet():
     # Run REST api request to Google Sheets API
     url = "https://sheets.googleapis.com/v4/spreadsheets/"+gsheets_data+"?key="+gsheets_key.get("api_key")+"&includeGridData=True"
     async with aiohttp.ClientSession() as session:
-      async with session.get(url) as reqtext:
-        reqtext = reqtext.json()
+      async with session.get(url) as resp:
+        # Loads whole json into memory, may consider improving in future
+        # https://docs.aiohttp.org/en/stable/client_quickstart.html#streaming-response-content
+        reqtext = await resp.json()
         emotearray = []
 
         for sheet in reqtext["sheets"]:
