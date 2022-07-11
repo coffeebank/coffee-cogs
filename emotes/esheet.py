@@ -1,6 +1,7 @@
 import discord
 import json
-import requests
+import asyncio
+import aiohttp
 import time
 
 class EmoteSheet():
@@ -102,31 +103,34 @@ class EmoteSheet():
 
     # Run REST api request to Google Sheets API
     url = "https://sheets.googleapis.com/v4/spreadsheets/"+gsheets_data+"?key="+gsheets_key.get("api_key")+"&includeGridData=True"
-    sendreq = requests.get(url)
-    reqtext = sendreq.json()
-    emotearray = []
+    async with aiohttp.ClientSession() as session:
+      async with session.get(url) as resp:
+        # Loads whole json into memory, may consider improving in future
+        # https://docs.aiohttp.org/en/stable/client_quickstart.html#streaming-response-content
+        reqtext = await resp.json()
+        emotearray = []
 
-    for sheet in reqtext["sheets"]:
-      for rowdata in sheet["data"][0]["rowData"]:
-        try:
-          b = rowdata["values"][1]["formattedValue"] #name
-          c = rowdata["values"][2]["formattedValue"]+"&size=64&emote="+b #url
-        except:
-          # Skip if the cell doesn't have name/url
-          pass
-        else:
-          # Check if the emote is saved under "fav"
-          try:
-            a = rowdata["values"][0]["formattedValue"] #fav
-          except:
-            a = False
-          # Check if the emote has extra tags
-          try:
-            d = rowdata["values"][3]["formattedValue"] #tags
-          except:
-            d = ""
-          # Format for emotearray
-          b = b.lower()
-          emotearray.append([a, b, c, d])
+        for sheet in reqtext["sheets"]:
+          for rowdata in sheet["data"][0]["rowData"]:
+            try:
+              b = rowdata["values"][1]["formattedValue"] #name
+              c = rowdata["values"][2]["formattedValue"]+"&size=64&emote="+b #url
+            except:
+              # Skip if the cell doesn't have name/url
+              pass
+            else:
+              # Check if the emote is saved under "fav"
+              try:
+                a = rowdata["values"][0]["formattedValue"] #fav
+              except:
+                a = False
+              # Check if the emote has extra tags
+              try:
+                d = rowdata["values"][3]["formattedValue"] #tags
+              except:
+                d = ""
+              # Format for emotearray
+              b = b.lower()
+              emotearray.append([a, b, c, d])
 
-    return emotearray
+        return emotearray
