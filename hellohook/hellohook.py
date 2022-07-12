@@ -3,7 +3,7 @@ from redbot.cogs.admin import admin
 import asyncio
 import aiohttp
 import discord
-from discord import Webhook, AsyncWebhookAdapter
+from discord import Webhook, AsyncWebhookAdapter, Embed
 from urllib.parse import quote
 import json
 import typing
@@ -64,8 +64,13 @@ class Hellohook(commands.Cog):
             greetMessageJson.pop("attachments")
         # Create embed
         if greetMessageJson["embeds"]:
+            # For loops not working for some reason? Force patching to add support for 2 embeds
             e = discord.Embed.from_dict(greetMessageJson["embeds"][0])
-            greetMessageJson["embeds"] = [e]
+            try:
+              e2 = discord.Embed.from_dict(greetMessageJson["embeds"][1])
+              greetMessageJson["embeds"] = [e,e2]
+            except:
+              greetMessageJson["embeds"] = [e]
         # Send webhook
         try:
             return await webhook.send(**greetMessageJson)
@@ -120,14 +125,14 @@ class Hellohook(commands.Cog):
         e = discord.Embed(color=(await ctx.embed_colour()), title="Hellohook Greet Settings")
         e.add_field(name="Greet Enabled", value=guildData.get("hellohookEnabled", None), inline=False)
         e.add_field(name="Greet Webhook", value=self.validChecker(guildData.get("greetWebhook", None)), inline=False)
-        e.add_field(name="Greet Message", value='```json\n'+str(json.dumps(guildData.get("greetMessage", {})))+'```', inline=False)
+        e.add_field(name="Greet Message", value='```json\n'+str(json.dumps(guildData.get("greetMessage", {})))[:1011]+'```', inline=False)
         await ctx.send(embed=e)
 
         # Leave info
         e2 = discord.Embed(color=(await ctx.embed_colour()), title="Hellohook Leave Settings")
         e2.add_field(name="Leave Enabled", value=guildData.get("leaveEnabled", None), inline=False)
         e2.add_field(name="Leave Webhook", value=self.validChecker(guildData.get("leaveWebhook", None)), inline=False)
-        e2.add_field(name="Leave Message", value='```json\n'+str(json.dumps(guildData.get("leaveMessage", {})))+'```', inline=False)
+        e2.add_field(name="Leave Message", value='```json\n'+str(json.dumps(guildData.get("leaveMessage", {})))[:1011]+'```', inline=False)
         await ctx.send(embed=e2)
     
     @hellohook.command(name="setgreethook", aliases=["set", "setchannel", "setwebhook"])
