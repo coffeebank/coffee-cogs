@@ -434,7 +434,7 @@ class Msgmover(commands.Cog):
         else:
             msgContent = "**Discord:** "+str(message.type)
             if json["userProfiles"] == True:
-                userProfilesName = "\u17b5\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u17b5"
+                userProfilesName = "\u2e33\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2e33"
                 userProfilesAvatar = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/0-Background.svg/300px-0-Background.svg.png'
 
         # Add reply if exists
