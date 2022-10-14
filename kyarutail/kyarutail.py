@@ -78,7 +78,7 @@ class Kyarutail(commands.Cog):
             sendMsg += str(i)
 
         # Extra spacing
-        sendMsg = sendMsg.replace(":kyaru :", "  ")
+        sendMsg = sendMsg.replace(":kyaru :", "      ")
 
         await ctx.send("Copy-paste and send the following:", delete_after=12)
         e = discord.Embed(description=sendMsg, color=(await ctx.embed_colour()))
