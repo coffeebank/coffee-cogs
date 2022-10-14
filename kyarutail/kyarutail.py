@@ -81,7 +81,8 @@ class Kyarutail(commands.Cog):
         sendMsg = sendMsg.replace(":kyaru :", "  ")
 
         await ctx.send("Copy-paste and send the following:", delete_after=12)
-        sendMsgResult = await ctx.send("```"+sendMsg+"```", delete_after=12)
+        e = discord.Embed(description=sendMsg, color=(await ctx.embed_colour()))
+        sendMsgResult = await ctx.send(embed=e, delete_after=12)
         await sendMsgResult.add_reaction("🗑️")
         await sendMsgResult.add_reaction("3️⃣")
         await asyncio.sleep(4)
