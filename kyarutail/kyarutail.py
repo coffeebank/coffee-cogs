@@ -1,4 +1,5 @@
 from redbot.core import Config, commands, checks
+import asyncio
 import aiohttp
 import discord
 from discord import Webhook, AsyncWebhookAdapter
@@ -53,7 +54,47 @@ class Kyarutail(commands.Cog):
 
     @commands.command()
     async def kyarutail(self, ctx, *, msgBody):
-        """Send a message as yourself with Kyarutail emotes.
+        """Prepare a Kyarutail message to send
+
+        Prerequisites: NQN bot + joined Kyarutail server ([Why?](https://thymedev.github.io/coffee/kyarutail))
+
+        It may be troublesome to type or access Kyarutail emotes. This cog will translate text (abc) into emotes (:kyaruA::kyaruB::kyaruC:) for [NQN bot](https://nqn.blue).
+        """
+        guildData = await self.config.guild(ctx.guild).all()
+        ktData = guildData.get("kyaruEmotes", None)
+        
+        # catch
+        if ktData == None:
+          return await ctx.send("Error: No saved Kyarutail emotes.")
+
+        # split into array and replace
+        msgArray = list(msgBody.lower())
+        sendMsg = ""
+        for i in msgArray:
+          ktLetter = ktData.get(str(i), None)
+          if ktLetter:
+            sendMsg += ":kyaru"+str(i).upper()+":"
+          else:
+            sendMsg += str(i)
+
+        # Extra spacing
+        sendMsg = sendMsg.replace(":kyaru :", "  ")
+
+        await ctx.send("Copy-paste and send the following:", delete_after=12)
+        sendMsgResult = await ctx.send("```"+sendMsg+"```", delete_after=12)
+        await sendMsgResult.add_reaction("🗑️")
+        await sendMsgResult.add_reaction("3️⃣")
+        await asyncio.sleep(4)
+        await sendMsgResult.add_reaction("2️⃣")
+        await asyncio.sleep(4)
+        await sendMsgResult.add_reaction("1️⃣")
+        return
+
+    @commands.command()
+    async def kyaruself(self, ctx, *, msgBody):
+        """Send a Kyarutail message as yourself
+
+        Due to Discord limitations, this may no longer work.
         
         Uses webhook when available. Falls back to bot message when not."""
         guildData = await self.config.guild(ctx.guild).all()
@@ -70,7 +111,7 @@ class Kyarutail(commands.Cog):
           ktLetter = ktData.get(str(i), None)
           if ktLetter:
             if ktLetter.isalpha() == True:
-              sendMsg += "<:emote_"+str(i)+":"+str(ktLetter)+">"
+              sendMsg += "<:kyaru"+str(i)+":"+str(ktLetter)+">"
             else:
               sendMsg += "<:emote"+":"+str(ktLetter)+">"
           else:

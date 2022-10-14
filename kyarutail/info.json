@@ -1,9 +1,9 @@
 {
   "author" : ["coffeebank"],
-  "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by the GitHub repo at https://github.com/coffeebank/coffee-cogs",
+  "install_msg" : "Documentation: https://thymedev.github.io/coffee/kyarutail",
   "name" : "kyarutail",
   "short" : "Convert your messages into a message written with Kyaru's tail.",
-  "requirements" : [],
+  "requirements" : ["asyncio", "aiohttp"],
   "description" : "Convert your messages into a message written with emotes of Kyaru's tail. Kyaru (aka. Karyl) is a character from Princess Connect! Re:Dive.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
