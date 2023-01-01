@@ -179,24 +179,29 @@ class Hellohook(commands.Cog):
         if not ctx.invoked_subcommand:
             pass
 
-    @hellohook.command(name="settings")
+    @hellohook.command(name="settings", aliases=["list"])
     async def hellohooksettings(self, ctx):
-        """See current Hellohook settings"""
+        """List current Hellohook settings"""
         guildData = await self.config.guild(ctx.guild).all()
 
         # Greet info
         e = discord.Embed(color=(await ctx.embed_colour()), title="Hellohook Greet Settings")
         e.add_field(name="Greet Enabled", value=guildData.get("hellohookEnabled", None), inline=False)
-        e.add_field(name="Greet Webhook", value=self.validChecker(guildData.get("greetWebhook", None)), inline=False)
+        e.add_field(name="Greet Webhook", value="||"+self.validChecker(guildData.get("greetWebhook", None))+"||", inline=False)
         e.add_field(name="Greet Message", value='```json\n' + str(json.dumps(guildData.get("greetMessage", {})))[:1011]+'```', inline=False)
         await ctx.send(embed=e)
 
         # Leave info
         e2 = discord.Embed(color=(await ctx.embed_colour()), title="Hellohook Leave Settings")
         e2.add_field(name="Leave Enabled", value=guildData.get("leaveEnabled", None), inline=False)
-        e2.add_field(name="Leave Webhook", value=self.validChecker(guildData.get("leaveWebhook", None)), inline=False)
+        e2.add_field(name="Leave Webhook", value="||"+self.validChecker(guildData.get("leaveWebhook", None))+"||", inline=False)
         e2.add_field(name="Leave Message", value='```json\n' + str(json.dumps(guildData.get("leaveMessage", {})))[:1011]+'```', inline=False)
         await ctx.send(embed=e2)
+
+        # Invites info
+        if guildData.get("inviteList", None) is not None:
+          e3 = discord.Embed(color=(await ctx.embed_colour()), title="Hellohook Invite Settings", description="Invite settings found, use `[p]hellohook invite settings` to show.")
+          await ctx.send(embed=e3)
 
     @hellohook.command(name="setgreethook", aliases=["set", "setchannel", "setwebhook"])
     async def hellohooksetgreethook(self, ctx, webhookUrl):
@@ -242,7 +247,7 @@ class Hellohook(commands.Cog):
 
         You can use variables to put the info of new users into the welcome message automatically.
 
-        [Create a webhook message here >\nSee Hellohook help documentation >](https://github.com/coffeebank/coffee-cogs/wiki/Hellohook)
+        [Create a webhook message here >\nSee Hellohook help documentation >](https://coffeebank.github.io/coffee-cogs/hellohook)
 
         When you are done on Discohook:
         - Scroll to the bottom
@@ -262,7 +267,7 @@ class Hellohook(commands.Cog):
 
         You can use variables to put the info of users into the message automatically.
 
-        [Create a webhook message here >\nSee Hellohook help documentation >](https://github.com/coffeebank/coffee-cogs/wiki/Hellohook)
+        [Create a webhook message here >\nSee Hellohook help documentation >](https://coffeebank.github.io/coffee-cogs/hellohook)
 
         When you are done on Discohook:
         - Scroll to the bottom
@@ -295,15 +300,12 @@ class Hellohook(commands.Cog):
             # Send Webhooks
             async with aiohttp.ClientSession() as session:
                 try:
-                    greetWebhook = Webhook.from_url(
-                        greetWebhook, adapter=AsyncWebhookAdapter(session))
+                    greetWebhook = Webhook.from_url(greetWebhook, adapter=AsyncWebhookAdapter(session))
                     await self.hellohookSender(greetWebhook, ctx.message.author, greetMessage)
                 except:
                     await ctx.send("Error: Hellohook Greet message failed. Is your webhook deleted, or your message empty?")
-
                 try:
-                    leaveWebhook = Webhook.from_url(
-                        leaveWebhook, adapter=AsyncWebhookAdapter(session))
+                    leaveWebhook = Webhook.from_url(leaveWebhook, adapter=AsyncWebhookAdapter(session))
                     await self.hellohookSender(leaveWebhook, ctx.message.author, leaveMessage)
                 except:
                     await ctx.send("Error: Hellohook Leave message failed. Is your webhook deleted, or your message empty?")
@@ -341,9 +343,10 @@ class Hellohook(commands.Cog):
         """Send custom Hellohook welcomes based on invite URLs (beta)
 
         -
-        ⚠️ **Warning: This feature is in testing. Use at your own risk.**
-        If you can't load Hellohook cog anymore, please enter your bot config data and delete Hellohook settings from all guilds.
-        If you don't know how to do the above, please **do not use this Invites feature yet**. We cannot provide support."""
+        ⚠️ **Warning: This feature is still in testing.
+        Data loss is possible. Use at your own risk.
+        [See Documentation >](https://coffeebank.github.io/coffee-cogs/hellohook)**
+        """
         if not ctx.invoked_subcommand:
             pass
 
@@ -353,20 +356,20 @@ class Hellohook(commands.Cog):
         inviteList = await self.config.guild(ctx.guild).inviteList()
 
         # Choose an invite
-        invLink = await ctx.send("Enter the invite link you want to attach a custom welcome message to:")
+        invLink = await ctx.send("Please enter only the ##### part of your <https://discord.gg/#####> invite link you want to attach a custom welcome message to:")
         invLinkPred = await ctx.bot.wait_for("message")
         invObj = await self.inviteFetch(ctx.guild, invLinkPred.clean_content)
         if invObj == None:
-            return await ctx.send("Error: Invalid invite.... setup exited.")
+            return await ctx.send("Error: Couldn't find invite.... is it valid? Setup exited.")
 
         # Set invite webhook
-        invHook = await ctx.send("Enter the webhook link you'd like to send the custom welcome message to:")
+        invHook = await ctx.send("Please enter the webhook link you'd like to send the custom welcome message to:")
         invHookPred = await ctx.bot.wait_for("message")
         if "https://" not in invHookPred.clean_content:
             return await ctx.send("Error: Invalid link.... setup exited.")
 
         # Set message
-        invMsg = await ctx.send("Enter the Discohook JSON you'd like to use as your custom welcome message:")
+        invMsg = await ctx.send("Please enter the Discohook JSON you'd like to use as your custom welcome message:")
         invMsgPred = await ctx.bot.wait_for("message")
         try:
             invMsgJson = json.loads(invMsgPred.clean_content)
@@ -391,7 +394,7 @@ class Hellohook(commands.Cog):
     async def hhinvremove(self, ctx, inviteLink: str):
         """Remove a custom invite-based welcome
 
-        Please input the https://discord.gg/###### link you want to remove."""
+        Please input only the ##### part of your <https://discord.gg/#####> invite."""
         inviteList = await self.config.guild(ctx.guild).inviteList()
         invObj = await self.inviteFetch(ctx.guild, inviteLink)
         if invObj is None:
@@ -402,7 +405,7 @@ class Hellohook(commands.Cog):
 
     @hhinv.command(name="sync")
     async def hhinvsync(self, ctx):
-        """Sync the invite tracker database
+        """Re-sync the invite tracker if bot's been offline
 
         If the bot has gone offline before, run this command to ensure the bot is tracking the right invites.
 
@@ -425,11 +428,21 @@ class Hellohook(commands.Cog):
         await self.config.guild(ctx.guild).inviteList.set(newInviteList)
         return await ctx.message.add_reaction("✅")
 
-    @hhinv.command(name="list")
-    async def hhinvlist(self, ctx):
+    @hhinv.command(name="settings", aliases=["list"])
+    async def hhinvsettings(self, ctx):
         "List all invite-based welcomes"
         inviteList = await self.config.guild(ctx.guild).inviteList()
-        await ctx.send(str(inviteList))
+        for io, iv in inviteList.items():
+          try:
+            e = discord.Embed(color=(await ctx.embed_colour()), title=io)
+            e.add_field(name="Uses", value=inviteList[io]["uses"], inline=False)
+            e.add_field(name="Webhook", value="||"+self.validChecker(inviteList[io]["channel"])+"||", inline=False)
+            e.add_field(name="Greet Message", value='```json\n' + str(json.dumps(inviteList[io]["message"]))[:1011]+'```', inline=False)
+            await ctx.send(embed=e)
+          except:
+            e = discord.Embed(color=(await ctx.embed_colour()), title=io, description="Data error:\n"+str(inviteList[io]))
+            await ctx.send(embed=e)
+        return
 
     # Listeners
 
