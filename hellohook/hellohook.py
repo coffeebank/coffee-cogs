@@ -458,7 +458,7 @@ class Hellohook(commands.Cog):
               guildInvites = await userGuild.invites()
               for gio in guildInvites:
                   try:
-                      if savedInvites[str(gio.code)] and gio.uses <= savedInvites[str(gio.code)]["uses"]:
+                      if savedInvites[str(gio.code)] and gio.uses >= savedInvites[str(gio.code)]["uses"]:
                           await self.inviteUsesSetter(userGuild, str(gio.code), gio.uses)
                           invHook = Webhook.from_url(savedInvites[str(gio.code)]["channel"], adapter=AsyncWebhookAdapter(session))
                           await self.hellohookSender(invHook, userObj, savedInvites[str(gio.code)]["message"])
