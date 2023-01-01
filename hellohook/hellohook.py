@@ -133,11 +133,12 @@ class Hellohook(commands.Cog):
         except:
             return None
 
-    async def inviteUsesSetter(ctx, guildObj, inviteId, uses: int):
-        savedInvites = await self.config.guild(userGuild).inviteList()
+    async def inviteUsesSetter(self, guildObj, inviteId, uses: int):
+        savedInvites = await self.config.guild(guildObj).inviteList()
         try:
             savedInvites[str(inviteId)]["uses"] = uses
-            return await self.config.guild(userGuild).inviteList.set(savedInvites)
+            await self.config.guild(guildObj).inviteList.set(savedInvites)
+            return True
         except:
             return None
 
@@ -444,6 +445,29 @@ class Hellohook(commands.Cog):
             await ctx.send(embed=e)
         return
 
+    @hhinv.command(name="test")
+    async def hhinvtest(self, ctx):
+        "Test all invite-based welcomes"
+        await ctx.send("Starting test....")
+        userGuild = ctx.guild
+        userObj = ctx.author
+        async with aiohttp.ClientSession() as session:
+          # Fetch current custom invites only if exists
+          savedInvites = await self.config.guild(userGuild).inviteList()
+          if len(savedInvites) > 0:
+              guildInvites = await userGuild.invites()
+              for gio in guildInvites:
+                  try:
+                      if savedInvites[str(gio.code)] and gio.uses <= savedInvites[str(gio.code)]["uses"]:
+                          await self.inviteUsesSetter(userGuild, str(gio.code), gio.uses)
+                          invHook = Webhook.from_url(savedInvites[str(gio.code)]["channel"], adapter=AsyncWebhookAdapter(session))
+                          await self.hellohookSender(invHook, userObj, savedInvites[str(gio.code)]["message"])
+                          # End early if webhook exists and was sent successfully
+                          # return
+                  except:
+                      pass
+        await ctx.send("Ended test")
+
     # Listeners
 
     @commands.Cog.listener()
@@ -458,34 +482,32 @@ class Hellohook(commands.Cog):
         if hellohookEnabled == False:
             return
 
-        # Fetch current custom invites only if exists
-        savedInvites = await self.config.guild(userGuild).inviteList()
-        if len(savedInvites.items()) > 0:
-            guildInvites = await userGuild.invites()
-            for gio in guildInvites:
-                try:
-                    if savedInvites[gio.id] and gio.uses > savedInvites[gio.id]["uses"]:
-                        updateUsesCount = await self.inviteUsesSetter(userGuild, gio.id, gio.uses)
-                        assert updateUsesCount is not None
-                        async with aiohttp.ClientSession() as session:
-                            invHook = Webhook.from_url(savedInvites[gio.id]["channel"], adapter=AsyncWebhookAdapter(session))
-                            await self.hellohookSender(invHook, userObj, savedInvites[gio.id]["message"])
-                        return
-                        # End early if webhook exists and was sent successfully
-                except:
-                    pass
-
-        # Otherwise, use default welcome
-        greetMessage = await self.config.guild(userGuild).greetMessage()
-        if not greetMessage:
-            updatev1data = await self.updatev1data(userObj.guild)
-            if updatev1data == False:
-                return
-        greetWebhook = await self.config.guild(userGuild).greetWebhook()
         async with aiohttp.ClientSession() as session:
-            webhook = Webhook.from_url(greetWebhook, adapter=AsyncWebhookAdapter(session))
-            await self.hellohookSender(webhook, userObj, greetMessage)
-        return
+          # Fetch current custom invites only if exists
+          savedInvites = await self.config.guild(userGuild).inviteList()
+          if len(savedInvites) > 0:
+              guildInvites = await userGuild.invites()
+              for gio in guildInvites:
+                  try:
+                      if savedInvites[str(gio.code)] and gio.uses > savedInvites[str(gio.code)]["uses"]:
+                          await self.inviteUsesSetter(userGuild, str(gio.code), gio.uses)
+                          invHook = Webhook.from_url(savedInvites[str(gio.code)]["channel"], adapter=AsyncWebhookAdapter(session))
+                          await self.hellohookSender(invHook, userObj, savedInvites[str(gio.code)]["message"])
+                          # End early if webhook exists and was sent successfully
+                          return
+                  except:
+                      pass
+
+          # Otherwise, use default welcome
+          greetMessage = await self.config.guild(userGuild).greetMessage()
+          if not greetMessage:
+              updatev1data = await self.updatev1data(userObj.guild)
+              if updatev1data == False:
+                  return
+          greetWebhook = await self.config.guild(userGuild).greetWebhook()
+          webhook = Webhook.from_url(greetWebhook, adapter=AsyncWebhookAdapter(session))
+          await self.hellohookSender(webhook, userObj, greetMessage)
+          return
 
     @commands.Cog.listener()
     async def on_member_remove(self, userObj: discord.Member) -> None:
