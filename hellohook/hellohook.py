@@ -460,7 +460,7 @@ class Hellohook(commands.Cog):
 
         # Fetch current custom invites only if exists
         savedInvites = await self.config.guild(userGuild).inviteList()
-        if len(savedInvites) > 0:
+        if len(savedInvites.items()) > 0:
             guildInvites = await userGuild.invites()
             for gio in guildInvites:
                 try:
