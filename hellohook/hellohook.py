@@ -391,6 +391,26 @@ class Hellohook(commands.Cog):
         await ctx.send("Done ✅")
         return
 
+    @hhinv.command(name="edit")
+    async def hhinvedit(self, ctx, inviteLink: str, field: str, *, updatedContentHere: str):
+        """Edit a custom invite-based welcome
+
+        Please input only the ##### part of your <https://discord.gg/#####> invite.
+        
+        Fields:
+          channel - for webhook URL
+          message - for Discohook JSON
+        """
+        inviteList = await self.config.guild(ctx.guild).inviteList()
+        try:
+            if field == "message":
+                updatedContentHere = json.loads(updatedContentHere)
+            inviteList[inviteLink][field] = updatedContentHere
+            await self.config.guild(ctx.guild).inviteList.set(inviteList)
+            return await ctx.message.add_reaction("✅")
+        except:
+            await ctx.send("Error: Could not update. Did you type it in the format:\nINVITELINKCODE   FIELD   NEW_CONTENT_HERE")
+
     @hhinv.command(name="remove")
     async def hhinvremove(self, ctx, inviteLink: str):
         """Remove a custom invite-based welcome
