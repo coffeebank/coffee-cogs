@@ -4,6 +4,10 @@ import { preToCodeBlock } from 'mdx-utils';
 import { MDXProvider } from '@mdx-js/react';
 
 import Code from '../src/components/Code';
+import ReactButton from '../../../src/components/ReactButton';
+import ReactFrame from '../../../src/components/ReactFrame';
+
+const shortcodes = { ReactButton, ReactFrame }
 
 const components = {
   pre: (preProps) => {
@@ -21,6 +25,7 @@ const components = {
       <table {...rest}>{children}</table>
     </div>
   ),
+  ...shortcodes
 };
 
 export function wrapPageElement({ element }) {

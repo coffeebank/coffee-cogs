@@ -50,6 +50,8 @@ export default function Sidebar({ isMenuOpen }) {
     );
   }
 
+  const currentYear = new Date().getFullYear();
+
   return (
     <Container isMenuOpen={isMenuOpen}>
       <LogoContainer>
@@ -76,6 +78,12 @@ export default function Sidebar({ isMenuOpen }) {
           })}
         </List>
       </nav>
+      <div style={{width:'100%',padding:'2em',fontSize:'0.9em',color:'rgba(0,0,0,0.6)'}}>
+        &copy; {currentYear} Coffeebank ☕🏦 <br />
+        <a href="https://coffeebank.github.io/" target="_blank" rel="noopener" style={{color:'rgba(0,0,0,0.6)'}}>Home</a>&ensp;
+        <a href="https://github.com/coffeebank/coffee-cogs/" target="_blank" rel="noopener" style={{color:'rgba(0,0,0,0.6)'}}>GitHub</a>&ensp;
+        <a href="https://github.com/coffeebank/coffee-cogs/blob/master/LICENSE" target="_blank" rel="noopener" style={{color:'rgba(0,0,0,0.6)'}}>License</a>
+      </div>
     </Container>
   );
 }
