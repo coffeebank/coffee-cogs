@@ -1,4 +1,4 @@
-export default {
+const options = {
   colors: {
     primary: '#8257E6',
     background: '#FFFFFF',
@@ -16,3 +16,5 @@ export default {
     body: `-apple-system, BlinkMacSystemFont, 'Jost', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
   },
 };
+
+export default options;
