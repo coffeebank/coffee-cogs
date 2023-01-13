@@ -1,5 +1,4 @@
 module.exports = {
-  pathPrefix: '/coffee-cogs/',
   siteMetadata: {
     siteTitle: `Coffee Cogs ☕`,
     defaultTitle: `Coffee Cogs ☕`,
@@ -10,8 +9,10 @@ module.exports = {
     siteImage: `/banner.png`,
     siteLanguage: `en`,
     themeColor: `#8257E6`,
-    basePath: `/`,
+    basePath: ``,
   },
+  pathPrefix: '/coffee-cogs',
+	trailingSlash: 'always',
   plugins: [
     {
       resolve: `@rocketseat/gatsby-theme-docs`,
@@ -20,6 +21,7 @@ module.exports = {
         docsPath: `src/docs`,
         yamlFilesPath: `src/yamlFiles`,
         repositoryUrl: `https://github.com/coffeebank/coffee-cogs`,
+        branch: `docs/src`,
         baseDir: ``,
         gatsbyRemarkPlugins: [],
       },
@@ -35,14 +37,8 @@ module.exports = {
         icon: `static/favicon.png`,
       },
     },
+    `gatsby-plugin-postcss`,
     `gatsby-plugin-sitemap`,
-    // {
-    //   resolve: `gatsby-plugin-google-analytics`,
-    //   options: {
-    //     trackingId: `YOUR_ANALYTICS_ID`,
-    //   },
-    // },
-    `gatsby-plugin-remove-trailing-slashes`,
     {
       resolve: `gatsby-plugin-canonical-urls`,
       options: {
