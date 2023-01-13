@@ -4,7 +4,7 @@ const options = {
     background: '#FFFFFF',
     shape: `#F2F2FA`,
     title: `#3D3D4D`,
-    text: `#6C6C80`,
+    text: `#2c3e50`,
     components: {
       blockquote: {
         background: `#feebc8`,
