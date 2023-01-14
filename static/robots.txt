@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /coffee-cogs/img/
+Disallow: /img/
