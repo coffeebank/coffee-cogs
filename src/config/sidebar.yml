@@ -4,7 +4,12 @@
   link: '/'
 - label: 'Getting Started'
   link: '/start'
-
+- label: 'Cherry Emotes'
+  items:
+    - label: 'Home'
+      link: '/emotes'
+    - label: 'Prerequisites'
+      link: '/emotes/#prerequisites'
 - label: 'More Cogs'
   items:
     - label: 'bartender'

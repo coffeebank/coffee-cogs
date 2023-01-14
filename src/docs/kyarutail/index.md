@@ -7,7 +7,7 @@
 
 <br />
 
-![kyarutail.jpg](./kyarutail.jpg)
+![kyarutail.jpg](/img/kyarutail.jpg)
 
 This Kyarutail cog is a Discord bot for converting text you type into emote letters from Kyaru's tail.
 
