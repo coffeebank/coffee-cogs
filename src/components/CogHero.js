@@ -46,10 +46,10 @@ class CogHero extends React.Component {
           ):''}
           <div className="pt-10 font-bold">Install</div>
           <div className="py-2 text-sm">New here? <Link to="/coffee/start/">See the Getting Started guide&ensp;▸</Link></div>
-          <div className="px-4 py-3 rounded-md bg-black/5" title="Replace [p] with your bot's prefix">
-            <pre className="text-gray-600 text-sm">
-              <span className="select-none">[p]</span>repo add coffee-cogs https://github.com/coffeebank/coffee-cogs<br />
-              <span className="select-none">[p]</span>cog install coffee-cogs { cogData.name || this.props.cog }
+          <div className="px-5 py-4 sm:py-3 rounded-md bg-black/5" title="Replace [p] with your bot's prefix">
+            <pre className="text-gray-600 text-sm overflow-x-auto leading-6">
+              <span className="select-none">[p]</span><span className="select-all sm:select-auto">repo add coffee-cogs https://github.com/coffeebank/coffee-cogs</span><br />
+              <span className="select-none">[p]</span><span className="select-all sm:select-auto">cog install coffee-cogs { cogData.name || this.props.cog }</span>
             </pre>
           </div>
           <div className="pt-2 text-sm">{ cogData.end_user_data_statement || "" }</div>

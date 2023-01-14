@@ -27,7 +27,7 @@ export const Container = styled.div`
     text-transform: uppercase;
     font-size: 14px;
     font-weight: bold;
-    letter-spacing: 0.142em;
+    letter-spacing: 0.01em;
     margin-top: 0rem;
     border: none;
     margin: 0 0 16px 0;

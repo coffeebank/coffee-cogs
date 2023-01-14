@@ -67,12 +67,11 @@ export const List = styled.ul`
 export const Heading = styled.li`
   padding-left: 30px;
   width: 100%;
-  text-transform: uppercase;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   margin-top: 20px;
   color: ${({ theme }) => theme.colors.title};
-  letter-spacing: 0.142em;
+  letter-spacing: 0.01em;
 `;
 
 export const Item = styled.li`
