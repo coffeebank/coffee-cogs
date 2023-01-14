@@ -3,7 +3,7 @@ title: "Cherry Emotes | Coffee Series"
 description: "Custom emote solution for non-nitro users. Use animated emotes in your server, even without Nitro. Make your own emote storage spreadsheet and generate emote-like image links for use in DMs and elsewhere."
 ---
 
-<img src="/img/emotes.jpg" alt="logo" class="h-24 aspect-square rounded" />
+<img src="/img/emotes.jpg" alt="Logo: a stack of pancakes" class="h-24 aspect-square rounded mb-2" />
 
 # Cherry Emotes
 

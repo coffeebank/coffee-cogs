@@ -4,13 +4,19 @@
   link: '/'
 - label: 'Getting Started'
   link: '/start'
-- label: 'Cherry Emotes'
+- label: '🍒 Cherry Emotes'
   items:
     - label: 'Home'
       link: '/emotes'
-    - label: 'Prerequisites'
-      link: '/emotes/#prerequisites'
-- label: 'More Cogs'
+- label: '🔖 Hellohook'
+  items:
+    - label: 'Home'
+      link: '/hellohook'
+- label: '🚚 Msgmover'
+  items:
+    - label: 'Home'
+      link: '/msgmover'
+- label: 'More cogs'
   items:
     - label: 'bartender'
       link: '/bartender'
