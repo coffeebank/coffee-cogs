@@ -18,6 +18,9 @@ class CogHero extends React.Component {
       .then(resp => {
         return resp.json();
       })
+      .catch(err => {
+        console.log(err);
+      })
       .then(json => {
         this.setState({
           cogData: json,
@@ -36,14 +39,24 @@ class CogHero extends React.Component {
     return (
       <div>
         <div className="transition-opacity duration-150">
-          <div className="text-xl whitespace-pre-line">{ cogData.description || this.props.desc || "⏳" }</div>
+          {(cogData.description || this.props.desc) ? (
+            <div className="text-xl whitespace-pre-line">{ cogData.description || this.props.desc }</div>
+          ) : (
+            <div className="text-xl whitespace-pre-line h-8">⏳</div>
+          )}
           {cogData.tags ? (
             <div className="pt-4 flex flex-wrap">
               {cogData.tags.map(ct =>
                 <div key={ct} className="mx-1 mt-1 px-2 py-1 bg-gray-300 text-gray-800 rounded text-xs select-none">{ ct }</div>
               )}
             </div>
-          ):''}
+          ) : (
+            <div className="pt-4 flex flex-wrap">
+              <div className="mx-1 mt-1 px-2 py-1 animate-pulse bg-gray-300 text-gray-800 rounded text-xs select-none">...</div>
+              <div className="mx-1 mt-1 px-2 py-1 animate-pulse bg-gray-300 text-gray-800 rounded text-xs select-none">...</div>
+              <div className="mx-1 mt-1 px-2 py-1 animate-pulse bg-gray-300 text-gray-800 rounded text-xs select-none">...</div>
+            </div>
+          )}
           <div className="pt-10 font-bold">Install</div>
           <div className="py-2 text-sm">New here? <Link to="/coffee/start/">See the Getting Started guide&ensp;▸</Link></div>
           <div className="px-5 py-4 sm:py-3 rounded-md bg-black/5" title="Replace [p] with your bot's prefix">
