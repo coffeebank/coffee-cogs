@@ -10,6 +10,7 @@ export default function SEO({ description, title, slug, image, children }) {
       query {
         site {
           siteMetadata {
+            basePath
             defaultTitle
             siteTitleShort
             siteTitle
@@ -25,6 +26,7 @@ export default function SEO({ description, title, slug, image, children }) {
   );
 
   const {
+    basePath,
     siteTitle,
     siteTitleShort,
     siteUrl,
@@ -37,8 +39,8 @@ export default function SEO({ description, title, slug, image, children }) {
   } = site.siteMetadata;
 
   const metaTitle = title ? `${title} | ${siteTitle}` : defaultTitle;
-  const metaUrl = urljoin(siteUrl, slug);
-  const metaImage = urljoin(siteUrl, image || siteImage);
+  const metaUrl = urljoin(siteUrl, basePath, slug);
+  const metaImage = urljoin(siteUrl, basePath, image || siteImage);
   const metaDescription = description || siteDescription;
 
   const schemaOrgJSONLD = [
@@ -63,19 +65,14 @@ export default function SEO({ description, title, slug, image, children }) {
       <meta name="image" content={metaImage} />
 
       <meta httpEquiv="x-ua-compatible" content="IE=edge,chrome=1" />
-      <meta name="MobileOptimized" content="320" />
-      <meta name="HandheldFriendly" content="True" />
-      <meta name="google" content="notranslate" />
       <meta name="referrer" content="no-referrer-when-downgrade" />
 
       <meta property="og:url" content={metaUrl} />
       <meta property="og:type" content="website" />
       <meta property="og:title" content={metaTitle} />
       <meta property="og:description" content={metaDescription} />
-      <meta property="og:locale" content={siteLanguage} />
       <meta property="og:site_name" content={siteTitle} />
       <meta property="og:image" content={metaImage} />
-      <meta property="og:image:secure_url" content={metaImage} />
       <meta property="og:image:alt" content="Banner" />
       <meta property="og:image:type" content="image/png" />
       <meta property="og:image:width" content="1200" />
@@ -83,8 +80,6 @@ export default function SEO({ description, title, slug, image, children }) {
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={metaTitle} />
-      <meta name="twitter:site" content={siteAuthor} />
-      <meta name="twitter:creator" content={siteAuthor} />
       <meta name="twitter:image" content={metaImage} />
       <meta name="twitter:image:src" content={metaImage} />
       <meta name="twitter:image:alt" content="Banner" />

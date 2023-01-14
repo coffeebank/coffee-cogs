@@ -17,10 +17,10 @@
     "react-dom": "^17.0.2"
   },
   "scripts": {
-    "build": "gatsby build",
-    "dev": "gatsby develop",
-    "start": "gatsby develop",
-    "serve": "gatsby serve",
+    "build": "gatsby build --prefix-paths",
+    "dev": "gatsby develop --prefix-paths",
+    "start": "gatsby develop --prefix-paths",
+    "serve": "gatsby serve --prefix-paths",
     "clean": "gatsby clean"
   },
   "devDependencies": {

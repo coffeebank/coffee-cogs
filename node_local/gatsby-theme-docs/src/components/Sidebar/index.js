@@ -55,7 +55,7 @@ export default function Sidebar({ isMenuOpen }) {
   return (
     <Container isMenuOpen={isMenuOpen}>
       <LogoContainer>
-        <Link to={basePath} aria-label="Go to home page">
+        <Link to="/" aria-label="Go to home page">
           <Logo aria-hidden="true" />
         </Link>
       </LogoContainer>

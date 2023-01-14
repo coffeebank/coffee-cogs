@@ -14,23 +14,26 @@ class CogHero extends React.Component {
 
   componentDidMount() {
     let cogUrl = "https://raw.githubusercontent.com/coffeebank/coffee-cogs/master/"+this.props.cog+"/info.json";
-    fetch(cogUrl)
-      .then(resp => {
-        return resp.json();
+    try {
+      fetch(cogUrl)
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          this.setState({
+            cogData: json,
+            loading: false
+          });
+          return this.state;
+        })
+    } catch (error) {
+      console.log(error);
+      this.setState({
+        cogData: {},
+        loading: true
       })
-      .catch(err => {
-        console.log(err);
-      })
-      .then(json => {
-        this.setState({
-          cogData: json,
-          loading: false
-        });
-        return this.state;
-      })
-      .catch(err => {
-        console.log(err);
-      })
+      return this.state;
+    }
   }
 
   render() {
