@@ -22,8 +22,8 @@ export const Container = styled.div`
     font-style: normal;
     font-weight: 300;
     src: local(''),
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-300.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-300.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-300.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-300.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 
   /* jost-regular - latin */
@@ -32,8 +32,8 @@ export const Container = styled.div`
     font-style: normal;
     font-weight: 400;
     src: local(''),
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 
   /* jost-500 - latin */
@@ -42,8 +42,8 @@ export const Container = styled.div`
     font-style: normal;
     font-weight: 500;
     src: local(''),
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-500.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-500.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 
   /* jost-600 - latin */
@@ -52,8 +52,8 @@ export const Container = styled.div`
     font-style: normal;
     font-weight: 600;
     src: local(''),
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-600.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-600.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-600.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-600.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 
   /* jost-700 - latin */
@@ -62,8 +62,8 @@ export const Container = styled.div`
     font-style: normal;
     font-weight: 700;
     src: local(''),
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-700.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-700.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-700.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-700.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 
   /* jost-800 - latin */
@@ -72,8 +72,8 @@ export const Container = styled.div`
     font-style: normal;
     font-weight: 800;
     src: local(''),
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-800.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-800.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-800.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-800.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 
   /* jost-300italic - latin */
@@ -82,8 +82,8 @@ export const Container = styled.div`
     font-style: italic;
     font-weight: 300;
     src: local(''),
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-300italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-300italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-300italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-300italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 
   /* jost-italic - latin */
@@ -92,8 +92,8 @@ export const Container = styled.div`
     font-style: italic;
     font-weight: 400;
     src: local(''),
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 
   /* jost-500italic - latin */
@@ -102,8 +102,8 @@ export const Container = styled.div`
     font-style: italic;
     font-weight: 500;
     src: local(''),
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-500italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-500italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-500italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-500italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 
   /* jost-600italic - latin */
@@ -112,8 +112,8 @@ export const Container = styled.div`
     font-style: italic;
     font-weight: 600;
     src: local(''),
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-600italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-600italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-600italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-600italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 
   /* jost-700italic - latin */
@@ -122,8 +122,8 @@ export const Container = styled.div`
     font-style: italic;
     font-weight: 700;
     src: local(''),
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-700italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-700italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-700italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-700italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 
   /* jost-800italic - latin */
@@ -132,8 +132,8 @@ export const Container = styled.div`
     font-style: italic;
     font-weight: 800;
     src: local(''),
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-800italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-        url('/coffee-cogs/fonts/jost/jost-v14-latin-800italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-800italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+        url('https://coffeebank.github.io/home/fonts/jost/jost-v14-latin-800italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 `;
 
