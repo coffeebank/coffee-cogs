@@ -12,7 +12,7 @@ export const Container = styled.aside`
   position: sticky;
   top: 0;
   padding-top: 36px;
-  transition: transform 200ms ease-out;
+  transition: transform 350ms ease;
   height: calc(100vh - 1px);
 
   nav {

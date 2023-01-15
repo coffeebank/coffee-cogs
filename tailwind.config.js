@@ -6,7 +6,8 @@ module.exports = {
   content: [
     "./src/pages/**/*.{js,jsx,ts,tsx,md,mdx}",
     "./src/components/**/*.{js,jsx,ts,tsx,md,mdx}",
-    "./src/docs/**/*.{js,jsx,ts,tsx,md,mdx}"
+    "./src/docs/**/*.{js,jsx,ts,tsx,md,mdx}",
+    "./src/**/*.{js,jsx,ts,tsx,md,mdx}"
   ],
   darkMode: 'class', // bool, 'media', or 'class'
   theme: {
