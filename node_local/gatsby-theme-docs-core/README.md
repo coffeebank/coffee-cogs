@@ -147,7 +147,7 @@ Add a title to the frontmatter of the MDX file and place the content below it. F
 ---
 title: 'My Example'
 description: 'A simple description for this page'
-image: 'banner.png'
+image: 'banner.jpg'
 disableTableOfContents: false
 ---
 

@@ -6,7 +6,7 @@ module.exports = {
     siteDescription: `coffee-cogs`,
     siteUrl: `https://coffeebank.github.io`,
     siteAuthor: `@coffeebank`,
-    siteImage: `/banner.png`,
+    siteImage: `/banner.jpg`,
     siteLanguage: `en`,
     themeColor: `#8257E6`,
     basePath: `/coffee-cogs`,
