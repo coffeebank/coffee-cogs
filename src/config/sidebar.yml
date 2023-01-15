@@ -8,11 +8,11 @@
   items:
     - label: 'Home'
       link: '/emotes'
-- label: '🔖 Hellohook'
+- label: '🐱 Hellohook'
   items:
     - label: 'Home'
       link: '/hellohook'
-- label: '🚚 Msgmover'
+- label: '📧 Msgmover'
   items:
     - label: 'Home'
       link: '/msgmover'

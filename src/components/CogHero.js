@@ -61,7 +61,7 @@ class CogHero extends React.Component {
             </div>
           )}
           <div className="pt-10 font-bold">Install</div>
-          <div className="py-2 text-sm">New here? <Link to="/coffee/start/">See the Getting Started guide&ensp;▸</Link></div>
+          <div className="py-2 text-sm">New here? <Link to="/start/">See the Getting Started guide&ensp;▸</Link></div>
           <div className="px-5 py-4 sm:py-3 rounded-md bg-black/5" title="Replace [p] with your bot's prefix">
             <pre className="text-gray-600 text-sm overflow-x-auto leading-6">
               <span className="select-none">[p]</span><span className="select-all sm:select-auto">repo add coffee-cogs https://github.com/coffeebank/coffee-cogs</span><br />
