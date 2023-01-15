@@ -94,4 +94,4 @@ return await webhook.send(**greetMessageJson,
 
 ## Forking Hellohook
 
-<!-- <CogFork :cog="$frontmatter.cogname" /> -->
+<CogFork cog="hellohook" />

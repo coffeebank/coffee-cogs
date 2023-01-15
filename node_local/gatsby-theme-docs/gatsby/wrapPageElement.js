@@ -4,11 +4,12 @@ import { preToCodeBlock } from 'mdx-utils';
 import { MDXProvider } from '@mdx-js/react';
 
 import Code from '../src/components/Code';
+import CogFork from '../../../src/components/CogFork';
 import CogHero from '../../../src/components/CogHero';
 import ReactButton from '../../../src/components/ReactButton';
 import ReactFrame from '../../../src/components/ReactFrame';
 
-const shortcodes = { CogHero, ReactButton, ReactFrame }
+const shortcodes = { CogFork, CogHero, ReactButton, ReactFrame }
 
 const components = {
   pre: (preProps) => {
