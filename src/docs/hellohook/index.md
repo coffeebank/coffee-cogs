@@ -4,7 +4,7 @@ description: "Create your own welcome bot with a custom profile picture! Choose 
 cogname: "hellohook"
 ---
 
-<img src="/img/hellohook.jpg" alt="Logo: a resting cat being scratched in the chin" class="h-24 aspect-square rounded mb-2" />
+<img src="./hellohook.jpg" alt="Logo: a resting cat being scratched in the chin" class="h-24 aspect-square rounded mb-2" />
 
 # Hellohook
 
@@ -89,7 +89,7 @@ return await webhook.send(**greetMessageJson,
     avatar_url=userObj.avatar_url)
 ```
 
-![Image: Replacing code under Utility Commands async def hellohookSender()](/img/carbon-user-avatar-as-webhook.png)
+![Image: Replacing code under Utility Commands async def hellohookSender()](./carbon-user-avatar-as-webhook.png)
 
 
 ## Forking Hellohook

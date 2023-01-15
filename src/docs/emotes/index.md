@@ -3,7 +3,7 @@ title: "Cherry Emotes | Coffee Series"
 description: "Custom emote solution for non-nitro users. Use animated emotes in your server, even without Nitro. Make your own emote storage spreadsheet and generate emote-like image links for use in DMs and elsewhere."
 ---
 
-<img src="/img/emotes.jpg" alt="Logo: a stack of pancakes" class="h-24 aspect-square rounded mb-2" />
+<img src="./emotes.jpg" alt="Logo: a stack of pancakes" class="h-24 aspect-square rounded mb-2" />
 
 # Cherry Emotes
 
@@ -26,7 +26,7 @@ Spreadsheet ID: `https://docs.google.com/spreadsheets/d/`**`1a2B3c4D5e6F7g8H9i10
 
 Share settings: Public, allow whoever has the link to view
 
-![Screenshot of Google Sheets template](/img/google_sheets_template.png)
+![Screenshot of Google Sheets template](./google_sheets_template.png)
 
 - fav: TRUE or empty
 - name: string

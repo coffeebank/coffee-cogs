@@ -3,7 +3,7 @@ title: "msgmover | Coffee Series"
 description: "The Discord Bot for Moving Messages Between Channels and Servers. Copy messages from one channel to another, or continuously relay messages to other channels/servers. Make moving messages between channels/servers easy and integrated, using webhooks."
 ---
 
-<img src="/img/msgmover.jpg" alt="Logo: a handful of letters, spread out on a table" class="h-24 aspect-square rounded mb-2" />
+<img src="./msgmover.jpg" alt="Logo: a handful of letters, spread out on a table" class="h-24 aspect-square rounded mb-2" />
 
 # Msgmover
 

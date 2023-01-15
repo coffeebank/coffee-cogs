@@ -14,7 +14,7 @@ Setup is as easy as 1-2-3:
 
 ## What is Red Discord Bot?
 
-![Explainer: Red Discord Bot is a platform. Coffee Cogs is a repository ("repo") of extensions ("cogs") that are built on top of Red Discord Bot.](/img/red-cogs-explainer.png)
+![Explainer: Red Discord Bot is a platform. Coffee Cogs is a repository ("repo") of extensions ("cogs") that are built on top of Red Discord Bot.](./red-cogs-explainer.png)
 
 To use any bot in **Coffee Cogs ☕**, you must first install Red Discord Bot.
 
@@ -79,7 +79,7 @@ Here is how to set up Google Cloud Platform:
 
 ## Step 2: Download Red DiscordBot
 
-![gcp-ssh.png](/img/gcp-ssh.png)
+![gcp-ssh.png](./gcp-ssh.png)
 
 After the setup above, you should see a console with a similar screen above.
 
