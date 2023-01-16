@@ -33,13 +33,19 @@ module.exports = {
       resolve: `gatsby-transformer-remark`,
       options: {
         plugins: [
-          `gatsby-remark-prismjs`,
+          {
+            resolve: `gatsby-remark-autolink-headers`,
+            options: {
+              offsetY: `100`,
+            },
+          },
           {
             resolve: "gatsby-remark-copy-linked-files",
             options: {
               ignoreFileExtensions: [],
             },
           },
+          `gatsby-remark-prismjs`,
         ],
       },
     },
@@ -106,5 +112,9 @@ module.exports = {
         icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
       },
     },
+    // {
+    //   resolve: 'gatsby-plugin-pace',
+    //   options: { theme: 'minimal', color: 'white', cdn: 'https://cdn.bootcdn.net/ajax/libs/pace/1.0.2/pace.min.js' }
+    // },
   ],
 }

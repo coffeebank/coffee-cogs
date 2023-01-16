@@ -14,13 +14,23 @@ module.exports = {
         'gray-175': '#E9EBEE',
         'discord-bg-primary': '#36393f'
       },
-      screens: {
-        'xs': '320px'
-      },
+      spacing: {
+        'nav': '36px'
+      }
+    },
+    screens: {
+      'xs': '320px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
     }
   },
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 }
