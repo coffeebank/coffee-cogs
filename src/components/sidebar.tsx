@@ -32,36 +32,42 @@ export default function Sidebar() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div>
-      <div>
+    <aside className="w-full min-h-screen pt-nav flex flex-col justify-between px-2 gap-6">
+      <header>
         <Link to="/" aria-label="Go to home page">
-          <h1>Title</h1>
+          <div className="w-full px-4 pb-4 min-h-[4rem]">
+            <h1 className="font-bold text-xl text-black/90 dark:text-white/90">Coffee Cogs ☕</h1>
+          </div>
         </Link>
-      </div>
-      <nav>
-        {sidebarItems.map(({ title, heading, items }) => {
-          const subitems = items.map((item, index) => (
-            <li key={item.title+index}><Link to={item.link}>{item.title}</Link></li>
-          ));
+        <nav className="pt-4">
+          {sidebarItems.map(({ title, heading, items }) => {
+            const subitems = items.map((item, index) => (
+              <li key={ item.title + index }>
+                <Link to={ item.link } activeClassName="active" partiallyActive={true} className="[&.active>div]:bg-purple-700/90 dark:[&.active>div]:bg-purple-800/90 [&.active>div]:text-white transition-all duration-200">
+                  <div className="py-[0.5rem] px-3 truncate text-[0.95rem] text-black/90 dark:text-white/90 rounded">{ item.title }</div>
+                </Link>
+              </li>
+            ));
 
-          return (
-            <>
-              { heading === true ? (
-                <h2>{ title }</h2>
-              ) : '' }
-              <ul key={title+heading}>
-                { subitems }
-              </ul>
-            </>
-          );
-        })}
-      </nav>
-      <div style={{width:'100%',padding:'2em',fontSize:'0.9em',color:'rgba(0,0,0,0.6)'}}>
+            return (
+              <>
+                { heading === true ? (
+                  <h2 className="px-5 pt-6 pb-1 font-bold text-black/90 dark:text-white/90">{ title }</h2>
+                ) : '' }
+                <ul key={title+heading} className="px-2">
+                  { subitems }
+                </ul>
+              </>
+            );
+          })}
+        </nav>
+      </header>
+      <footer className="w-full px-5 py-8 text-[0.9rem] text-black/60 dark:text-white/70 [&>_a]:font-bold hover:[&>_a]:underline [&>_a]:text-black/60 dark:[&>_a]:text-white/70">
         &copy; {currentYear} Coffeebank ☕🏦 <br />
-        <a href="https://coffeebank.github.io/" target="_blank" rel="noopener" style={{color:'rgba(0,0,0,0.6)'}}>Home</a>&ensp;
-        <a href="https://github.com/coffeebank/coffee-cogs/" target="_blank" rel="noopener" style={{color:'rgba(0,0,0,0.6)'}}>GitHub</a>&ensp;
-        <a href="https://github.com/coffeebank/coffee-cogs/blob/master/LICENSE" target="_blank" rel="noopener" style={{color:'rgba(0,0,0,0.6)'}}>License</a>
-      </div>
-    </div>
+        <a href="https://coffeebank.github.io/" target="_blank" rel="noopener">Home</a>&ensp;
+        <a href="https://github.com/coffeebank/coffee-cogs/" target="_blank" rel="noopener">GitHub</a>&ensp;
+        <a href="https://github.com/coffeebank/coffee-cogs/blob/master/LICENSE" target="_blank" rel="noopener">License</a>
+      </footer>
+    </aside>
   );
 }
