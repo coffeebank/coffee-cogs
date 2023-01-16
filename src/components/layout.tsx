@@ -24,7 +24,7 @@ const Layout = ({ children }: Props) => {
         </div>
         <div className="pl-[300px] lg:pl-[320px]">
           <section className="w-full flex flex-wrap gap-x-[45px] lg:flex-nowrap pt-nav justify-start">
-            <main className="w-full max-w-[710px] prose prose-neutral dark:prose-invert prose-img:rounded-lg [&_.anchor.before]:h-full [&_.anchor.before]:flex [&_.anchor.before]:items-center">
+            <main className="w-full max-w-[710px] prose prose-neutral dark:prose-invert prose-a:transition-colors prose-img:rounded-lg [&_.anchor.before]:h-full [&_.anchor.before]:flex [&_.anchor.before]:items-center">
               { children }
             </main>
             <aside className="w-full lg:max-w-[235px] h-full sticky top-0">

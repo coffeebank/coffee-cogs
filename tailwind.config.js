@@ -16,7 +16,20 @@ module.exports = {
       },
       spacing: {
         'nav': '36px'
-      }
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            color: '#333',
+            a: {
+              color: '#3182ce',
+              '&:hover': {
+                color: '#2c5282',
+              },
+            },
+          },
+        },
+      },
     },
     screens: {
       'xs': '320px',
