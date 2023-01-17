@@ -45,7 +45,7 @@ module.exports = {
               ignoreFileExtensions: [],
             },
           },
-          `gatsby-remark-prismjs`,
+          // `gatsby-remark-prismjs`,
         ],
       },
     },
