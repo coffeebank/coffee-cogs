@@ -13,7 +13,7 @@ interface Props {
 export default function ReactButton({
     children,
     body = "Open Link",
-    classButton = "bg-purple-800 hover:bg-purple-700 text-white",
+    classButton = "bg-purple-700/90 hover:bg-purple-800/90 dark:bg-purple-800/90 dark:hover:bg-purple-700/90 text-white",
     className = "",
     newTab = true,
     to

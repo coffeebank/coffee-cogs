@@ -8,22 +8,42 @@ export default function Sidebar() {
       heading: false,
       items: [
         {
-          title: "Hello World!",
-          link: "/hello-world"
+          title: "Home",
+          link: "/"
         },
         {
-          title: "My Second Post",
-          link: "/my-second-post"
+          title: "Getting Started",
+          link: "/start"
         }
       ]
     },
     {
-      title: "Title 2",
+      title: "🍒 Cherry Emotes",
       heading: true,
       items: [
         {
-          title: "New Beginnings",
-          link: "/new-beginnings"
+          title: "Home",
+          link: "/emotes"
+        }
+      ]
+    },
+    {
+      title: "🐱 Hellohook",
+      heading: true,
+      items: [
+        {
+          title: "Home",
+          link: "/hellohook"
+        }
+      ]
+    },
+    {
+      title: "📮 Msgmover",
+      heading: true,
+      items: [
+        {
+          title: "Home",
+          link: "/msgmover"
         }
       ]
     },
@@ -55,6 +75,30 @@ export default function Sidebar() {
           title: "kyarutail",
           link: "/kyarutail"
         },
+        {
+          title: "loveplay",
+          link: "/loveplay"
+        },
+        {
+          title: "pinboard",
+          link: "/pinboard"
+        },
+        {
+          title: "quarantine",
+          link: "/quarantine"
+        },
+        {
+          title: "sendhook",
+          link: "/sendhook"
+        },
+        {
+          title: "spotifyembed",
+          link: "/spotifyembed"
+        },
+        {
+          title: "websearch",
+          link: "/websearch"
+        },
       ]
     }
   ]
@@ -73,8 +117,8 @@ export default function Sidebar() {
           {sidebarItems.map(({ title, heading, items }) => {
             const subitems = items.map((item, index) => (
               <li key={ item.title + '-' + item.link + '-' + index }>
-                <Link to={ item.link } activeClassName="active" partiallyActive={true} className="[&.active>div]:bg-purple-700/90 dark:[&.active>div]:bg-purple-800/90 [&.active>div]:text-white transition-all duration-200">
-                  <div className="py-[0.5rem] px-3 truncate text-[0.95rem] text-black/90 dark:text-white/90 rounded">{ item.title }</div>
+                <Link to={ item.link } activeClassName="active" partiallyActive={false} className="[&.active>div]:bg-purple-700/90 dark:[&.active>div]:bg-purple-800/90 [&.active>div]:text-white transition-all duration-200">
+                  <div className="py-[0.5rem] px-3 truncate text-[0.95rem] text-black/90 dark:text-white/80 rounded">{ item.title }</div>
                 </Link>
               </li>
             ));
@@ -82,7 +126,7 @@ export default function Sidebar() {
             return (
               <>
                 { heading === true ? (
-                  <h2 className="px-5 pt-6 pb-1 font-bold text-black/90 dark:text-white/90">{ title }</h2>
+                  <h2 className="px-2 pt-7 pb-2 font-bold dark:font-thick text-black/90 dark:text-white/90">{ title }</h2>
                 ) : '' }
                 <ul key={ title + heading } className="px-2">
                   { subitems }

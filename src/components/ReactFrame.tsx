@@ -1,11 +1,10 @@
 import React from 'react';
 
 interface Props {
-  children: React.ReactNode,
-  height: number,
-  title: string,
+  height?: number,
+  title?: string,
   to: string,
-  newTab: boolean,
+  newTab?: boolean,
 }
 
 export const Head = ({ height = 400 }: Props) => (

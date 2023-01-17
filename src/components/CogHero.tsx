@@ -23,7 +23,7 @@ const CogHero = (props: Props) => {
     <div>
       <div className="transition-opacity duration-150">
         <div className="text-xl whitespace-pre-line">{ cogData.description || props.desc || (
-          <div className="w-full h-12 rounded-lg bg-black/5 animate-pulse"></div>
+          <div className="w-full h-16 rounded-lg bg-black/5 dark:bg-white/30 animate-pulse"></div>
         ) }</div>
         {cogData.tags ? (
           <div className="pt-4 flex flex-wrap">
@@ -33,9 +33,9 @@ const CogHero = (props: Props) => {
           </div>
         ) : (
           <div className="pt-4 flex flex-wrap">
-            <div className="mx-1 mt-1 px-2 py-1 animate-pulse bg-gray-300 text-gray-800 rounded text-xs select-none">...</div>
-            <div className="mx-1 mt-1 px-2 py-1 animate-pulse bg-gray-300 text-gray-800 rounded text-xs select-none">...</div>
-            <div className="mx-1 mt-1 px-2 py-1 animate-pulse bg-gray-300 text-gray-800 rounded text-xs select-none">...</div>
+            <div className="mx-1 mt-1 px-2 py-1 animate-pulse bg-gray-300 dark:bg-white/30 text-gray-800 rounded text-xs select-none">...</div>
+            <div className="mx-1 mt-1 px-2 py-1 animate-pulse bg-gray-300 dark:bg-white/30 text-gray-800 rounded text-xs select-none">...</div>
+            <div className="mx-1 mt-1 px-2 py-1 animate-pulse bg-gray-300 dark:bg-white/30 text-gray-800 rounded text-xs select-none">...</div>
           </div>
         )}
         <div className="pt-10 font-bold">Install</div>
