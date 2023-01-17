@@ -1,36 +1,34 @@
 import * as React from "react"
 import { Link, graphql } from "gatsby"
+import rehypeReact from "rehype-react"
 
-import Bio from "../components/bio"
-import Layout from "../components/layout"
 import Seo from "../components/seo"
+import CogFork from "../components/CogFork"
+import CogHero from "../components/CogHero"
+import ReactButton from "../components/ReactButton"
+import ReactFrame from "../components/ReactFrame"
+
+const renderAst = new rehypeReact({
+  createElement: React.createElement,
+  components: {
+    "component-cogfork": CogFork,
+    "component-coghero": CogHero,
+    "component-reactbutton": ReactButton,
+    "component-reactframe": ReactFrame,
+  },
+}).Compiler
 
 const BlogPostTemplate = ({
   data: { previous, next, site, markdownRemark: post },
-  location,
 }) => {
-  const siteTitle = site.siteMetadata?.title || `Title`
-
   return (
-    <Layout location={location} title={siteTitle}>
-      <article
-        className="blog-post"
-        itemScope
-        itemType="http://schema.org/Article"
-      >
-        <header>
-          <h1 itemProp="headline">{post.frontmatter.title}</h1>
-          <p>{post.frontmatter.date}</p>
-        </header>
-        <section
-          dangerouslySetInnerHTML={{ __html: post.html }}
-          itemProp="articleBody"
-        />
-        <hr />
-        <footer>
-          <Bio />
-        </footer>
-      </article>
+    <section>
+      {/* <div
+        dangerouslySetInnerHTML={{ __html: post.html }}
+        itemProp="articleBody"
+      /> */}
+      {renderAst(post.htmlAst)}
+      <hr />
       <nav className="blog-post-nav">
         <ul
           style={{
@@ -57,7 +55,7 @@ const BlogPostTemplate = ({
           </li>
         </ul>
       </nav>
-    </Layout>
+    </section>
   )
 }
 
@@ -87,6 +85,8 @@ export const pageQuery = graphql`
       id
       excerpt(pruneLength: 160)
       html
+      htmlAst
+      tableOfContents
       frontmatter {
         title
         date(formatString: "MMMM DD, YYYY")

@@ -26,6 +26,36 @@ export default function Sidebar() {
           link: "/new-beginnings"
         }
       ]
+    },
+    {
+      title: "More cogs",
+      heading: true,
+      items: [
+        {
+          title: "bartender",
+          link: "/bartender"
+        },
+        {
+          title: "coffeetime",
+          link: "/coffeetime"
+        },
+        {
+          title: "coffeetools",
+          link: "/coffeetools"
+        },
+        {
+          title: "dmreply",
+          link: "/dmreply"
+        },
+        {
+          title: "jsonrequest",
+          link: "/jsonrequest"
+        },
+        {
+          title: "kyarutail",
+          link: "/kyarutail"
+        },
+      ]
     }
   ]
   
@@ -35,14 +65,14 @@ export default function Sidebar() {
     <aside className="w-full min-h-screen pt-nav flex flex-col justify-between px-2 gap-6">
       <header>
         <Link to="/" aria-label="Go to home page">
-          <div className="w-full px-4 pb-4 min-h-[4rem]">
+          <div className="w-full px-4 pt-1 pb-4 min-h-[4rem]">
             <h1 className="font-bold text-xl text-black/90 dark:text-white/90">Coffee Cogs ☕</h1>
           </div>
         </Link>
         <nav className="pt-4">
           {sidebarItems.map(({ title, heading, items }) => {
             const subitems = items.map((item, index) => (
-              <li key={ item.title + index }>
+              <li key={ item.title + '-' + item.link + '-' + index }>
                 <Link to={ item.link } activeClassName="active" partiallyActive={true} className="[&.active>div]:bg-purple-700/90 dark:[&.active>div]:bg-purple-800/90 [&.active>div]:text-white transition-all duration-200">
                   <div className="py-[0.5rem] px-3 truncate text-[0.95rem] text-black/90 dark:text-white/90 rounded">{ item.title }</div>
                 </Link>
@@ -54,7 +84,7 @@ export default function Sidebar() {
                 { heading === true ? (
                   <h2 className="px-5 pt-6 pb-1 font-bold text-black/90 dark:text-white/90">{ title }</h2>
                 ) : '' }
-                <ul key={title+heading} className="px-2">
+                <ul key={ title + heading } className="px-2">
                   { subitems }
                 </ul>
               </>
