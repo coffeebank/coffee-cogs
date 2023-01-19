@@ -14,6 +14,8 @@ module.exports = {
     siteUrl: `https://coffeebank.github.io`,
     basePath: `/coffee-cogs`,
   },
+  pathPrefix: "/coffee-cogs",
+  trailingSlash: "always",
   plugins: [
     {
       resolve: `gatsby-source-filesystem`,

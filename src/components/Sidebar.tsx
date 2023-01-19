@@ -112,9 +112,11 @@ export default function Sidebar() {
           <Link to="/" aria-label="Go to home page">
             <h1 className="font-bold text-xl text-black/90 dark:text-white/90">Coffee Cogs ☕</h1>
           </Link>
-          <button>
-            Menu
-          </button>
+          <div className="md:hidden">
+            <button>
+              Menu
+            </button>
+          </div>
         </div>
         <nav className="pt-4 px-8 md:px-0">
           {sidebarItems.map(({ title, heading, items }) => {
