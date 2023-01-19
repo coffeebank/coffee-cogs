@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - docs/src
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [18]
+
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@master
+
+      - name: Setup node env 🏗
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: ${{ matrix.node }}
+          check-latest: true
+
+      - name: Cache node_modules 📦
+        uses: actions/cache@v2.1.4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies 👨🏻‍💻
+        run: npm ci
+
+      - name: Build site 🛠
+        run: npm run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: docs/dist # The branch the action should deploy to.
+          folder: ./public # The folder the action should deploy.
