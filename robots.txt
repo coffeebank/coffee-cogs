@@ -1,6 +1,2 @@
-User-agent: Googlebot-Image
-Disallow: /
-
 User-agent: *
-Disallow: /coffee-cogs/img/
-Disallow: /img/
+Disallow:
