@@ -22,7 +22,7 @@ const BlogPostTemplate = ({
   data: { previous, next, site, markdownRemark: post },
 }) => {
   return (
-    <section className="w-full flex flex-wrap gap-x-[45px] lg:flex-nowrap pt-nav justify-start">
+    <section className="w-full flex flex-wrap gap-x-[45px] xl:flex-nowrap pt-nav justify-start">
       <main
         className="w-full max-w-[710px] text-[#2c3e50] dark:text-[#faf9f7] \
           prose prose-neutral dark:prose-invert \
@@ -41,7 +41,7 @@ const BlogPostTemplate = ({
       >
         {renderAst(post.htmlAst)}
         <hr />
-        <nav className="blog-post-nav">
+        {/* <nav className="blog-post-nav">
           <ul
             style={{
               display: `flex`,
@@ -66,9 +66,9 @@ const BlogPostTemplate = ({
               )}
             </li>
           </ul>
-        </nav>
+        </nav> */}
       </main>
-      <aside className="w-full lg:max-w-[235px] h-full sticky top-0">
+      <aside className="w-full lg:min-w-[100px] lg:max-w-[235px] h-full sticky top-0">
         <div className="pt-20">
           <h2 className="font-bold text-sm uppercase text-black/80 dark:text-white/80">On this page</h2>
           <div

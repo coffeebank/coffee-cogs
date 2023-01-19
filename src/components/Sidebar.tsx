@@ -106,14 +106,17 @@ export default function Sidebar() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <aside className="w-full min-h-screen pt-nav flex flex-col justify-between px-2 gap-6">
+    <aside className="w-full min-h-screen md:pt-nav flex flex-col justify-between px-2 gap-6">
       <header>
-        <Link to="/" aria-label="Go to home page">
-          <div className="w-full px-4 pt-1 pb-4 min-h-[4rem]">
+        <div className="w-full px-4 md:pt-1 md:pb-4 min-h-[4rem] flex items-center align-middle justify-between md:block">
+          <Link to="/" aria-label="Go to home page">
             <h1 className="font-bold text-xl text-black/90 dark:text-white/90">Coffee Cogs ☕</h1>
-          </div>
-        </Link>
-        <nav className="pt-4">
+          </Link>
+          <button>
+            Menu
+          </button>
+        </div>
+        <nav className="pt-4 px-8 md:px-0">
           {sidebarItems.map(({ title, heading, items }) => {
             const subitems = items.map((item, index) => (
               <li key={ item.title + '-' + item.link + '-' + index }>

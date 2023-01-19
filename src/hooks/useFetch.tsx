@@ -6,7 +6,8 @@ const useFetch = (url: string) => {
   useEffect(() => {
     fetch(url)
       .then((resp) => resp.json())
-      .then((data) => setData(data));
+      .then((data) => setData(data))
+      .catch((err) => console.log(err));
   }, [ url ]);
 
   return data;

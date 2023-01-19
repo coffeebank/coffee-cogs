@@ -36,8 +36,8 @@ export default function CogFork({ cog }: Props) {
       
       <h4>Updates</h4>
       <ol><li>Visit your copy of the GitHub repo at USERNAME/coffee-cogs</li> <li>Click "Fetch upstream" and merge updates</li> <li>On Discord, type:<br />
-      <div className="px-5 py-4 sm:py-3 rounded-md bg-black/5" title="Replace [p] with your bot's prefix">
-        <pre className="text-gray-600 text-sm overflow-x-auto leading-6">
+      <div title="Replace [p] with your bot's prefix">
+        <pre className="px-5 py-4 sm:py-3 rounded-md text-gray-600 dark:text-gray-200 text-sm overflow-x-auto leading-6">
           <span className="select-none">[p]</span><span className="select-all sm:select-auto">cog update { cog }</span><br />
         </pre>
       </div>
