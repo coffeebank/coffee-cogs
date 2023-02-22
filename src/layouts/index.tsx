@@ -25,9 +25,9 @@ const Layout = ({ children }: Props) => {
   
         try {
           // use iso timestamp as session id
-          if (localStorage.getItem("catsSession")) {
+          if (sessionStorage.getItem("catsSession")) {
             // ongoing session
-            catsSession = localStorage.getItem("catsSession");
+            catsSession = sessionStorage.getItem("catsSession");
             dateObj = new Date();
             catsTime = dateObj.toString();
           } else {
@@ -35,7 +35,7 @@ const Layout = ({ children }: Props) => {
             dateObj = new Date();
             catsSession = Date.parse(dateObj);
             catsTime = dateObj.toString();
-            localStorage.setItem("catsSession", catsSession);
+            sessionStorage.setItem("catsSession", catsSession);
           }
           console.log("catsjs: session timestamp " + catsSession);
   
