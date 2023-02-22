@@ -112,7 +112,7 @@ export default function Sidebar() {
             <h1 className="font-bold text-xl text-black/90 dark:text-white/90">Coffee Cogs ☕</h1>
           </Link>
           <div className="md:hidden">
-            <button>
+            <button className="dark:text-gray-200">
               Menu
             </button>
           </div>

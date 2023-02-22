@@ -81,7 +81,7 @@ const BlogPostTemplate = ({
         <div className="pt-20 pb-8 xl:pb-0">
           <h2 className="font-bold text-sm uppercase text-black/80 dark:text-white/80">On this page</h2>
           <div
-            className="py-2 text-sm [&_li>p]:hidden [&_li]:py-1 hover:[&_li>a]:text-purple-700 [&_li]:transition-all"
+            className="py-2 text-sm dark:text-gray-300 [&_li>p]:hidden [&_li]:py-1 hover:[&_li>a]:text-purple-700 dark:hover:[&_li>a]:text-purple-400 [&_li]:transition-all duration-200"
             dangerouslySetInnerHTML={{ __html: post.tableOfContents }}
           />
         </div>
