@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from "gatsby"
+import Footer from './Footer';
 
 export default function Sidebar() {
   const sidebarItems = [
@@ -102,8 +103,6 @@ export default function Sidebar() {
       ]
     }
   ]
-  
-  const currentYear = new Date().getFullYear();
 
   return (
     <aside className="w-full min-h-screen md:pt-nav flex flex-col justify-between px-2 gap-6">
@@ -142,10 +141,7 @@ export default function Sidebar() {
         </nav>
       </header>
       <footer className="w-full px-5 py-8 text-[0.9rem] text-black/60 dark:text-white/70 [&>_a]:font-bold hover:[&>_a]:underline [&>_a]:text-black/60 dark:[&>_a]:text-white/70">
-        &copy; {currentYear} Coffeebank ☕🏦 <br />
-        <a href="https://coffeebank.github.io/" target="_blank" rel="noopener">Home</a>&ensp;
-        <a href="https://github.com/coffeebank/coffee-cogs/" target="_blank" rel="noopener">GitHub</a>&ensp;
-        <a href="https://github.com/coffeebank/coffee-cogs/blob/master/LICENSE" target="_blank" rel="noopener">License</a>
+        <Footer />
       </footer>
     </aside>
   );

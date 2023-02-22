@@ -5,6 +5,7 @@ import rehypeReact from "rehype-react"
 import Seo from "../components/seo"
 import CogFork from "../components/CogFork"
 import CogHero from "../components/CogHero"
+import Footer from "../components/Footer"
 import ReactButton from "../components/ReactButton"
 import ReactFrame from "../components/ReactFrame"
 
@@ -41,6 +42,14 @@ const BlogPostTemplate = ({
       >
         {renderAst(post.htmlAst)}
         <hr />
+        <footer className="sm:pb-12 grid grid-cols-1 sm:grid-cols-2 gap-y-4">
+          <p class="!p-0 !m-0">
+            <a href={"https://github.com/coffeebank/coffee-cogs/blob/docs/src/content/docs"+post.fields.slug} target="_blank" rel="noopener" className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-500 transition duration-200 no-underline">📝&ensp;Help us improve this page</a>
+          </p>
+          <article className="w-full sm:text-right text-[0.9rem] text-black/60 dark:text-white/70 [&>_a]:font-bold hover:[&>_a]:underline [&>_a]:text-black/60 dark:[&>_a]:text-white/70">
+            <Footer />
+          </article>
+        </footer>
         {/* <nav className="blog-post-nav">
           <ul
             style={{
@@ -69,7 +78,7 @@ const BlogPostTemplate = ({
         </nav> */}
       </main>
       <aside className="w-full lg:min-w-[100px] lg:max-w-[235px] h-full sticky top-0">
-        <div className="pt-20">
+        <div className="pt-20 pb-8 xl:pb-0">
           <h2 className="font-bold text-sm uppercase text-black/80 dark:text-white/80">On this page</h2>
           <div
             className="py-2 text-sm [&_li>p]:hidden [&_li]:py-1 hover:[&_li>a]:text-purple-700 [&_li]:transition-all"
@@ -105,10 +114,17 @@ export const pageQuery = graphql`
     }
     markdownRemark(id: { eq: $id }) {
       id
+      fields {
+        slug
+      }
       excerpt(pruneLength: 160)
       html
       htmlAst
       tableOfContents(maxDepth: 2)
+      headings(depth: h2) {
+        id
+        value
+      }
       frontmatter {
         title
         date(formatString: "MMMM DD, YYYY")
