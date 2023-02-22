@@ -16,7 +16,7 @@ interface CogData {
 
 const CogHero = (props: Props) => {
   const cogData: CogData = (
-    useFetch("https://raw.githubusercontent.com/coffeebank/coffee-cogs/master/" + props.cog + "/info.json")
+    useFetch("https://github.com/coffeebank/coffee-cogs/blob/master/" + props.cog + "/info.json?raw=true")
   ) || {} ;
 
   return (
