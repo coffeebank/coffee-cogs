@@ -25,15 +25,15 @@ const Seo = ({ description, title, children }) => {
     `
   )
 
-  const metaDescription = description || site.siteMetadata.description
+  const metaDescription = description || site.siteMetadata.description || "Documentation - Coffee Cogs ☕"
   const defaultTitle = site.siteMetadata?.title
 
   return (
     <>
       <title>{ title ? (defaultTitle ? `${title} | ${defaultTitle}` : title) : "Coffee Cogs ☕" }</title>
-      <meta name="description" content={ metaDescription ? metaDescription : "Documentation site for Coffee Cogs ☕" } />
-      <meta property="og:title" content={ title ? title+" | Coffee Cogs ☕" : "Coffee Cogs ☕" } />
-      <meta property="og:description" content={ metaDescription ? metaDescription : "Documentation site for Coffee Cogs ☕" } />
+      <meta name="description" content={ metaDescription } />
+      <meta property="og:title" content={ title ? title+" | Coffee Cogs ☕" : "Coffee Cogs ☕" } />
+      <meta property="og:description" content={ metaDescription } />
       <meta property="og:image" content="/coffee-cogs/coffee-cogs-rd.png" />
       <meta property="og:image:type" content="image/png" />
       <meta property="og:image:width" content="200" />
