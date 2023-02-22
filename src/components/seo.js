@@ -30,11 +30,14 @@ const Seo = ({ description, title, children }) => {
 
   return (
     <>
-      <title>{defaultTitle ? `${title} | ${defaultTitle}` : title}</title>
-      <meta name="description" content={metaDescription} />
+      <title>{ title ? (defaultTitle ? `${title} | ${defaultTitle}` : title) : "Coffee Cogs ☕" }</title>
+      <meta name="description" content={ metaDescription ? metaDescription : "Documentation site for Coffee Cogs ☕" } />
       <meta property="og:title" content={title} />
-      <meta property="og:description" content={metaDescription} />
-      <meta property="og:type" content="website" />
+      <meta property="og:description" content={ metaDescription ? metaDescription : "Documentation site for Coffee Cogs ☕" } />
+      <meta property="og:image" content="/coffee-cogs-rd.png" />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content="200" />
+      <meta property="og:image:height" content="200" />
       <meta name="twitter:card" content="summary" />
       <meta
         name="twitter:creator"
