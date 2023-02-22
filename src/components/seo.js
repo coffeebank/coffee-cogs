@@ -32,9 +32,9 @@ const Seo = ({ description, title, children }) => {
     <>
       <title>{ title ? (defaultTitle ? `${title} | ${defaultTitle}` : title) : "Coffee Cogs ☕" }</title>
       <meta name="description" content={ metaDescription ? metaDescription : "Documentation site for Coffee Cogs ☕" } />
-      <meta property="og:title" content={title} />
+      <meta property="og:title" content={ title ? title+" | Coffee Cogs ☕" : "Coffee Cogs ☕" } />
       <meta property="og:description" content={ metaDescription ? metaDescription : "Documentation site for Coffee Cogs ☕" } />
-      <meta property="og:image" content="/coffee-cogs-rd.png" />
+      <meta property="og:image" content="/coffee-cogs/coffee-cogs-rd.png" />
       <meta property="og:image:type" content="image/png" />
       <meta property="og:image:width" content="200" />
       <meta property="og:image:height" content="200" />

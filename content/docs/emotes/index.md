@@ -1,5 +1,5 @@
 ---
-title: "Cherry Emotes | Coffee Series"
+title: "Cherry Emotes"
 description: "Custom emote solution for non-nitro users. Use animated emotes in your server, even without Nitro. Make your own emote storage spreadsheet and generate emote-like image links for use in DMs and elsewhere."
 ---
 

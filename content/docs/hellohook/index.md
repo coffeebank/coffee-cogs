@@ -1,5 +1,5 @@
 ---
-title: "Hellohook | Coffee Series"
+title: "Hellohook"
 description: "Create your own welcome bot with a custom profile picture! Choose between a regular message or an embed welcome, with a ping option."
 cogname: "hellohook"
 ---
