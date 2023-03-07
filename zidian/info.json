@@ -3,7 +3,7 @@
   "install_msg" : "**Note: Please run  `[p]setzidian update`  to fetch the dictionary on first install.**\n\n---\n\nThanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by the website at <https://coffeebank.github.io/coffee-cogs/>",
   "name" : "zidian",
   "short" : "Chinese dictionary bot",
-  "requirements" : ["asyncio", "aiohttp", "io", "re", "zipfile"],
+  "requirements" : ["asyncio", "aiohttp"],
   "description" : "Chinese dictionary bot. Can search Chinese characters, Pinyin, and English. Fetches results locally from saved dictionaries. Uses CC-CEDICT.\n\nInspired by Pleco and Jisho.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
