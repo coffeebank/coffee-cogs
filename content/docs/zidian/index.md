@@ -26,7 +26,7 @@ Chinese characters
 
 #### `ka fei` / `ka1 fei1`
 
-Pinyin - put spaces in between, tones optional, ü -> u:
+Pinyin - put spaces in between, tones optional, `ü` -> `u:`
 
 #### `coffee`
 
