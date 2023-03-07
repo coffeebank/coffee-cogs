@@ -100,6 +100,10 @@ export default function Sidebar() {
           title: "websearch",
           link: "/websearch"
         },
+        {
+          title: "zidian",
+          link: "/zidian"
+        },
       ]
     }
   ]
