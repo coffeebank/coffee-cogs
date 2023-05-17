@@ -3,7 +3,7 @@ from redbot.cogs.admin import admin
 import asyncio
 import aiohttp
 import discord
-from discord import Webhook, AsyncWebhookAdapter, Embed
+from discord import Webhook, SyncWebhook, Embed
 from urllib.parse import quote
 import json
 import typing
