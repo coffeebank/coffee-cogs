@@ -23,7 +23,7 @@ const BlogPostTemplate = ({
   data: { previous, next, site, markdownRemark: post },
 }) => {
   return (
-    <section className="w-full flex flex-wrap gap-x-[45px] xl:flex-nowrap pt-nav justify-start">
+    <div className="w-full flex flex-wrap gap-x-[45px] xl:flex-nowrap pt-nav justify-start">
       <main
         className="w-full max-w-[710px] text-[#2c3e50] dark:text-[#faf9f7] \
           prose prose-neutral dark:prose-invert \
@@ -43,39 +43,13 @@ const BlogPostTemplate = ({
         {renderAst(post.htmlAst)}
         <hr />
         <footer className="sm:pb-12 grid grid-cols-1 sm:grid-cols-2 gap-y-4">
-          <p class="!p-0 !m-0">
+          <div className="!p-0 !m-0">
             <a href={"https://github.com/coffeebank/coffee-cogs/blob/docs/src/content/docs"+post.fields.slug} target="_blank" rel="noopener" className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-500 transition duration-200 no-underline">📝&ensp;Help us improve this page</a>
-          </p>
+          </div>
           <article className="w-full sm:text-right text-[0.9rem] text-black/60 dark:text-white/70 [&>_a]:font-bold hover:[&>_a]:underline [&>_a]:text-black/60 dark:[&>_a]:text-white/70">
             <Footer />
           </article>
         </footer>
-        {/* <nav className="blog-post-nav">
-          <ul
-            style={{
-              display: `flex`,
-              flexWrap: `wrap`,
-              justifyContent: `space-between`,
-              listStyle: `none`,
-              padding: 0,
-            }}
-          >
-            <li>
-              {previous && (
-                <Link to={previous.fields.slug} rel="prev">
-                  ← {previous.frontmatter.title}
-                </Link>
-              )}
-            </li>
-            <li>
-              {next && (
-                <Link to={next.fields.slug} rel="next">
-                  {next.frontmatter.title} →
-                </Link>
-              )}
-            </li>
-          </ul>
-        </nav> */}
       </main>
       <aside className="w-full lg:min-w-[100px] lg:max-w-[235px] h-full sticky top-0">
         <div className="pt-20 pb-8 xl:pb-0">
@@ -86,7 +60,7 @@ const BlogPostTemplate = ({
           />
         </div>
       </aside>
-    </section>
+    </div>
   )
 }
 

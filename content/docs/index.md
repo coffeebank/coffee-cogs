@@ -19,10 +19,10 @@
   </pre>
 </div>
 
-<p align="center">
+<div align="center">
   <component-reactbutton to="/start/" body="Add to your Discord >"></component-reactbutton>
-</p>
+</div>
 
-<p align="center">
+<div align="center">
   <component-reactbutton to="https://coffeebank.github.io/discord" body="Join the Support Discord >" classButton="px-6 py-3 bg-emerald-800 hover:bg-emerald-700 text-white" newTab="true"></component-reactbutton>
-</p>
+</div>

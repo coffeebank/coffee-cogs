@@ -123,8 +123,10 @@ export default function Sidebar() {
         </div>
         <nav className="pt-4 px-8 md:px-0">
           {sidebarItems.map(({ title, heading, items }) => {
+            let keyNum = Math.floor(Math.random() * (99 - 11) + 11);
+
             const subitems = items.map((item, index) => (
-              <li key={ item.title + '-' + item.link + '-' + index }>
+              <li key={ item.toString() + index + keyNum }>
                 <Link to={ item.link } activeClassName="active" partiallyActive={false} className="[&.active>div]:bg-purple-700/90 dark:[&.active>div]:bg-purple-800/90 [&.active>div]:text-white transition-all duration-200">
                   <div className="py-[0.5rem] px-3 truncate text-[0.95rem] text-black/90 dark:text-white/80 rounded">{ item.title }</div>
                 </Link>
@@ -136,7 +138,7 @@ export default function Sidebar() {
                 { heading === true ? (
                   <h2 className="px-2 pt-7 pb-2 font-bold dark:font-thick text-black/90 dark:text-white/90">{ title }</h2>
                 ) : '' }
-                <ul key={ title + heading } className="px-2">
+                <ul className="px-2">
                   { subitems }
                 </ul>
               </>
