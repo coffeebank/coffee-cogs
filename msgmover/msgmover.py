@@ -4,7 +4,7 @@ from redbot.core.utils.menus import start_adding_reactions
 from urllib.request import urlopen
 import mimetypes
 import discord
-from discord import Webhook, AsyncWebhookAdapter
+from discord import Webhook, SyncWebhook
 import aiohttp
 import requests
 
@@ -196,7 +196,7 @@ class Msgmover(commands.Cog):
         # Start webhook session
         await ctx.message.add_reaction("⏳")
         async with aiohttp.ClientSession() as session:
-            webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
+            webhook = SyncWebhook.from_url(toWebhook)
 
             # Retrieve messages, sorted by oldest first
             # Can't use oldest_first= since that will only return earliest messages in channel, instead of what we want
@@ -368,7 +368,7 @@ class Msgmover(commands.Cog):
                 for wh in hookData:
                     configJson = self.relayGetData(wh)
                     async with aiohttp.ClientSession() as session:
-                        webhook = Webhook.from_url(wh["toWebhook"], adapter=AsyncWebhookAdapter(session))
+                        webhook = SyncWebhook.from_url(wh["toWebhook"])
                         whResult = await self.msgFormatter(webhook, message, configJson)
                         wh["whResult"] = whResult.id
                 # Wait, then check for edits/deletes
@@ -382,14 +382,14 @@ class Msgmover(commands.Cog):
                         for wf in hookData:
                             configJson = self.relayGetData(wh)
                             async with aiohttp.ClientSession() as session:
-                                webhook = Webhook.from_url(wf["toWebhook"], adapter=AsyncWebhookAdapter(session))
+                                webhook = SyncWebhook.from_url(wf["toWebhook"])
                                 await self.msgFormatter(webhook, message, configJson, deleteMsgId=wf.get("whResult", None))
                     else:
                         if endMsg.edited_at:
                             for wf in hookData:
                                 configJson = self.relayGetData(wh)
                                 async with aiohttp.ClientSession() as session:
-                                    webhook = Webhook.from_url(wf["toWebhook"], adapter=AsyncWebhookAdapter(session))
+                                    webhook = SyncWebhook.from_url(wf["toWebhook"])
                                     await self.msgFormatter(webhook, endMsg, configJson, editMsgId=wf.get("whResult", None))
             else:
                 return
