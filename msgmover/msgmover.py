@@ -195,38 +195,37 @@ class Msgmover(commands.Cog):
 
         # Start webhook session
         await ctx.message.add_reaction("⏳")
-        async with aiohttp.ClientSession() as session:
-            webhook = SyncWebhook.from_url(toWebhook)
+        webhook = SyncWebhook.from_url(toWebhook)
 
-            # Retrieve messages, sorted by oldest first
-            # Can't use oldest_first= since that will only return earliest messages in channel, instead of what we want
-            msgList = [message async for message in fromChannel.history(limit=maxMessages)]
-            msgList.reverse()
-            if skipMessages > 0:
-                # https://stackoverflow.com/a/37105499
-                msgList = msgList[:-skipMessages or None]
+        # Retrieve messages, sorted by oldest first
+        # Can't use oldest_first= since that will only return earliest messages in channel, instead of what we want
+        msgList = [message async for message in fromChannel.history(limit=maxMessages)]
+        msgList.reverse()
+        if skipMessages > 0:
+            # https://stackoverflow.com/a/37105499
+            msgList = msgList[:-skipMessages or None]
 
-            # Send them via webhook
-            msgItemLast = msgList[0].created_at
-            for msgItem in msgList:
-                # Send timestamp if it's been more than 10mins time difference
-                # If they equal, it means it's the first item, so send timestamp
-                if msgItemLast == msgItem.created_at or (msgItem.created_at-msgItemLast).total_seconds() > 600:
-                    await webhook.send(
-                        username="\u2e33\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2e33",
-                        avatar_url='https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/0-Background.svg/300px-0-Background.svg.png',
-                        embed=await self.timestampEmbed(ctx, msgItem.created_at)
-                    )
-                configJson = self.relayGetData({"attachsAsUrl": False, "userProfiles": True})
-                whMsg = await self.msgFormatter(webhook, msgItem, configJson)
-                if whMsg == False:
-                    await ctx.send("Failed to send: "+str(msgItem))
-                else:
-                    # Trigger edited tag if it was edited
-                    if msgItem.edited_at:
-                        await self.msgFormatter(webhook, msgItem, configJson, editMsgId=whMsg.id)
-                # Save timestamp to msgItemLast
-                msgItemLast = msgItem.created_at
+        # Send them via webhook
+        msgItemLast = msgList[0].created_at
+        for msgItem in msgList:
+            # Send timestamp if it's been more than 10mins time difference
+            # If they equal, it means it's the first item, so send timestamp
+            if msgItemLast == msgItem.created_at or (msgItem.created_at-msgItemLast).total_seconds() > 600:
+                webhook.send(
+                    username="\u2e33\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2e33",
+                    avatar_url='https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/0-Background.svg/300px-0-Background.svg.png',
+                    embed=await self.timestampEmbed(ctx, msgItem.created_at)
+                )
+            configJson = self.relayGetData({"attachsAsUrl": False, "userProfiles": True})
+            whMsg = await self.msgFormatter(webhook, msgItem, configJson)
+            if whMsg == False:
+                await ctx.send("Failed to send: "+str(msgItem))
+            else:
+                # Trigger edited tag if it was edited
+                if msgItem.edited_at:
+                    await self.msgFormatter(webhook, msgItem, configJson, editMsgId=whMsg.id)
+            # Save timestamp to msgItemLast
+            msgItemLast = msgItem.created_at
 
         # Add react on complete
         try:
@@ -367,10 +366,9 @@ class Msgmover(commands.Cog):
                 # Send along webhook for each in array
                 for wh in hookData:
                     configJson = self.relayGetData(wh)
-                    async with aiohttp.ClientSession() as session:
-                        webhook = SyncWebhook.from_url(wh["toWebhook"])
-                        whResult = await self.msgFormatter(webhook, message, configJson)
-                        wh["whResult"] = whResult.id
+                    webhook = SyncWebhook.from_url(wh["toWebhook"])
+                    whResult = await self.msgFormatter(webhook, message, configJson)
+                    wh["whResult"] = whResult.id
                 # Wait, then check for edits/deletes
                 if relayTimer <= 0:
                     return
@@ -381,16 +379,14 @@ class Msgmover(commands.Cog):
                     except discord.errors.NotFound:
                         for wf in hookData:
                             configJson = self.relayGetData(wh)
-                            async with aiohttp.ClientSession() as session:
-                                webhook = SyncWebhook.from_url(wf["toWebhook"])
-                                await self.msgFormatter(webhook, message, configJson, deleteMsgId=wf.get("whResult", None))
+                            webhook = SyncWebhook.from_url(wf["toWebhook"])
+                            await self.msgFormatter(webhook, message, configJson, deleteMsgId=wf.get("whResult", None))
                     else:
                         if endMsg.edited_at:
                             for wf in hookData:
                                 configJson = self.relayGetData(wh)
-                                async with aiohttp.ClientSession() as session:
-                                    webhook = SyncWebhook.from_url(wf["toWebhook"])
-                                    await self.msgFormatter(webhook, endMsg, configJson, editMsgId=wf.get("whResult", None))
+                                webhook = SyncWebhook.from_url(wf["toWebhook"])
+                                await self.msgFormatter(webhook, endMsg, configJson, editMsgId=wf.get("whResult", None))
             else:
                 return
         else:
@@ -404,19 +400,19 @@ class Msgmover(commands.Cog):
         # Delete the message if it's delete
         if deleteMsgId is not None:
             try:
-                return await webhook.delete_message(deleteMsgId)
+                return webhook.delete_message(deleteMsgId)
             except:
                 return False
 
         # Edit the message if it's edit
         if editMsgId is not None:
             try:
-                return await webhook.edit_message(
+                return webhook.edit_message(
                     message_id=editMsgId,
                     content=message.clean_content
                 )
             except discord.HTTPException:
-                return await webhook.edit_message(
+                return webhook.edit_message(
                     message_id=editMsgId,
                     content="**Discord:** Unsupported content\n"+str(message.clean_content)
                 )
@@ -464,7 +460,7 @@ class Msgmover(commands.Cog):
             else:
                 replyEmbed.set_author(name=replyTitle, url=refUrl)
             # Send this before the original message so that the embed appears above the message in chat
-            await webhook.send(
+            webhook.send(
                 username=userProfilesName,
                 avatar_url=userProfilesAvatar,
                 embed=replyEmbed
@@ -493,15 +489,15 @@ class Msgmover(commands.Cog):
                     for mm in message.attachments:
                         try:
                             assert mm.size < 8000000
-                            await webhook.send(
+                            webhook.send(
                                 username=userProfilesName,
                                 avatar_url=userProfilesAvatar,
                                 files=[await mm.to_file()],
                                 wait=True
                             )
                         except AssertionError:
-                            await webhook.send(
-                                "**Discord:** File too large\n"+str(mm.url),
+                            webhook.send(
+                                content="**Discord:** File too large\n"+str(mm.url),
                                 username=userProfilesName,
                                 avatar_url=userProfilesAvatar,
                                 wait=True
