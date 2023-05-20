@@ -528,15 +528,20 @@ class Msgmover(commands.Cog):
         #             msgContent += "\n**Discord:** Sticker\n"+str(msgSticker.name)+", "+str(msgSticker.pack_id)
 
         # Send core message
+        # (dpy-v2) Switch to argument unpacking, since passing None doesn't work anymore
         whMsg = False
+        whMsgArgs = {}
         try:
-            whMsg = await webhook.send(
-                msgContent,
-                username=userProfilesName,
-                avatar_url=userProfilesAvatar,
-                embeds=msgEmbed,
-                files=msgAttach,
-                wait=True
+            whMsgArgs = {
+              "content": msgContent,
+              "username": userProfilesName,
+              "avatar_url": userProfilesAvatar,
+              "embeds": msgEmbed,
+              "files": msgAttach,
+              "wait": True
+            }
+            whMsg = webhook.send(
+                **{k: v for k, v in whMsgArgs.items() if v is not None}
             )
         except discord.HTTPException:
             # catch HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
@@ -544,23 +549,29 @@ class Msgmover(commands.Cog):
             if len(msgContent) > 1964:
                 msgLines = textwrap.wrap(msgContent, 2000, break_long_words=True)
                 for msgLineItem in msgLines:
-                    whMsg = await webhook.send(
-                        str(msgLineItem),
-                        username=userProfilesName,
-                        avatar_url=userProfilesAvatar,
-                        embeds=msgEmbed,
-                        files=msgAttach,
-                        wait=True
+                    whMsgArgs = {
+                      "content": str(msgLineItem),
+                      "username": userProfilesName,
+                      "avatar_url": userProfilesAvatar,
+                      "embeds": msgEmbed,
+                      "files": msgAttach,
+                      "wait": True
+                    }
+                    whMsg = webhook.send(
+                        **{k: v for k, v in whMsgArgs.items() if v is not None}
                     )
             # catch HTTPException: 400 Bad Request (error code: 50006): Cannot send an empty message
             else:
-                whMsg = await webhook.send(
-                    "**Discord:** Unsupported content\n" + str(msgContent[:1964]) + (str(msgContent[1964:]) and '…'),
-                    username=userProfilesName,
-                    avatar_url=userProfilesAvatar,
-                    embeds=msgEmbed,
-                    files=msgAttach,
-                    wait=True
+                whMsgArgs = {
+                  "content": "**Discord:** Unsupported content\n" + str(msgContent[:1964]) + (str(msgContent[1964:]) and '…'),
+                  "username": userProfilesName,
+                  "avatar_url": userProfilesAvatar,
+                  "embeds": msgEmbed,
+                  "files": msgAttach,
+                  "wait": True
+                }
+                whMsg = webhook.send(
+                    **{k: v for k, v in whMsgArgs.items() if v is not None}
                 )
         except:
             traceback.print_exc()
