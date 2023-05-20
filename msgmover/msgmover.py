@@ -426,7 +426,7 @@ class Msgmover(commands.Cog):
             msgContent = message.clean_content
             if json["userProfiles"] == True:
                 userProfilesName = message.author.display_name
-                userProfilesAvatar = message.author.avatar_url
+                userProfilesAvatar = message.author.display_avatar.url
         else:
             msgContent = "**Discord:** "+str(message.type)
             if json["userProfiles"] == True:
@@ -456,7 +456,7 @@ class Msgmover(commands.Cog):
             # Create link to message
             replyTitle = f"↪️ {replyBody}"
             if json["userProfiles"] == True:
-                replyEmbed.set_author(name=replyTitle, icon_url=refObj.author.avatar_url, url=refUrl)
+                replyEmbed.set_author(name=replyTitle, icon_url=refObj.author.display_avatar.url, url=refUrl)
             else:
                 replyEmbed.set_author(name=replyTitle, url=refUrl)
             # Send this before the original message so that the embed appears above the message in chat
