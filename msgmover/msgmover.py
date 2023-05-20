@@ -200,7 +200,7 @@ class Msgmover(commands.Cog):
 
             # Retrieve messages, sorted by oldest first
             # Can't use oldest_first= since that will only return earliest messages in channel, instead of what we want
-            msgList = await fromChannel.history(limit=maxMessages).flatten()
+            msgList = [message async for message in fromChannel.history(limit=maxMessages)]
             msgList.reverse()
             if skipMessages > 0:
                 # https://stackoverflow.com/a/37105499
@@ -336,7 +336,7 @@ class Msgmover(commands.Cog):
         Reply to a message to use this command."""
         if ctx.message.reference:
             await ctx.message.add_reaction("⏳")
-            messages = await ctx.channel.history(limit=None, after=ctx.message.reference.resolved).flatten()
+            messages = [message async for message in ctx.channel.history(limit=None, after=ctx.message.reference.resolved)]
             await ctx.message.add_reaction("✅")
             return await ctx.send(str(len(messages))+" + 2 (your bot command and this message)")
         else:
