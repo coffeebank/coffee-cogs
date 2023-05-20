@@ -15,6 +15,7 @@ from io import BytesIO
 import json
 import random
 import textwrap
+import traceback
 import typing
 
 
@@ -562,6 +563,7 @@ class Msgmover(commands.Cog):
                     wait=True
                 )
         except:
+            traceback.print_exc()
             return False
         
         # Need to tell endpoint that function ended, so that sent message order is enforceable by await
