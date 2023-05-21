@@ -520,13 +520,12 @@ class Msgmover(commands.Cog):
             msgContent += f"\n**Discord:** {message.application.name}\n{message.application.description}"
 
         # Add sticker if exists
-        # if message.stickers:
-        #     for msgSticker in message.stickers:
-        #         msgStickerItem = await msgSticker.image_url_as(size=128)
-        #         if msgStickerItem is not None:
-        #             msgContent += "\n"+str(msgStickerItem)
-        #         else:
-        #             msgContent += "\n**Discord:** Sticker\n"+str(msgSticker.name)+", "+str(msgSticker.pack_id)
+        if message.stickers:
+            for msgSticker in message.stickers:
+                if msgSticker.url is not None:
+                    msgContent += "\n"+str(msgSticker.url)
+                else:
+                    msgContent += "\n**Discord:** Sticker\n"+str(msgSticker.name)+", "+str(msgSticker.id)
 
         # Send core message
         whMsg = False
