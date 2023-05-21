@@ -478,19 +478,20 @@ class Msgmover(commands.Cog):
         # Add attachment if exists
         msgAttach = None
         if message.attachments:
+            attachMaxSize = 25000000 # 25MB, prev. 8MB
             attachSuccess = False
             if json["attachsAsUrl"] == False:
                 try:
-                    # 8MB upload limit
+                    # attachMaxSize upload limit
                     totalSize = 0
                     for mm in message.attachments:
                         totalSize += mm.size
-                    assert totalSize < 8000000
+                    assert totalSize < attachMaxSize
                 except AssertionError:
-                    # See if each file is under 8MB, maybe we can send individually
+                    # See if each file is under attachMaxSize, maybe we can send individually
                     for mm in message.attachments:
                         try:
-                            assert mm.size < 8000000
+                            assert mm.size < attachMaxSize
                             webhook.send(
                                 username=userProfilesName,
                                 avatar_url=userProfilesAvatar,
