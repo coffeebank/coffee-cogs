@@ -22,8 +22,11 @@ import typing
 class Msgmover(commands.Cog):
     """Move messages around, cross-channels, cross-server!
     
+    Run `[p]msgmover` to see more details!
+
+    msgcopy: Copy a set # of past messages to another channel/server
     msgrelay: Forward all of a channel's messages to another channel/server
-    msgcopy: Copy a set # of past messages to another channel/server"""
+    """
 
     def __init__(self, bot):
         self.config = Config.get_conf(self, identifier=806715409318936616)
@@ -162,7 +165,7 @@ class Msgmover(commands.Cog):
 
         Msgmover comes with two key features, both of which use webhooks to move messages from one place to another with a close-to-native feel:
 
-        **`[p]msgcopy`** - Copies messages from one channel to another *(single-use)*
+        **`[p]msgcopy`** - Copies a set # of messages from one channel to another *(single-use)*
         - *Requires users with **Manage Messages** permissions*
 
         **`[p]msgrelay`** - Forward messages to other channels/servers *(continuous)*
