@@ -217,6 +217,7 @@ class Msgmover(commands.Cog):
                     avatar_url='https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/0-Background.svg/300px-0-Background.svg.png',
                     embed=await self.timestampEmbed(ctx, msgItem.created_at)
                 )
+                await asyncio.sleep(1)
             configJson = self.relayGetData({"attachsAsUrl": False, "userProfiles": True})
             whMsg = await self.msgFormatter(webhook, msgItem, configJson)
             if whMsg == False:
@@ -467,6 +468,7 @@ class Msgmover(commands.Cog):
                 avatar_url=userProfilesAvatar,
                 embed=replyEmbed
             )
+            await asyncio.sleep(1)
               
 
         # Add embed if exists
