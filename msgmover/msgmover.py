@@ -4,7 +4,7 @@ from redbot.core.utils.menus import start_adding_reactions
 from urllib.request import urlopen
 import mimetypes
 import discord
-from discord import Webhook, AsyncWebhookAdapter
+from discord import Webhook, SyncWebhook
 import aiohttp
 import requests
 
@@ -15,14 +15,18 @@ from io import BytesIO
 import json
 import random
 import textwrap
+import traceback
 import typing
 
 
 class Msgmover(commands.Cog):
     """Move messages around, cross-channels, cross-server!
     
+    Run `[p]msgmover` to see more details!
+
+    msgcopy: Copy a set # of past messages to another channel/server
     msgrelay: Forward all of a channel's messages to another channel/server
-    msgcopy: Copy a set # of past messages to another channel/server"""
+    """
 
     def __init__(self, bot):
         self.config = Config.get_conf(self, identifier=806715409318936616)
@@ -161,7 +165,7 @@ class Msgmover(commands.Cog):
 
         Msgmover comes with two key features, both of which use webhooks to move messages from one place to another with a close-to-native feel:
 
-        **`[p]msgcopy`** - Copies messages from one channel to another *(single-use)*
+        **`[p]msgcopy`** - Copies a set # of messages from one channel to another *(single-use)*
         - *Requires users with **Manage Messages** permissions*
 
         **`[p]msgrelay`** - Forward messages to other channels/servers *(continuous)*
@@ -195,38 +199,38 @@ class Msgmover(commands.Cog):
 
         # Start webhook session
         await ctx.message.add_reaction("⏳")
-        async with aiohttp.ClientSession() as session:
-            webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
+        webhook = SyncWebhook.from_url(toWebhook)
 
-            # Retrieve messages, sorted by oldest first
-            # Can't use oldest_first= since that will only return earliest messages in channel, instead of what we want
-            msgList = await fromChannel.history(limit=maxMessages).flatten()
-            msgList.reverse()
-            if skipMessages > 0:
-                # https://stackoverflow.com/a/37105499
-                msgList = msgList[:-skipMessages or None]
+        # Retrieve messages, sorted by oldest first
+        # Can't use oldest_first= since that will only return earliest messages in channel, instead of what we want
+        msgList = [message async for message in fromChannel.history(limit=maxMessages)]
+        msgList.reverse()
+        if skipMessages > 0:
+            # https://stackoverflow.com/a/37105499
+            msgList = msgList[:-skipMessages or None]
 
-            # Send them via webhook
-            msgItemLast = msgList[0].created_at
-            for msgItem in msgList:
-                # Send timestamp if it's been more than 10mins time difference
-                # If they equal, it means it's the first item, so send timestamp
-                if msgItemLast == msgItem.created_at or (msgItem.created_at-msgItemLast).total_seconds() > 600:
-                    await webhook.send(
-                        username="\u2e33\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2e33",
-                        avatar_url='https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/0-Background.svg/300px-0-Background.svg.png',
-                        embed=await self.timestampEmbed(ctx, msgItem.created_at)
-                    )
-                configJson = self.relayGetData({"attachsAsUrl": False, "userProfiles": True})
-                whMsg = await self.msgFormatter(webhook, msgItem, configJson)
-                if whMsg == False:
-                    await ctx.send("Failed to send: "+str(msgItem))
-                else:
-                    # Trigger edited tag if it was edited
-                    if msgItem.edited_at:
-                        await self.msgFormatter(webhook, msgItem, configJson, editMsgId=whMsg.id)
-                # Save timestamp to msgItemLast
-                msgItemLast = msgItem.created_at
+        # Send them via webhook
+        msgItemLast = msgList[0].created_at
+        for msgItem in msgList:
+            # Send timestamp if it's been more than 10mins time difference
+            # If they equal, it means it's the first item, so send timestamp
+            if msgItemLast == msgItem.created_at or (msgItem.created_at-msgItemLast).total_seconds() > 600:
+                webhook.send(
+                    username="\u2e33\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2e33",
+                    avatar_url='https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/0-Background.svg/300px-0-Background.svg.png',
+                    embed=await self.timestampEmbed(ctx, msgItem.created_at)
+                )
+                await asyncio.sleep(1)
+            configJson = self.relayGetData({"attachsAsUrl": False, "userProfiles": True})
+            whMsg = await self.msgFormatter(webhook, msgItem, configJson)
+            if whMsg == False:
+                await ctx.send("Failed to send: "+str(msgItem))
+            else:
+                # Trigger edited tag if it was edited
+                if msgItem.edited_at:
+                    await self.msgFormatter(webhook, msgItem, configJson, editMsgId=whMsg.id)
+            # Save timestamp to msgItemLast
+            msgItemLast = msgItem.created_at
 
         # Add react on complete
         try:
@@ -336,7 +340,7 @@ class Msgmover(commands.Cog):
         Reply to a message to use this command."""
         if ctx.message.reference:
             await ctx.message.add_reaction("⏳")
-            messages = await ctx.channel.history(limit=None, after=ctx.message.reference.resolved).flatten()
+            messages = [message async for message in ctx.channel.history(limit=None, after=ctx.message.reference.resolved)]
             await ctx.message.add_reaction("✅")
             return await ctx.send(str(len(messages))+" + 2 (your bot command and this message)")
         else:
@@ -367,10 +371,9 @@ class Msgmover(commands.Cog):
                 # Send along webhook for each in array
                 for wh in hookData:
                     configJson = self.relayGetData(wh)
-                    async with aiohttp.ClientSession() as session:
-                        webhook = Webhook.from_url(wh["toWebhook"], adapter=AsyncWebhookAdapter(session))
-                        whResult = await self.msgFormatter(webhook, message, configJson)
-                        wh["whResult"] = whResult.id
+                    webhook = SyncWebhook.from_url(wh["toWebhook"])
+                    whResult = await self.msgFormatter(webhook, message, configJson)
+                    wh["whResult"] = whResult.id
                 # Wait, then check for edits/deletes
                 if relayTimer <= 0:
                     return
@@ -381,16 +384,14 @@ class Msgmover(commands.Cog):
                     except discord.errors.NotFound:
                         for wf in hookData:
                             configJson = self.relayGetData(wh)
-                            async with aiohttp.ClientSession() as session:
-                                webhook = Webhook.from_url(wf["toWebhook"], adapter=AsyncWebhookAdapter(session))
-                                await self.msgFormatter(webhook, message, configJson, deleteMsgId=wf.get("whResult", None))
+                            webhook = SyncWebhook.from_url(wf["toWebhook"])
+                            await self.msgFormatter(webhook, message, configJson, deleteMsgId=wf.get("whResult", None))
                     else:
                         if endMsg.edited_at:
                             for wf in hookData:
                                 configJson = self.relayGetData(wh)
-                                async with aiohttp.ClientSession() as session:
-                                    webhook = Webhook.from_url(wf["toWebhook"], adapter=AsyncWebhookAdapter(session))
-                                    await self.msgFormatter(webhook, endMsg, configJson, editMsgId=wf.get("whResult", None))
+                                webhook = SyncWebhook.from_url(wf["toWebhook"])
+                                await self.msgFormatter(webhook, endMsg, configJson, editMsgId=wf.get("whResult", None))
             else:
                 return
         else:
@@ -404,19 +405,19 @@ class Msgmover(commands.Cog):
         # Delete the message if it's delete
         if deleteMsgId is not None:
             try:
-                return await webhook.delete_message(deleteMsgId)
+                return webhook.delete_message(deleteMsgId)
             except:
                 return False
 
         # Edit the message if it's edit
         if editMsgId is not None:
             try:
-                return await webhook.edit_message(
+                return webhook.edit_message(
                     message_id=editMsgId,
                     content=message.clean_content
                 )
             except discord.HTTPException:
-                return await webhook.edit_message(
+                return webhook.edit_message(
                     message_id=editMsgId,
                     content="**Discord:** Unsupported content\n"+str(message.clean_content)
                 )
@@ -426,11 +427,12 @@ class Msgmover(commands.Cog):
         # Check for system messages, Set up user profile
         userProfilesName = None
         userProfilesAvatar = None
-        if message.type == discord.MessageType.default:
+        if message.type == discord.MessageType.default or message.type == discord.MessageType.reply:
             msgContent = message.clean_content
             if json["userProfiles"] == True:
-                userProfilesName = message.author.display_name
-                userProfilesAvatar = message.author.avatar_url
+                # (dpy-v2) "Discord" is not allowed in webhook usernames
+                userProfilesName = message.author.display_name.replace("Discord", "D🗪cord").replace("discord", "d🗪cord")
+                userProfilesAvatar = message.author.display_avatar.url
         else:
             msgContent = "**Discord:** "+str(message.type)
             if json["userProfiles"] == True:
@@ -438,7 +440,7 @@ class Msgmover(commands.Cog):
                 userProfilesAvatar = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/0-Background.svg/300px-0-Background.svg.png'
 
         # Add reply if exists
-        if message.reference and message.type == discord.MessageType.default:
+        if message.reference and message.type == discord.MessageType.reply:
             # Retrieve replied-to message
             refObj = message.reference.resolved
             replyEmbed = discord.Embed(color=discord.Color(value=0x25c059), description="")
@@ -460,15 +462,16 @@ class Msgmover(commands.Cog):
             # Create link to message
             replyTitle = f"↪️ {replyBody}"
             if json["userProfiles"] == True:
-                replyEmbed.set_author(name=replyTitle, icon_url=refObj.author.avatar_url, url=refUrl)
+                replyEmbed.set_author(name=replyTitle, icon_url=refObj.author.display_avatar.url, url=refUrl)
             else:
                 replyEmbed.set_author(name=replyTitle, url=refUrl)
             # Send this before the original message so that the embed appears above the message in chat
-            await webhook.send(
+            webhook.send(
                 username=userProfilesName,
                 avatar_url=userProfilesAvatar,
                 embed=replyEmbed
             )
+            await asyncio.sleep(1)
               
 
         # Add embed if exists
@@ -480,28 +483,29 @@ class Msgmover(commands.Cog):
         # Add attachment if exists
         msgAttach = None
         if message.attachments:
+            attachMaxSize = 25000000 # 25MB, prev. 8MB
             attachSuccess = False
             if json["attachsAsUrl"] == False:
                 try:
-                    # 8MB upload limit
+                    # attachMaxSize upload limit
                     totalSize = 0
                     for mm in message.attachments:
                         totalSize += mm.size
-                    assert totalSize < 8000000
+                    assert totalSize < attachMaxSize
                 except AssertionError:
-                    # See if each file is under 8MB, maybe we can send individually
+                    # See if each file is under attachMaxSize, maybe we can send individually
                     for mm in message.attachments:
                         try:
-                            assert mm.size < 8000000
-                            await webhook.send(
+                            assert mm.size < attachMaxSize
+                            webhook.send(
                                 username=userProfilesName,
                                 avatar_url=userProfilesAvatar,
                                 files=[await mm.to_file()],
                                 wait=True
                             )
                         except AssertionError:
-                            await webhook.send(
-                                "**Discord:** File too large\n"+str(mm.url),
+                            webhook.send(
+                                content="**Discord:** File too large\n"+str(mm.url),
                                 username=userProfilesName,
                                 avatar_url=userProfilesAvatar,
                                 wait=True
@@ -524,22 +528,28 @@ class Msgmover(commands.Cog):
         # Add sticker if exists
         if message.stickers:
             for msgSticker in message.stickers:
-                msgStickerItem = await msgSticker.image_url_as(size=128)
-                if msgStickerItem is not None:
-                    msgContent += "\n"+str(msgStickerItem)
+                if msgSticker.url is not None:
+                    msgContent += "\n"+str(msgSticker.url)
                 else:
-                    msgContent += "\n**Discord:** Sticker\n"+str(msgSticker.name)+", "+str(msgSticker.pack_id)
+                    msgContent += "\n**Discord:** Sticker\n"+str(msgSticker.name)+", "+str(msgSticker.id)
 
         # Send core message
         whMsg = False
+
+        # (dpy-v2) Switch to argument unpacking, since passing None doesn't work anymore
+        whMsgArgs = {}
+
         try:
-            whMsg = await webhook.send(
-                msgContent,
-                username=userProfilesName,
-                avatar_url=userProfilesAvatar,
-                embeds=msgEmbed,
-                files=msgAttach,
-                wait=True
+            whMsgArgs = {
+              "content": msgContent,
+              "username": userProfilesName,
+              "avatar_url": userProfilesAvatar,
+              "embeds": msgEmbed,
+              "files": msgAttach,
+              "wait": True
+            }
+            whMsg = webhook.send(
+                **{k: v for k, v in whMsgArgs.items() if v is not None}
             )
         except discord.HTTPException:
             # catch HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
@@ -547,25 +557,45 @@ class Msgmover(commands.Cog):
             if len(msgContent) > 1964:
                 msgLines = textwrap.wrap(msgContent, 2000, break_long_words=True)
                 for msgLineItem in msgLines:
-                    whMsg = await webhook.send(
-                        str(msgLineItem),
-                        username=userProfilesName,
-                        avatar_url=userProfilesAvatar,
-                        embeds=msgEmbed,
-                        files=msgAttach,
-                        wait=True
+                    whMsgArgs = {
+                      "content": str(msgLineItem),
+                      "username": userProfilesName,
+                      "avatar_url": userProfilesAvatar,
+                      "embeds": msgEmbed,
+                      "files": msgAttach,
+                      "wait": True
+                    }
+                    whMsg = webhook.send(
+                        **{k: v for k, v in whMsgArgs.items() if v is not None}
                     )
             # catch HTTPException: 400 Bad Request (error code: 50006): Cannot send an empty message
             else:
-                whMsg = await webhook.send(
-                    "**Discord:** Unsupported content\n" + str(msgContent[:1964]) + (str(msgContent[1964:]) and '…'),
-                    username=userProfilesName,
-                    avatar_url=userProfilesAvatar,
-                    embeds=msgEmbed,
-                    files=msgAttach,
-                    wait=True
-                )
+                try:
+                    whMsgArgs = {
+                      "content": "**Discord:** Unsupported content\n" + str(msgContent[:1964]) + (str(msgContent[1964:]) and '…'),
+                      "username": userProfilesName,
+                      "avatar_url": userProfilesAvatar,
+                      "embeds": msgEmbed,
+                      "files": msgAttach,
+                      "wait": True
+                    }
+                    whMsg = webhook.send(
+                        **{k: v for k, v in whMsgArgs.items() if v is not None}
+                    )
+                # One last try, without username or avatar
+                except:
+                    whMsgArgs = {
+                      "content": "**Discord:** Unsupported content\n" + str(msgContent[:1964]) + (str(msgContent[1964:]) and '…'),
+                      "username": "Unknown User",
+                      "embeds": msgEmbed,
+                      "files": msgAttach,
+                      "wait": True
+                    }
+                    whMsg = webhook.send(
+                        **{k: v for k, v in whMsgArgs.items() if v is not None}
+                    )
         except:
+            traceback.print_exc()
             return False
         
         # Need to tell endpoint that function ended, so that sent message order is enforceable by await
