@@ -423,7 +423,7 @@ class Msgmover(commands.Cog):
         # Check for system messages, Set up user profile
         userProfilesName = None
         userProfilesAvatar = None
-        if message.type == discord.MessageType.default:
+        if message.type == discord.MessageType.default or message.type == discord.MessageType.reply:
             msgContent = message.clean_content
             if json["userProfiles"] == True:
                 # (dpy-v2) "Discord" is not allowed in webhook usernames
@@ -436,7 +436,7 @@ class Msgmover(commands.Cog):
                 userProfilesAvatar = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/0-Background.svg/300px-0-Background.svg.png'
 
         # Add reply if exists
-        if message.reference and message.type == discord.MessageType.default:
+        if message.reference and message.type == discord.MessageType.reply:
             # Retrieve replied-to message
             refObj = message.reference.resolved
             replyEmbed = discord.Embed(color=discord.Color(value=0x25c059), description="")
