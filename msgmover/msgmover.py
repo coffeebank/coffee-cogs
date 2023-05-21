@@ -426,7 +426,8 @@ class Msgmover(commands.Cog):
         if message.type == discord.MessageType.default:
             msgContent = message.clean_content
             if json["userProfiles"] == True:
-                userProfilesName = message.author.display_name
+                # (dpy-v2) "Discord" is not allowed in webhook usernames
+                userProfilesName = message.author.display_name.replace("Discord", "D🗪cord").replace("discord", "d🗪cord")
                 userProfilesAvatar = message.author.display_avatar.url
         else:
             msgContent = "**Discord:** "+str(message.type)
@@ -528,9 +529,11 @@ class Msgmover(commands.Cog):
         #             msgContent += "\n**Discord:** Sticker\n"+str(msgSticker.name)+", "+str(msgSticker.pack_id)
 
         # Send core message
-        # (dpy-v2) Switch to argument unpacking, since passing None doesn't work anymore
         whMsg = False
+
+        # (dpy-v2) Switch to argument unpacking, since passing None doesn't work anymore
         whMsgArgs = {}
+
         try:
             whMsgArgs = {
               "content": msgContent,
@@ -562,17 +565,30 @@ class Msgmover(commands.Cog):
                     )
             # catch HTTPException: 400 Bad Request (error code: 50006): Cannot send an empty message
             else:
-                whMsgArgs = {
-                  "content": "**Discord:** Unsupported content\n" + str(msgContent[:1964]) + (str(msgContent[1964:]) and '…'),
-                  "username": userProfilesName,
-                  "avatar_url": userProfilesAvatar,
-                  "embeds": msgEmbed,
-                  "files": msgAttach,
-                  "wait": True
-                }
-                whMsg = webhook.send(
-                    **{k: v for k, v in whMsgArgs.items() if v is not None}
-                )
+                try:
+                    whMsgArgs = {
+                      "content": "**Discord:** Unsupported content\n" + str(msgContent[:1964]) + (str(msgContent[1964:]) and '…'),
+                      "username": userProfilesName,
+                      "avatar_url": userProfilesAvatar,
+                      "embeds": msgEmbed,
+                      "files": msgAttach,
+                      "wait": True
+                    }
+                    whMsg = webhook.send(
+                        **{k: v for k, v in whMsgArgs.items() if v is not None}
+                    )
+                # One last try, without username or avatar
+                except:
+                    whMsgArgs = {
+                      "content": "**Discord:** Unsupported content\n" + str(msgContent[:1964]) + (str(msgContent[1964:]) and '…'),
+                      "username": "Unknown User",
+                      "embeds": msgEmbed,
+                      "files": msgAttach,
+                      "wait": True
+                    }
+                    whMsg = webhook.send(
+                        **{k: v for k, v in whMsgArgs.items() if v is not None}
+                    )
         except:
             traceback.print_exc()
             return False
