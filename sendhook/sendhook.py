@@ -162,7 +162,7 @@ class Sendhook(commands.Cog):
 
         # Send webhook
         try:
-            await self.sendhookEngine(toWebhook, message, webhookText, message.author.display_name, message.author.avatar_url)
+            await self.sendhookEngine(toWebhook, message, webhookText, message.author.display_name, message.author.display_avatar.url)
         except:
             await ctx.send("Oops, an error occurred :'(")
         else:

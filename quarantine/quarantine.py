@@ -84,8 +84,8 @@ class Quarantine(commands.Cog):
                 e = discord.Embed(color=(await ctx.embed_colour()), description=reason)
                 e.set_footer(text="Sent in #{}".format(ctx.channel))
 
-                if user.avatar_url:
-                    e.set_author(name="User Quarantined: {}".format(user.display_name), icon_url=user.avatar_url)
+                if user.display_avatar.url:
+                    e.set_author(name="User Quarantined: {}".format(user.display_name), icon_url=user.display_avatar.url)
                 else:
                     e.set_author(name=user.display_name)
 

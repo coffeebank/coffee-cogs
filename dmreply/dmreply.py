@@ -62,8 +62,8 @@ class Dmreply(BaseCog):
         e = discord.Embed(color=(await ctx.embed_colour()), description=message)
 
         # e.set_footer(text=content)
-        if ctx.bot.user.avatar_url:
-            e.set_author(name=description, icon_url=ctx.bot.user.avatar_url)
+        if ctx.bot.user.display_avatar.url:
+            e.set_author(name=description, icon_url=ctx.bot.user.display_avatar.url)
         else:
             e.set_author(name=description)
 
@@ -111,8 +111,8 @@ class Dmreply(BaseCog):
         # sending a dm
         title = await self.config.guild(ctx.guild).title()
         e = discord.Embed(color=(await ctx.embed_colour()), description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
-        if ctx.bot.user.avatar_url:
-            e.set_author(name=title, icon_url=ctx.bot.user.avatar_url)
+        if ctx.bot.user.display_avatar.url:
+            e.set_author(name=title, icon_url=ctx.bot.user.display_avatar.url)
         else:
             e.set_author(name=title)
 
@@ -123,8 +123,8 @@ class Dmreply(BaseCog):
         dme = discord.Embed(color=16711680, description=defaultreply)
         dme.set_footer(text=defaultreplyfooter)
 
-        if self.bot.user.avatar_url:
-            dme.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        if self.bot.user.display_avatar.url:
+            dme.set_author(name=self.bot.user.name, icon_url=self.bot.user.display_avatar.url)
         else:
             dme.set_author(name=self.bot.user.name)
 
@@ -150,8 +150,8 @@ class Dmreply(BaseCog):
             e = discord.Embed(color=16711680, description=defaultreply)
             e.set_footer(text=defaultreplyfooter)
 
-            if self.bot.user.avatar_url:
-                e.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            if self.bot.user.display_avatar.url:
+                e.set_author(name=self.bot.user.name, icon_url=self.bot.user.display_avatar.url)
             else:
                 e.set_author(name=self.bot.user.name)
 

@@ -140,7 +140,7 @@ class Kyarutail(commands.Cog):
                 await webhook.send(
                     sendMsg,
                     username=ctx.author.display_name,
-                    avatar_url=ctx.author.avatar_url,
+                    avatar_url=ctx.author.display_avatar.url,
                 )
         except discord.errors.Forbidden:
             return await ctx.send(sendMsg)
