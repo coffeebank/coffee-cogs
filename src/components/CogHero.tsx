@@ -5,6 +5,8 @@ import useFetch from '../hooks/useFetch';
 interface Props extends React.ProfilerProps {
   cog: string,
   desc: string,
+  repo?: string,
+  branch?: string,
 }
 
 interface CogData {
@@ -42,8 +44,8 @@ const CogHero = (props: Props) => {
         <div className="py-2 text-sm">New here? <Link to="/start/">See the Getting Started guide&ensp;▸</Link></div>
         <div className="px-5 py-4 sm:py-3 rounded-md bg-black/5 dark:bg-white/[0.075]" title="Replace [p] with your bot's prefix">
           <pre className="m-0 p-0 !bg-transparent text-gray-600 text-sm overflow-x-auto leading-6">
-            <span className="select-none">[p]</span><span className="select-all sm:select-auto">repo add coffee-cogs https://github.com/coffeebank/coffee-cogs</span><br />
-            <span className="select-none">[p]</span><span className="select-all sm:select-auto">cog install coffee-cogs { cogData.name || props.cog }</span>
+            <span className="select-none">[p]</span><span className="select-all sm:select-auto">repo add { props.repo ? props.repo : ( props.branch ? 'coffee-cogs-'+props.branch : 'coffee-cogs' ) } https://github.com/coffeebank/coffee-cogs{ props.branch ? '/tree/'+props.branch : '' }</span><br />
+            <span className="select-none">[p]</span><span className="select-all sm:select-auto">cog install { props.repo ? props.repo : ( props.branch ? 'coffee-cogs-'+props.branch : 'coffee-cogs' ) } { cogData.name || props.cog }</span>
           </pre>
         </div>
         <div className="pt-2 text-sm">{ cogData.end_user_data_statement || "" }</div>
