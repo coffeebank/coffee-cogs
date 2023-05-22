@@ -1,9 +1,8 @@
 from redbot.core import Config, commands, checks
 from redbot.cogs.admin import admin
 import asyncio
-import aiohttp
 import discord
-from discord import Webhook, AsyncWebhookAdapter, Embed
+from discord import Webhook, SyncWebhook, Embed
 from urllib.parse import quote
 import json
 import typing
@@ -76,7 +75,7 @@ class Hellohook(commands.Cog):
                 greetMessageJson["embeds"] = [e]
         # Send webhook
         try:
-            return await webhook.send(**greetMessageJson)
+            return webhook.send(**greetMessageJson)
         except Exception as e:
             return print(e)
 
@@ -299,17 +298,16 @@ class Hellohook(commands.Cog):
             await ctx.send("Hellohook Leave Enabled: "+str(leaveEnabled))
 
             # Send Webhooks
-            async with aiohttp.ClientSession() as session:
-                try:
-                    greetWebhook = Webhook.from_url(greetWebhook, adapter=AsyncWebhookAdapter(session))
-                    await self.hellohookSender(greetWebhook, ctx.message.author, greetMessage)
-                except:
-                    await ctx.send("Error: Hellohook Greet message failed. Is your webhook deleted, or your message empty?")
-                try:
-                    leaveWebhook = Webhook.from_url(leaveWebhook, adapter=AsyncWebhookAdapter(session))
-                    await self.hellohookSender(leaveWebhook, ctx.message.author, leaveMessage)
-                except:
-                    await ctx.send("Error: Hellohook Leave message failed. Is your webhook deleted, or your message empty?")
+            try:
+                greetWebhook = SyncWebhook.from_url(greetWebhook)
+                await self.hellohookSender(greetWebhook, ctx.message.author, greetMessage)
+            except:
+                await ctx.send("Error: Hellohook Greet message failed. Is your webhook deleted, or your message empty?")
+            try:
+                leaveWebhook = SyncWebhook.from_url(leaveWebhook)
+                await self.hellohookSender(leaveWebhook, ctx.message.author, leaveMessage)
+            except:
+                await ctx.send("Error: Hellohook Leave message failed. Is your webhook deleted, or your message empty?")
         except Exception as e:
             await ctx.send("Error: "+str(e))
 
@@ -471,21 +469,20 @@ class Hellohook(commands.Cog):
         await ctx.send("Starting test....")
         userGuild = ctx.guild
         userObj = ctx.author
-        async with aiohttp.ClientSession() as session:
-          # Fetch current custom invites only if exists
-          savedInvites = await self.config.guild(userGuild).inviteList()
-          if len(savedInvites) > 0:
-              guildInvites = await userGuild.invites()
-              for gio in guildInvites:
-                  try:
-                      if savedInvites[str(gio.code)] and gio.uses >= savedInvites[str(gio.code)]["uses"]:
-                          await self.inviteUsesSetter(userGuild, str(gio.code), gio.uses)
-                          invHook = Webhook.from_url(savedInvites[str(gio.code)]["channel"], adapter=AsyncWebhookAdapter(session))
-                          await self.hellohookSender(invHook, userObj, savedInvites[str(gio.code)]["message"])
-                          # End early if webhook exists and was sent successfully
-                          # return
-                  except:
-                      pass
+        # Fetch current custom invites only if exists
+        savedInvites = await self.config.guild(userGuild).inviteList()
+        if len(savedInvites) > 0:
+            guildInvites = await userGuild.invites()
+            for gio in guildInvites:
+                try:
+                    if savedInvites[str(gio.code)] and gio.uses >= savedInvites[str(gio.code)]["uses"]:
+                        await self.inviteUsesSetter(userGuild, str(gio.code), gio.uses)
+                        invHook = SyncWebhook.from_url(savedInvites[str(gio.code)]["channel"])
+                        await self.hellohookSender(invHook, userObj, savedInvites[str(gio.code)]["message"])
+                        # End early if webhook exists and was sent successfully
+                        # return
+                except:
+                    pass
         await ctx.send("Ended test")
 
     # Listeners
@@ -502,32 +499,31 @@ class Hellohook(commands.Cog):
         if hellohookEnabled == False:
             return
 
-        async with aiohttp.ClientSession() as session:
-          # Fetch current custom invites only if exists
-          savedInvites = await self.config.guild(userGuild).inviteList()
-          if len(savedInvites) > 0:
-              guildInvites = await userGuild.invites()
-              for gio in guildInvites:
-                  try:
-                      if savedInvites[str(gio.code)] and gio.uses > savedInvites[str(gio.code)]["uses"]:
-                          await self.inviteUsesSetter(userGuild, str(gio.code), gio.uses)
-                          invHook = Webhook.from_url(savedInvites[str(gio.code)]["channel"], adapter=AsyncWebhookAdapter(session))
-                          await self.hellohookSender(invHook, userObj, savedInvites[str(gio.code)]["message"])
-                          # End early if webhook exists and was sent successfully
-                          return
-                  except:
-                      pass
+        # Fetch current custom invites only if exists
+        savedInvites = await self.config.guild(userGuild).inviteList()
+        if len(savedInvites) > 0:
+            guildInvites = await userGuild.invites()
+            for gio in guildInvites:
+                try:
+                    if savedInvites[str(gio.code)] and gio.uses > savedInvites[str(gio.code)]["uses"]:
+                        await self.inviteUsesSetter(userGuild, str(gio.code), gio.uses)
+                        invHook = SyncWebhook.from_url(savedInvites[str(gio.code)]["channel"])
+                        await self.hellohookSender(invHook, userObj, savedInvites[str(gio.code)]["message"])
+                        # End early if webhook exists and was sent successfully
+                        return
+                except:
+                    pass
 
-          # Otherwise, use default welcome
-          greetMessage = await self.config.guild(userGuild).greetMessage()
-          if not greetMessage:
-              updatev1data = await self.updatev1data(userObj.guild)
-              if updatev1data == False:
-                  return
-          greetWebhook = await self.config.guild(userGuild).greetWebhook()
-          webhook = Webhook.from_url(greetWebhook, adapter=AsyncWebhookAdapter(session))
-          await self.hellohookSender(webhook, userObj, greetMessage)
-          return
+        # Otherwise, use default welcome
+        greetMessage = await self.config.guild(userGuild).greetMessage()
+        if not greetMessage:
+            updatev1data = await self.updatev1data(userObj.guild)
+            if updatev1data == False:
+                return
+        greetWebhook = await self.config.guild(userGuild).greetWebhook()
+        webhook = SyncWebhook.from_url(greetWebhook)
+        await self.hellohookSender(webhook, userObj, greetMessage)
+        return
 
     @commands.Cog.listener()
     async def on_member_remove(self, userObj: discord.Member) -> None:
@@ -545,9 +541,8 @@ class Hellohook(commands.Cog):
         if not leaveMessage:
             return
         leaveWebhook = await self.config.guild(userGuild).leaveWebhook()
-        async with aiohttp.ClientSession() as session:
-            webhook = Webhook.from_url(leaveWebhook, adapter=AsyncWebhookAdapter(session))
-            await self.hellohookSender(webhook, userObj, leaveMessage)
+        webhook = SyncWebhook.from_url(leaveWebhook)
+        await self.hellohookSender(webhook, userObj, leaveMessage)
         return
 
     # Legacy
