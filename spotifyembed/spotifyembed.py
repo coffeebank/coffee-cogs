@@ -3,7 +3,7 @@ from redbot.core import Config, commands, checks
 import asyncio
 import aiohttp
 import discord
-from discord import Webhook, AsyncWebhookAdapter
+from discord import Webhook, SyncWebhook
 import re
 
 class Spotifyembed(commands.Cog):
@@ -84,13 +84,12 @@ class Spotifyembed(commands.Cog):
                     newHook = await ctx.channel.create_webhook(name="Webhook")
                     whurl = newHook.url
 
-                async with aiohttp.ClientSession() as session:
-                    webhook = Webhook.from_url(whurl, adapter=AsyncWebhookAdapter(session))
-                    await webhook.send(
-                        sendMsg,
-                        username=ctx.author.display_name,
-                        avatar_url=ctx.author.display_avatar.url,
-                    )
+                webhook = SyncWebhook.from_url(whurl)
+                webhook.send(
+                    sendMsg,
+                    username=ctx.author.display_name,
+                    avatar_url=ctx.author.display_avatar.url,
+                )
             except discord.errors.Forbidden:
                 return await ctx.send(sendMsg)
         else:
@@ -137,12 +136,11 @@ class Spotifyembed(commands.Cog):
                 newHook = await message.channel.create_webhook(name="Webhook")
                 whurl = newHook.url
 
-            async with aiohttp.ClientSession() as session:
-                webhook = Webhook.from_url(whurl, adapter=AsyncWebhookAdapter(session))
-                await webhook.send(
-                    sendMsg,
-                    username=message.author.display_name,
-                    avatar_url=message.author.display_avatar.url,
-                )
+            webhook = SyncWebhook.from_url(whurl)
+            webhook.send(
+                sendMsg,
+                username=message.author.display_name,
+                avatar_url=message.author.display_avatar.url,
+            )
         except discord.errors.Forbidden:
             return await message.channel.send(sendMsg)
