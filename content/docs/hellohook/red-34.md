@@ -6,11 +6,9 @@ cogname: "hellohook"
 
 <img src="./hellohook.jpg" alt="Logo: a resting cat being scratched in the chin" class="h-24 aspect-square rounded mb-2" />
 
-<span class="px-3 py-1 rounded-full bg-green-600 text-white text-xs select-none">✅ Works on Red 3.5</span>
+# Hellohook (for Red 3.4)
 
-# Hellohook
-
-<component-coghero cog="hellohook" desc="Create your own welcome bot with a custom profile picture! Choose between a regular message or an embed welcome, with a ping option."></component-coghero>
+<component-coghero cog="hellohook" branch="red-3.4" desc="Create your own welcome bot with a custom profile picture! Choose between a regular message or an embed welcome, with a ping option."></component-coghero>
 
 
 ## Drafting your Webhook Message
@@ -71,23 +69,29 @@ If it says `send() got an unexpected keyword argument '####'`, please let me kno
 
 As of 10 June 2022, this has been patched, but may happen again in the future.
 
+### **Hellohook still works, but Greet Message is empty!**
+
+Note for old users: Data has been upgraded to V2 system as of late 2021. Your data is saved. Greet Message will show as empty until a new user joins, which will activate the data migration process automatically. See **`[p]hellohook set`** for more info.
+
 ### **How do I send a webhook styled as the person who joined?**
 
 This feature is not recommended. But, Hellohook is open-source, so I encourage you to customize the bot by [forking the code](#forking-hellohook).
 
-In the code, find the marker MM101, and add the code below:
+What you want to edit is:
+```
+return await webhook.send(**greetMessageJson)
+```
 
+Replace it with:
 ```
-            # (MM101) Add custom parameters here
-            greetMessageJson["username"] = userObj.display_name
-            greetMessageJson["avatar_url"] = userObj.display_avatar.url
+return await webhook.send(**greetMessageJson,
+    username=userObj.display_name,
+    avatar_url=userObj.avatar_url)
 ```
+
+![Image: Replacing code under Utility Commands async def hellohookSender()](./carbon-user-avatar-as-webhook.png)
+
 
 ## Forking Hellohook
 
-<component-cogfork cog="hellohook"></component-cogfork>
-
-
-## For Red 3.4 and below
-
-See [Hellohook for Red 3.4](./red-34/)
+<component-cogfork cog="hellohook" />
