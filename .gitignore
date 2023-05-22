@@ -1,3 +1,7 @@
+*/__pycache__
+*/settings.json
+*/.local
+
 # Logs
 logs
 *.log
