@@ -8,6 +8,12 @@
   A collection of Discord Bot extensions ("cogs") built for users with a self-hosted instance of <a href="https://github.com/Cog-Creators/Red-DiscordBot">Red Discord Bot</a>.
 </p>
 
+<div class="py-8 px-6 text-center">
+  <div class="bg-yellow-300/5 border-4 rounded border-yellow-400 py-1 px-6">
+    <p><b>🚧&ensp;Coffee-cogs is being updated to work with Red 3.5&ensp;🏗️</b><br>More details: <a href="https://github.com/coffeebank/coffee-cogs/issues/26" target="_blank" rel="noopener">https://github.com/coffeebank/coffee-cogs/issues/26</a></p>
+  </div>
+</div>
+
 <p align="center">
   <strong>To start using it for your Red Discord Bot, type:</strong>
 </p>

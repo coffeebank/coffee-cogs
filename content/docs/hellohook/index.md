@@ -6,6 +6,8 @@ cogname: "hellohook"
 
 <img src="./hellohook.jpg" alt="Logo: a resting cat being scratched in the chin" class="h-24 aspect-square rounded mb-2" />
 
+<span class="px-3 py-1 rounded-full bg-green-600 text-white text-xs select-none">✅ Works on Red 3.5</span>
+
 # Hellohook
 
 <component-coghero cog="hellohook" desc="Create your own welcome bot with a custom profile picture! Choose between a regular message or an embed welcome, with a ping option."></component-coghero>
