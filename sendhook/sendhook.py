@@ -1,7 +1,7 @@
 from redbot.core import Config, commands, checks
 # from array import *
 import discord
-from discord import Webhook, AsyncWebhookAdapter
+from discord import Webhook, SyncWebhook
 import aiohttp
 import asyncio
 import requests
@@ -28,39 +28,38 @@ class Sendhook(commands.Cog):
 
     async def sendhookEngine(self, toWebhook, messageObj, webhookText=None, webhookUser=None, webhookAvatar=None):
         # Start webhook session
-        async with aiohttp.ClientSession() as session:
-            webhook = Webhook.from_url(toWebhook, adapter=AsyncWebhookAdapter(session))
+        webhook = SyncWebhook.from_url(toWebhook)
 
-            # Check for attachments
-            if messageObj.attachments:
-                # Send message first if there is a message
-                if webhookText is not None:
-                    await webhook.send(
-                        webhookText,
-                        username=webhookUser,
-                        avatar_url=webhookAvatar
-                    )
-                # Then send each attachment in separate messages
-                for msgAttach in messageObj.attachments:
-                    try:
-                        await webhook.send(
-                            username=webhookUser,
-                            avatar_url=webhookAvatar,
-                            file=await msgAttach.to_file()
-                        )
-                    except:
-                        # Couldn't send, retry sending file as url only
-                        await webhook.send(
-                            "File: "+str(msgAttach.url), 
-                            username=webhookUser,
-                            avatar_url=webhookAvatar
-                        )
-            else:
-                await webhook.send(
+        # Check for attachments
+        if messageObj.attachments:
+            # Send message first if there is a message
+            if webhookText is not None:
+                webhook.send(
                     webhookText,
                     username=webhookUser,
                     avatar_url=webhookAvatar
                 )
+            # Then send each attachment in separate messages
+            for msgAttach in messageObj.attachments:
+                try:
+                    webhook.send(
+                        username=webhookUser,
+                        avatar_url=webhookAvatar,
+                        file=await msgAttach.to_file()
+                    )
+                except:
+                    # Couldn't send, retry sending file as url only
+                    webhook.send(
+                        "File: "+str(msgAttach.url), 
+                        username=webhookUser,
+                        avatar_url=webhookAvatar
+                    )
+        else:
+            webhook.send(
+                webhookText,
+                username=webhookUser,
+                avatar_url=webhookAvatar
+            )
 
 
     # Bot Commands
@@ -162,7 +161,7 @@ class Sendhook(commands.Cog):
 
         # Send webhook
         try:
-            await self.sendhookEngine(toWebhook, message, webhookText, message.author.display_name, message.author.avatar_url)
+            await self.sendhookEngine(toWebhook, message, webhookText, message.author.display_name, message.author.display_avatar.url)
         except:
             await ctx.send("Oops, an error occurred :'(")
         else:
