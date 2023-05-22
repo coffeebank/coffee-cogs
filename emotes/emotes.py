@@ -4,7 +4,7 @@ from typing import Union
 import asyncio
 import aiohttp
 import discord
-from discord import Webhook, AsyncWebhookAdapter
+from discord import Webhook, SyncWebhook
 import requests
 import time
 import random

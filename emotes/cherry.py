@@ -2,7 +2,7 @@ import aiohttp
 import asyncio
 from collections import OrderedDict
 import discord
-from discord import Webhook, AsyncWebhookAdapter
+from discord import Webhook, SyncWebhook
 import re
 
 class Cherry():
@@ -60,18 +60,17 @@ class Cherry():
       return False
 
   async def webhookSender(self, message, webhookUrl, sendMsg):
-    async with aiohttp.ClientSession() as session:
-      webhook = Webhook.from_url(webhookUrl, adapter=AsyncWebhookAdapter(session))
-      try:
-        await webhook.send(
-            sendMsg,
-            username=message.author.display_name,
-            avatar_url=message.author.avatar_url,
-        )
-      except:
-        return False
-      else:
-        return True
+    webhook = SyncWebhook.from_url(webhookUrl)
+    try:
+      webhook.send(
+          sendMsg,
+          username=message.author.display_name,
+          avatar_url=message.author.display_avatar.url,
+      )
+    except:
+      return False
+    else:
+      return True
 
 
   # Utilities for 'emotesheet'
