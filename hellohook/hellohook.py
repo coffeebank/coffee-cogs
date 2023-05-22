@@ -75,6 +75,8 @@ class Hellohook(commands.Cog):
                 greetMessageJson["embeds"] = [e]
         # Send webhook
         try:
+            # (MM101) Add custom parameters here
+
             # (dpy-v2) Sending keys with value of None doesn't work anymore
             return webhook.send(
                 **{k: v for k, v in greetMessageJson.items() if v is not None}
