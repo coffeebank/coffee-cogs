@@ -4,7 +4,7 @@
   "name" : "hellohook",
   "short" : "Create your own welcome bot with a custom profile picture!",
   "requirements" : [],
-  "description" : "Create your own welcome bot with a custom profile picture! Set the welcome message to be regular text and/or an embed. Comes with usernames, user avatars, pings/mentions, server member counts, and leave messages.\n\nSend different welcome messsages based on the invite url! Create different 'bots' using webhooks.",
+  "description" : "Create your own welcome bot with a custom profile picture! Set the welcome message to be regular text and/or an embed. Comes with usernames, user avatars, pings/mentions, server member counts, and leave messages.\n\nSend different welcome messsages based on the invite url! Create different 'bots' using webhooks.\n\nUpdated for Red 3.5",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
   "tags" : ["welcome", "invites", "goodbye", "webhook"]
