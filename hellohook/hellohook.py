@@ -79,8 +79,9 @@ class Hellohook(commands.Cog):
             return webhook.send(
                 **{k: v for k, v in greetMessageJson.items() if v is not None}
             )
-        except Exception as e:
-            return print(e)
+        except Exception as err:
+            print(err)
+            return err
 
     async def inviteFetch(ctx, guildObj, inviteLink: str):
         newInvites = await guildObj.invites()
@@ -311,8 +312,8 @@ class Hellohook(commands.Cog):
                 await self.hellohookSender(leaveWebhook, ctx.message.author, leaveMessage)
             except:
                 await ctx.send("Error: Hellohook Leave message failed. Is your webhook deleted, or your message empty?")
-        except Exception as e:
-            await ctx.send("Error: "+str(e))
+        except Exception as err:
+            await ctx.send("Error: "+str(err))
 
     @hellohook.command(name="toggle")
     async def hellohooktoggle(self, ctx, GreetOrLeave: str, TrueOrFalse: bool):
