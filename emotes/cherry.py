@@ -65,7 +65,7 @@ class Cherry():
       webhook.send(
           sendMsg,
           username=message.author.display_name,
-          avatar_url=message.author.avatar_url,
+          avatar_url=message.author.display_avatar.url,
       )
     except:
       return False
