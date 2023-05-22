@@ -191,14 +191,14 @@ class Hellohook(commands.Cog):
         # Greet info
         e = discord.Embed(color=(await ctx.embed_colour()), title="Hellohook Greet Settings")
         e.add_field(name="Greet Enabled", value=guildData.get("hellohookEnabled", None), inline=False)
-        e.add_field(name="Greet Webhook", value="||"+self.validChecker(guildData.get("greetWebhook", None))+"||", inline=False)
+        e.add_field(name="Greet Webhook", value="||"+str(self.validChecker(guildData.get("greetWebhook", None)))+"||", inline=False)
         e.add_field(name="Greet Message", value='```json\n' + str(json.dumps(guildData.get("greetMessage", {})))[:1011]+'```', inline=False)
         await ctx.send(embed=e)
 
         # Leave info
         e2 = discord.Embed(color=(await ctx.embed_colour()), title="Hellohook Leave Settings")
         e2.add_field(name="Leave Enabled", value=guildData.get("leaveEnabled", None), inline=False)
-        e2.add_field(name="Leave Webhook", value="||"+self.validChecker(guildData.get("leaveWebhook", None))+"||", inline=False)
+        e2.add_field(name="Leave Webhook", value="||"+str(self.validChecker(guildData.get("leaveWebhook", None)))+"||", inline=False)
         e2.add_field(name="Leave Message", value='```json\n' + str(json.dumps(guildData.get("leaveMessage", {})))[:1011]+'```', inline=False)
         await ctx.send(embed=e2)
 
@@ -459,7 +459,7 @@ class Hellohook(commands.Cog):
           try:
             e = discord.Embed(color=(await ctx.embed_colour()), title=io)
             e.add_field(name="Uses", value=inviteList[io]["uses"], inline=False)
-            e.add_field(name="Webhook", value="||"+self.validChecker(inviteList[io]["channel"])+"||", inline=False)
+            e.add_field(name="Webhook", value="||"+str(self.validChecker(inviteList[io]["channel"]))+"||", inline=False)
             e.add_field(name="Greet Message", value='```json\n' + str(json.dumps(inviteList[io]["message"]))[:1011]+'```', inline=False)
             await ctx.send(embed=e)
           except:
