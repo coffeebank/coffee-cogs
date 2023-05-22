@@ -121,9 +121,12 @@ class Zidian(commands.Cog):
       middleText = fr'(^.*{patternKeyword}.*)'
       matches = None
 
-      with open(dictCedict, encoding="utf-8") as file:
-        matches = self.search_file(dictCedict, startText)
-        sendEmbed = discord.Embed(color=(await ctx.embed_colour()), title="Results")
+      try:
+        with open(dictCedict, encoding="utf-8") as file:
+          matches = self.search_file(dictCedict, startText)
+          sendEmbed = discord.Embed(color=(await ctx.embed_colour()), title="Results")
+      except FileNotFoundError as err:
+        return await ctx.send("Dictionary not initialized! Please run  **`[p]setzidian update`**  to initialize the dictionary first....")
 
       if len(matches) < 1:
         with open(dictCedict, encoding="utf-8") as file:
