@@ -1,7 +1,7 @@
 [![coffee-cogs banner](https://raw.githubusercontent.com/coffeebank/coffee-cogs/master/CAFq0pv9HjY_01.jpg)](https://coffeebank.github.io/coffee-cogs/)
 
 <h1 align="center">
-  <a href="https://coffeebank.github.io/coffee-cogs/">Coffee-cogs ☕</a>
+  <a href="https://coffeebank.github.io/coffee-cogs/">coffee-cogs ☕</a>
 </h1>
 
 <div id="supportdiscord"></div>
