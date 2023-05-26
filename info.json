@@ -1,8 +1,8 @@
 {
   "author" : ["coffeebank"],
-  "install_msg" : "Hi, thanks for dropping by! I hope my cogs are useful for something in your server :) To see the source code and documentation, visit https://github.com/coffeebank/coffee-cogs",
+  "install_msg" : "Hi, thanks for dropping by! I hope my cogs are useful for something in your server :) To see the source code and documentation, or to ask questions in the Support Discord, visit https://coffeebank.github.io/coffee-cogs/",
   "name" : "coffee-cogs",
-  "short" : "Special cogs offering deeper Discord integration with features and services",
-  "description" : "Special cogs offering deeper Discord integration with features and services",
-  "tags" : ["integrations", "services", "webhooks"]
+  "short" : "Special cogs offering deeper Discord integrations and convenience",
+  "description" : "Special cogs offering deeper Discord integrations and convenience through features, services, and webhooks",
+  "tags" : ["integrations", "services", "convenience", "webhooks"]
 }
