@@ -8,11 +8,9 @@
   A collection of Discord Bot extensions ("cogs") built for users with a self-hosted instance of <a href="https://github.com/Cog-Creators/Red-DiscordBot">Red Discord Bot</a>.
 </p>
 
-<div class="py-8 px-6 text-center">
-  <div class="bg-yellow-300/5 border-4 rounded border-yellow-400 py-1 px-6">
-    <p><b>🚧&ensp;Coffee-cogs is being updated to work with Red 3.5&ensp;🏗️</b><br>More details: <a href="https://github.com/coffeebank/coffee-cogs/issues/26" target="_blank" rel="noopener">https://github.com/coffeebank/coffee-cogs/issues/26</a></p>
-  </div>
-</div>
+<p align="center" class="text-lg py-2">
+  <strong>🎉 🆕  <a href="https://github.com/coffeebank/coffee-cogs/issues/26" target="_blank" rel="noopener">Coffee-cogs now works on Red 3.5</a>  🆕 🎉</strong>
+</p>
 
 <p align="center">
   <strong>To start using it for your Red Discord Bot, type:</strong>
@@ -32,3 +30,7 @@
 <div align="center">
   <component-reactbutton to="https://coffeebank.github.io/discord" body="Join the Support Discord >" classButton="px-6 py-3 bg-emerald-800 hover:bg-emerald-700 text-white" newTab="true"></component-reactbutton>
 </div>
+
+<br />
+
+**Still on Red 3.4?** [See Coffee-cogs docs for Red 3.4 >](/red-34/)

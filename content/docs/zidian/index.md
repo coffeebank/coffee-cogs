@@ -4,9 +4,11 @@ title: "zidian"
 
 # zidian
 
-<component-coghero cog="zidian" desc="Chinese dictionary bot. Can search Chinese characters, Pinyin, and English. Fetches results locally from saved dictionaries. Uses CC-CEDICT.\n\nInspired by Pleco and Jisho."></component-coghero>
+<component-coghero cog="zidian" desc="Chinese dictionary bot. Can search Chinese characters, Pinyin, and English. Fetches results locally from saved dictionaries. Uses CC-CEDICT."></component-coghero>
 
 Discord Bot for searching Chinese characters/words.
+
+Inspired by Pleco and Jisho.
 
 
 ## Installation

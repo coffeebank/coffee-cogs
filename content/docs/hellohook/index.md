@@ -1,6 +1,6 @@
 ---
 title: "Hellohook"
-description: "Create your own welcome bot with a custom profile picture! Choose between a regular message or an embed welcome, with a ping option."
+description: "Create your own welcome bot with a custom profile picture! Set the welcome message to be regular text and/or an embed. Comes with usernames, user avatars, pings/mentions, server member counts, and leave messages. Send different welcome messsages based on the invite url! Create different 'bots' using webhooks."
 cogname: "hellohook"
 ---
 
@@ -10,7 +10,7 @@ cogname: "hellohook"
 
 # Hellohook
 
-<component-coghero cog="hellohook" desc="Create your own welcome bot with a custom profile picture! Choose between a regular message or an embed welcome, with a ping option."></component-coghero>
+<component-coghero cog="hellohook" desc="Create your own welcome bot with a custom profile picture! Set the welcome message to be regular text and/or an embed. Comes with usernames, user avatars, pings/mentions, server member counts, and leave messages. Send different welcome messsages based on the invite url! Create different 'bots' using webhooks."></component-coghero>
 
 
 ## Drafting your Webhook Message
@@ -60,6 +60,21 @@ After you save them into the bot, when a new user joins, the variables will be r
 
 <br />
 
+## Why?
+
+Life was once peaceful in the land of Cats. As the land grew, the Cats community decided to run its own bot, named the Cat Lord. The Cat Lord welcomed every cat that passed through its gates.
+
+Then, one day, the land of Dogs found the Cat Lord a very helpful bot. However, the Dogs were not large enough yet to justify running its own bot. Yet, it would be a bad idea all the same to welcome new dogs with a bot named "The Cat Lord".
+
+An agreement was made, and Hellohook was born.
+
+Despite being a single bot, the welcome messages can finally be unique between both lands.
+
+The Cat Lord lives on. The Dog Lord is born.
+
+All live in harmony forevermore.
+
+<br />
 
 ## FAQ
 
@@ -86,8 +101,3 @@ In the code, find the marker MM101, and add the code below:
 ## Forking Hellohook
 
 <component-cogfork cog="hellohook"></component-cogfork>
-
-
-## For Red 3.4 and below
-
-See [Hellohook for Red 3.4](./red-34/)

@@ -105,7 +105,17 @@ export default function Sidebar() {
           link: "/zidian"
         },
       ]
-    }
+    },
+    {
+      title: "About",
+      heading: true,
+      items: [
+        {
+          title: "Red 3.4",
+          link: "/red-34/"
+        },
+      ]
+    },
   ]
 
   return (
