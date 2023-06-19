@@ -61,10 +61,15 @@ class Loveplay(commands.Cog):
     # Bot Commands
  
     @commands.command(name="loveplay", aliases=["lp"])
-    async def lpcustom(self, ctx, user, action, description):
+    async def lpmain(self, ctx, action, description, *, user):
         """Send a custom lovely reaction to someone!
-        
-        Use \"quote marks\" around multi-word phrases"""
+
+        Type  **`[p]help Loveplay`**  to see built-in reactions.
+
+        **`action`**  :  A sfw gif action from [Purrbot Image API](https://docs.purrbot.site/api/)
+        **`description`**  :  @you gives @user a *"description"* (quotes if multi-word)
+
+        [Loveplay Documentation >](https://coffeebank.github.io/coffee-cogs/loveplay)"""
         src = self.purrbotApi(action, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, description, src, user)
         await ctx.send(embed=e)
