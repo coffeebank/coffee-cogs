@@ -1,11 +1,11 @@
 {
-    "author" : ["Jintaku, Wyn"],
+    "author" : ["Jintaku, Wyn", "coffeebank"],
     "install_msg" : "Installing anilist cog",
-    "name" : "anisearch",
+    "name" : "coffeeani",
     "disabled" : false,
     "hidden" : false,
     "short" : "A cog to search the anilist API",
-    "description" : "You can search anime, manga, users and characters!",
+    "description" : "You can search anime, manga, users and characters!\n\nForked from Jintaku and Wyn's anisearch cog.",
     "tags" : ["anime", "manga", "anilist", "list"],
     "permissions": ["add_reactions", "embed_links"],
     "end_user_data_statement": "This cog does not persistently store data or metadata about users."

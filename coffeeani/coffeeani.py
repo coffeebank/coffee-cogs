@@ -124,7 +124,7 @@ query ($id: Int, $page: Int, $search: String) {
 '''
 
 
-class AniSearch(commands.Cog):
+class Coffeeani(commands.Cog):
     """Search for anime, manga, characters and users using Anilist"""
 
     def __init__(self, bot):
