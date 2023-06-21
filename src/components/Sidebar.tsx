@@ -49,6 +49,20 @@ export default function Sidebar() {
       ]
     },
     {
+      title: "📚 Dictionaries",
+      heading: true,
+      items: [
+        {
+          title: "Chinese 字典",
+          link: "/zidian"
+        },
+        {
+          title: "Japanese 辞書",
+          link: "/jishosearch"
+        },
+      ]
+    },
+    {
       title: "More cogs",
       heading: true,
       items: [
@@ -103,10 +117,6 @@ export default function Sidebar() {
         {
           title: "websearch",
           link: "/websearch"
-        },
-        {
-          title: "zidian",
-          link: "/zidian"
         },
       ]
     },
