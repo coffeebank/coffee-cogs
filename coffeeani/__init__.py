@@ -1,6 +1,4 @@
-from .anisearch import AniSearch
+from .coffeeani import Coffeeani
 
-
-def setup(bot):
-    n = AniSearch()
-    bot.add_cog(n)
+async def setup(bot):
+    await bot.add_cog(Coffeeani())

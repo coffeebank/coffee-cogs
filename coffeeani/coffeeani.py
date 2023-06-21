@@ -123,10 +123,7 @@ query ($id: Int, $page: Int, $search: String) {
 }
 """
 
-BaseCog = getattr(commands, "Cog", object)
-
-
-class AniSearch(BaseCog):
+class Coffeeani(commands.Cog):
     """Search for anime, manga, characters and users using Anilist"""
 
     def __init__(self):
