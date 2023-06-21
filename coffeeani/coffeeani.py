@@ -134,6 +134,10 @@ class Coffeeani(commands.Cog):
     def __init__(self):
         self.url = "https://graphql.anilist.co"
 
+    async def red_delete_data_for_user(self, **kwargs):
+        """Nothing to delete."""
+        return
+
     def format_name(self, first_name, last_name):  # Combines first_name and last_name and/or shows either of the two
         if first_name and last_name:
             return first_name + " " + last_name
