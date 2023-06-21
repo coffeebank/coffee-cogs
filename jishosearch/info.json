@@ -1,0 +1,11 @@
+{
+  "author" : ["coffeebank"],
+  "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by the website at <https://coffeebank.github.io/coffee-cogs/jishosearch>",
+  "name" : "jishosearch",
+  "short" : "Japanese dictionary bot",
+  "requirements" : ["asyncio", "aiohttp"],
+  "description" : "Japanese dictionary bot. Searches Jisho using Jisho API.",
+  "permissions" : [],
+  "end_user_data_statement" : "This cog does not store any End User Data.",
+  "tags" : ["dictionary", "jp", "ja", "japanese", "jisho", "辞書", "じしょ"]
+}
