@@ -1,7 +1,7 @@
 from redbot.core import Config, commands, checks
 from urllib.parse import urlparse
 import asyncio
-import requests
+import aiohttp
 import json
 
 class Jsonrequest(commands.Cog):
@@ -34,10 +34,12 @@ class Jsonrequest(commands.Cog):
             # Domain not approved or error occured; stop here
             return False
 
-    def makeJsonRequest(self, url):
-        reqdata = requests.get(url).json()
-        reqcontent = json.dumps(reqdata, sort_keys=True, indent=2, separators=(',', ': '))
-        return reqcontent
+    async def makeJsonRequest(self, url):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as resp:
+                reqdata = await resp.json()
+                reqcontent = json.dumps(reqdata, sort_keys=True, indent=2, separators=(',', ': '))
+                return reqcontent
 
 
     # Bot Commands
@@ -105,7 +107,7 @@ class Jsonrequest(commands.Cog):
 
         # Json request
         try:
-            reqcontent = self.makeJsonRequest(url)
+            reqcontent = await self.makeJsonRequest(url)
         except:
             return await ctx.send("Oops! An error occured with the request....")
         else:
