@@ -1,6 +1,7 @@
 {
   "author": ["Jintaku", "Wyn", "coffeebank"],
   "bot_version": [3,5,0],
+  "name" : "coffeeani",
   "description": "You can search anime, manga, users and characters from Anilist!\n\nForked from anisearch by Jintaku and Wyn.",
   "hidden": false,
   "install_msg": "Installed Anisearch! Have fun.",
