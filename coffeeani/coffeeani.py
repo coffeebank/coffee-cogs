@@ -16,11 +16,11 @@ query ($id: Int, $page: Int, $search: String, $type: MediaType) {
             title {
                 english
                 romaji
-              	native
+                native
             }
             coverImage {
-            		medium
-              	color
+                medium
+                color
             }
             bannerImage
             averageScore
@@ -35,9 +35,9 @@ query ($id: Int, $page: Int, $search: String, $type: MediaType) {
             nextAiringEpisode {
                 timeUntilAiring
             }
-      			countryOfOrigin
-      			format
-      			synonyms
+            countryOfOrigin
+            format
+            synonyms
         }
     }
 }
