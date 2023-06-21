@@ -16,9 +16,11 @@ query ($id: Int, $page: Int, $search: String, $type: MediaType) {
             title {
                 english
                 romaji
+              	native
             }
             coverImage {
             		medium
+              	color
             }
             bannerImage
             averageScore
@@ -33,6 +35,9 @@ query ($id: Int, $page: Int, $search: String, $type: MediaType) {
             nextAiringEpisode {
                 timeUntilAiring
             }
+      			countryOfOrigin
+      			format
+      			synonyms
         }
     }
 }
@@ -226,8 +231,7 @@ class Coffeeani(commands.Cog):
                 embed.url = link
                 embed.color = 3447003
                 embed.description = self.description_parser(description)
-                embed.set_thumbnail(url=anime_manga["coverImage"]["medium"])
-                embed.add_field(name="Score", value=anime_manga.get("averageScore", "N/A"))
+                embed.set_image(url=f"https://img.anili.st/media/{anime_manga['id']}")
                 if cmd == "ANIME":
                     embed.add_field(name="Episodes", value=anime_manga.get("episodes", "N/A"))
                     embed.set_footer(text="Status : " + MediaStatusToString[anime_manga["status"]] + ", Next episode : " + time_left + ", Powered by Anilist")
@@ -238,7 +242,14 @@ class Coffeeani(commands.Cog):
                     embed.add_field(name="Streaming and/or Info sites", value=external_links)
                 if anime_manga["bannerImage"]:
                     embed.set_image(url=anime_manga["bannerImage"])
-                embed.add_field(name="You can find out more", value=f"[Anilist]({link}), [MAL](https://myanimelist.net/{cmd.lower()}/{anime_manga['idMal']}), Kitsu (Soon™)")
+                embed.add_field(name="You can find out more", value=f"[Anilist]({link}), [MAL](https://myanimelist.net/{cmd.lower()}/{anime_manga['idMal']})")
+                am_name_native = []
+                am_name_native.append(anime_manga['title'].get('native', None))
+                am_name_native.append(anime_manga['title'].get('romaji', None))
+                am_names = am_name_native + anime_manga.get('synonyms', [])
+                if len(am_names) <= 0:
+                    am_names = ["N/A"]
+                embed.add_field(name="Names", value=self.description_parser(', '.join(am_names)), inline=False)
                 embeds.append(embed)
 
             return embeds, data
