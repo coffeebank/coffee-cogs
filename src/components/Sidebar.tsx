@@ -57,6 +57,10 @@ export default function Sidebar() {
           link: "/bartender"
         },
         {
+          title: "coffeeani",
+          link: "/coffeeani"
+        },
+        {
           title: "coffeetime",
           link: "/coffeetime"
         },
