@@ -381,11 +381,17 @@ class Hellohook(commands.Cog):
         except:
             return await ctx.send("Error: Invalid JSON.... setup exited.")
 
+        # Set message
+        invRoles = await ctx.send("Please ping any roles you'd like this invite to also add. Type 'none' to skip.")
+        invRolesPred = await ctx.bot.wait_for("message")
+        invRolesList = invRolesPred.role_mentions
+
         try:
             inviteList[str(invObj.id)] = {
                 "uses": invObj.uses,
                 "channel": invHookPred.clean_content,
                 "message": invMsgJson,
+                "roles": invRolesList
             }
         except:
             return await ctx.send("Error: Variables failed.... setup exited.\n"+str(invObj))
