@@ -26,6 +26,7 @@ class Hellohook(commands.Cog):
             #     uses: int,
             #     channel: str, // webhook url
             #     message: {} // discohook json
+            #     roles: [role.id] // role invites
             #   }
             # }
             "oldInviteList": {}
@@ -381,11 +382,17 @@ class Hellohook(commands.Cog):
         except:
             return await ctx.send("Error: Invalid JSON.... setup exited.")
 
+        # Set message
+        invRoles = await ctx.send("Please ping any roles you'd like this invite to also add. Type 'none' to skip.")
+        invRolesPred = await ctx.bot.wait_for("message")
+        invRolesList = [ir.id for ir in invRolesPred.role_mentions]
+
         try:
             inviteList[str(invObj.id)] = {
                 "uses": invObj.uses,
                 "channel": invHookPred.clean_content,
                 "message": invMsgJson,
+                "roles": invRolesList
             }
         except:
             return await ctx.send("Error: Variables failed.... setup exited.\n"+str(invObj))
@@ -445,6 +452,7 @@ class Hellohook(commands.Cog):
                         "uses": ni.uses,
                         "channel": inviteList[str(ni.id)]["channel"],
                         "message": inviteList[str(ni.id)]["message"],
+                        "roles": inviteList[str(ni.id)].get("roles", None),
                     }
             except:
                 pass
@@ -463,6 +471,7 @@ class Hellohook(commands.Cog):
             e.add_field(name="Uses", value=inviteList[io]["uses"], inline=False)
             e.add_field(name="Webhook", value="||"+str(self.validChecker(inviteList[io]["channel"]))+"||", inline=False)
             e.add_field(name="Greet Message", value='```json\n' + str(json.dumps(inviteList[io]["message"]))[:1011]+'```', inline=False)
+            e.add_field(name="Roles", value='```json\n' + str(inviteList[io].get("roles", None))[:1011]+'```', inline=False)
             await ctx.send(embed=e)
           except:
             e = discord.Embed(color=(await ctx.embed_colour()), title=io, description="Data error:\n"+str(inviteList[io]))
@@ -513,6 +522,15 @@ class Hellohook(commands.Cog):
                 try:
                     if savedInvites[str(gio.code)] and gio.uses > savedInvites[str(gio.code)]["uses"]:
                         await self.inviteUsesSetter(userGuild, str(gio.code), gio.uses)
+                        # Add role invites before sending welcome embed
+                        irRoles = json.loads(savedInvites[str(gio.code)].get("roles", '[]'))
+                        if len(irRoles) > 0:
+                            for iro in irRoles:
+                                try:
+                                    irAdd = userGuild.get_role(int(iro))
+                                    await userObj.add_roles(irAdd, reason="Hellohook invite role "+str(gio.code))
+                                except: # Silently skip if role not found
+                                    pass
                         invHook = SyncWebhook.from_url(savedInvites[str(gio.code)]["channel"])
                         await self.hellohookSender(invHook, userObj, savedInvites[str(gio.code)]["message"])
                         # End early if webhook exists and was sent successfully
