@@ -519,6 +519,9 @@ class Hellohook(commands.Cog):
                 try:
                     if savedInvites[str(gio.code)] and gio.uses > savedInvites[str(gio.code)]["uses"]:
                         await self.inviteUsesSetter(userGuild, str(gio.code), gio.uses)
+                        # Add role invites before sending welcome embed
+                        if savedInvites[str(gio.code)].get("roles", None) is not None:
+                            await userObj.add_roles(savedInvites[str(gio.code)].get("roles", None))
                         invHook = SyncWebhook.from_url(savedInvites[str(gio.code)]["channel"])
                         await self.hellohookSender(invHook, userObj, savedInvites[str(gio.code)]["message"])
                         # End early if webhook exists and was sent successfully
