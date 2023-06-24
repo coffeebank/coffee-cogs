@@ -469,6 +469,7 @@ class Hellohook(commands.Cog):
             e.add_field(name="Uses", value=inviteList[io]["uses"], inline=False)
             e.add_field(name="Webhook", value="||"+str(self.validChecker(inviteList[io]["channel"]))+"||", inline=False)
             e.add_field(name="Greet Message", value='```json\n' + str(json.dumps(inviteList[io]["message"]))[:1011]+'```', inline=False)
+            e.add_field(name="Roles", value='```json\n' + str(inviteList[io].get("roles", None))[:1011]+'```', inline=False)
             await ctx.send(embed=e)
           except:
             e = discord.Embed(color=(await ctx.embed_colour()), title=io, description="Data error:\n"+str(inviteList[io]))
