@@ -26,6 +26,7 @@ class Hellohook(commands.Cog):
             #     uses: int,
             #     channel: str, // webhook url
             #     message: {} // discohook json
+            #     roles: [role.id] // role invites
             #   }
             # }
             "oldInviteList": {}
@@ -384,7 +385,7 @@ class Hellohook(commands.Cog):
         # Set message
         invRoles = await ctx.send("Please ping any roles you'd like this invite to also add. Type 'none' to skip.")
         invRolesPred = await ctx.bot.wait_for("message")
-        invRolesList = invRolesPred.role_mentions
+        invRolesList = [ir.id for ir in invRolesPred.role_mentions]
 
         try:
             inviteList[str(invObj.id)] = {
@@ -451,6 +452,7 @@ class Hellohook(commands.Cog):
                         "uses": ni.uses,
                         "channel": inviteList[str(ni.id)]["channel"],
                         "message": inviteList[str(ni.id)]["message"],
+                        "roles": inviteList[str(ni.id)].get("roles", None),
                     }
             except:
                 pass
@@ -521,8 +523,14 @@ class Hellohook(commands.Cog):
                     if savedInvites[str(gio.code)] and gio.uses > savedInvites[str(gio.code)]["uses"]:
                         await self.inviteUsesSetter(userGuild, str(gio.code), gio.uses)
                         # Add role invites before sending welcome embed
-                        if savedInvites[str(gio.code)].get("roles", None) is not None:
-                            await userObj.add_roles(savedInvites[str(gio.code)].get("roles", None))
+                        irRoles = json.loads(savedInvites[str(gio.code)].get("roles", '[]'))
+                        if len(irRoles) > 0:
+                            for iro in irRoles:
+                                try:
+                                    irAdd = userGuild.get_role(int(iro))
+                                    await userObj.add_roles(irAdd, reason="Hellohook invite role "+str(gio.code))
+                                except: # Silently skip if role not found
+                                    pass
                         invHook = SyncWebhook.from_url(savedInvites[str(gio.code)]["channel"])
                         await self.hellohookSender(invHook, userObj, savedInvites[str(gio.code)]["message"])
                         # End early if webhook exists and was sent successfully
