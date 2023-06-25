@@ -1,7 +1,7 @@
 {
   "author" : ["coffeebank"],
-  "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by the website at <https://coffeebank.github.io/coffee-cogs/jishosearch>",
-  "name" : "jishosearch",
+  "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by the website at <https://coffeebank.github.io/coffee-cogs/jadict>",
+  "name" : "jadict",
   "short" : "Japanese dictionary bot",
   "requirements" : ["asyncio", "aiohttp"],
   "description" : "Japanese dictionary bot. Searches Jisho using Jisho API. Includes alternate links to Wiktionary, DeepL, and Google Translate.",

@@ -6,7 +6,7 @@ import asyncio
 import aiohttp
 import json
 
-class Jishosearch(commands.Cog):
+class Jadict(commands.Cog):
     """Japanese dictionary bot. Searches Jisho using Jisho API."""
 
     def __init__(self):
