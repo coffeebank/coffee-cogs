@@ -49,7 +49,10 @@ class Jishosearch(commands.Cog):
             if len(jishoResult.get("jlpt", [])) > 0:
                 jlpt = " ・ "+str(", ".join(jishoResult.get("jlpt", [])))
 
-            e = discord.Embed(color=(await ctx.embed_colour()), title=kanji, description=reading+is_common+jlpt)
+            if kanji != "None":
+                e = discord.Embed(color=(await ctx.embed_colour()), title=kanji, description=reading+is_common+jlpt)
+            else:
+                e = discord.Embed(color=(await ctx.embed_colour()), title=reading, description=is_common+jlpt)
 
             for index, sense in enumerate(jishoResult.get("senses", [])):
                 parts_of_speech = str(", ".join(sense.get("parts_of_speech", [])))
