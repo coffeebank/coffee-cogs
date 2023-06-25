@@ -99,7 +99,13 @@ class Jadict(commands.Cog):
 
     @commands.command(name="jishosearch", aliases=["jisho"])
     async def jishosearch(self, ctx, *, text):
-        """Search Jisho"""
+        """Search Japanese dictionary
+        
+        By default, searches Jisho using Japanese and Romaji. When searching in English, please use  **`"quotes"`** .
+
+        > ✅  東京, toukyou, or "tokyo"
+        > ❌  tokyo
+        """
         jishoJson = await self.fetchJisho(text)
 
         if jishoJson is not False:
