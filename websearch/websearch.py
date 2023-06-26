@@ -29,6 +29,10 @@ class Websearch(commands.Cog):
                     "title": "DuckDuckGo",
                     "url": "https://duckduckgo.com/?t=ffab&q="
                 },
+                {
+                    "title": "Wikipedia",
+                    "url": "https://en.wikipedia.org/w/index.php?fulltext=0&search="
+                },
             ]
         }
         self.config.register_guild(**default_guild)
@@ -41,7 +45,10 @@ class Websearch(commands.Cog):
 
     @commands.command()
     async def websearch(self, ctx, *, searchtext):
-        """Do a search"""
+        """Do a search
+        
+        Use the `[p]weblink` command to only show a link from one service.
+        Use the `[p]setwebsearch` command to change settings for your guild."""
         query = quote(searchtext)
         searchEngines = await self.config.guild(ctx.guild).searchEngines()
         message = ""
