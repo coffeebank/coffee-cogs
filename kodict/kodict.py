@@ -21,10 +21,20 @@ class Kodict(commands.Cog):
 
     # Utility Commands
 
-    async def makeJsonRequest(self, url):
+    async def fetchKrdict(self, text):
+        krdictKeyObj = await bot.get_shared_api_tokens("krdict")
+        krdictKey = krdictKeyObj.get("api_key")
+        if krdictKey is None:
+            return None
+        try:
+            krdictXml = await self.makeTextRequest(f"https://krdict.korean.go.kr/api/search?key={krdictKey}&q={text}")
+        except:
+            return None
+
+    async def makeTextRequest(self, url):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
-                reqdata = await resp.json()
+                reqdata = await resp.text()
                 return reqdata
 
     async def fetchJisho(self, text):
