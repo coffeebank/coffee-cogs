@@ -19,16 +19,6 @@ export default function Sidebar() {
       ]
     },
     {
-      title: "🍒 Cherry Emotes",
-      heading: true,
-      items: [
-        {
-          title: "Home",
-          link: "/emotes"
-        }
-      ]
-    },
-    {
       title: "🐱 Hellohook",
       heading: true,
       items: [
@@ -58,7 +48,7 @@ export default function Sidebar() {
         },
         {
           title: "Japanese 辞書",
-          link: "/jishosearch"
+          link: "/jadict"
         },
       ]
     },
@@ -85,6 +75,10 @@ export default function Sidebar() {
         {
           title: "dmreply",
           link: "/dmreply"
+        },
+        {
+          title: "emotes",
+          link: "/emotes"
         },
         {
           title: "jsonrequest",
