@@ -4,7 +4,7 @@ title: "kodict"
 
 # kodict
 
-<component-coghero cog="kodict"></component-coghero>
+<component-coghero cog="kodict" desc="Korean dictionary bot. Searches National Institute of Korean Language's Korean-English Learners' Dictionary (한국어기초사전) using their Open API."></component-coghero>
 
 
 ## Krdict API Key
