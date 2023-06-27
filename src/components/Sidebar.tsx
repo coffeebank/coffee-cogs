@@ -50,6 +50,10 @@ export default function Sidebar() {
           title: "Japanese 辞書",
           link: "/jadict"
         },
+        {
+          title: "Korean 사전",
+          link: "/kodict"
+        },
       ]
     },
     {
