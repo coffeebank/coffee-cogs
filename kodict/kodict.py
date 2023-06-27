@@ -4,12 +4,14 @@ import urllib.parse
 import discord
 import asyncio
 import aiohttp
+import defusedxml.ElementTree as ET
 import json
 
 class Kodict(commands.Cog):
     """Korean dictionary bot. Searches National Institute of Korean Language's Korean-English Learners' Dictionary."""
 
-    def __init__(self):
+    def __init__(self, bot):
+        self.bot = bot
         self.config = Config.get_conf(self, identifier=806715409318936616)
 
     # This cog does not store any End User Data
@@ -22,81 +24,85 @@ class Kodict(commands.Cog):
     # Utility Commands
 
     async def fetchKrdict(self, text):
-        krdictKeyObj = await bot.get_shared_api_tokens("krdict")
+        krdictKeyObj = await self.bot.get_shared_api_tokens("krdict")
         krdictKey = krdictKeyObj.get("api_key")
         if krdictKey is None:
+            print("Error: Krdict API key not set")
             return None
         try:
-            krdictXml = await self.makeTextRequest(f"https://krdict.korean.go.kr/api/search?key={krdictKey}&q={text}")
-        except:
+            krdictUrl = f"https://krdict.korean.go.kr/api/search?key={krdictKey}&q={text}&translated=y&trans_lang=1"
+            async with aiohttp.ClientSession() as session:
+                # TODO: Consider using certifi in the future
+                async with session.get(krdictUrl, ssl=False) as resp:
+                    krdictXmlRaw = await resp.text()
+                    krdictXml = ET.fromstring(krdictXmlRaw)
+
+                    # Check if there are results
+                    try:
+                        krdictXml.findall("item")[0]
+                        return krdictXml
+                    except:
+                        return False
+        except Exception as e:
+            print(e)
             return None
 
-    async def makeTextRequest(self, url):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
-                reqdata = await resp.text()
-                return reqdata
-
-    async def fetchJisho(self, text):
-        try:
-            jishoJson = await self.makeJsonRequest(f"http://jisho.org/api/v1/search/words?keyword={text}")
-            if len(jishoJson.get("data", [])) > 0:
-                return jishoJson
-            else:
-                return False
-        except:
-            return None
-        
-    async def jishoEmbeds(self, ctx, jishoJson):
+    async def kodictEmbeds(self, ctx, xmlTree):
         sendEmbeds = []
-        for jishoResult in jishoJson.get("data", []):
-            kanji = str(jishoResult["japanese"][0].get("word", None))
-            reading = str(jishoResult["japanese"][0].get("reading", None))
-            is_common = ""
-            if jishoResult.get("is_common", None) is True:
-                is_common = " ・ Common"
-            jlpt = ""
-            if len(jishoResult.get("jlpt", [])) > 0:
-                jlpt = " ・ "+str(", ".join(jishoResult.get("jlpt", [])))
 
-            if kanji != "None":
-                e = discord.Embed(color=(await ctx.embed_colour()), title=kanji, description=reading+is_common+jlpt)
-            else:
-                e = discord.Embed(color=(await ctx.embed_colour()), title=reading, description=is_common+jlpt)
+        attribution = "Results by 한국어기초사전"
+        try:
+            total = str(min(int(xmlTree.find("total").text), 10))+" results"
+        except AttributeError:
+            total = None
 
-            for index, sense in enumerate(jishoResult.get("senses", [])):
-                parts_of_speech = str(", ".join(sense.get("parts_of_speech", [])))
-                english_definitions = str("; ".join(sense.get("english_definitions", [])))
-                tags = ""
-                if len(sense.get("tags", [])) > 0:
-                    tags = "\n*Tags: " + str(", ".join(sense.get("tags", []))) + "*"
-                see_also = ""
-                if len(sense.get("see_also", [])) > 0:
-                    see_also = "\n*See also: " + str(", ".join(sense.get("see_also", []))) + "*"
+        for krResult in xmlTree.findall("item"):
+            word = krResult.find("word").text
+            link = krResult.find("link").text
+
+            try:
+                parts_of_speech = "` "+str(krResult.find("pos").text)+" `"
+            except AttributeError:
+                parts_of_speech = None
+            try:
+                origin = krResult.find("origin").text
+            except AttributeError:
+                origin = None
+            try:
+                pronunciation = krResult.find("pronunciation").text
+            except AttributeError:
+                pronunciation = None
+            try:
+                word_grade = "🏫 ` "+str(krResult.find("word_grade").text)+" `"
+            except AttributeError:
+                word_grade = None
+
+            desc_body = " ・ ".join(filter(None, [pronunciation, origin, parts_of_speech, word_grade]))
+            e = discord.Embed(color=(await ctx.embed_colour()), title=word, url=link, description=desc_body)
+
+            for krrSense in krResult.findall("sense"):
+                idx = krrSense.find("sense_order").text
+                ko_def = krrSense.find("definition").text
+
+                en_trans = krrSense.find("translation")
+                en_word = en_trans.find("trans_word").text
+                en_def = en_trans.find("trans_dfn").text
 
                 e.add_field(
-                    name=str(index+1)+". "+english_definitions, 
-                    value="*"+parts_of_speech+"*"+tags+see_also,
-                    inline=True
+                  name=str(idx)+". "+en_word, 
+                  value="\n".join([en_def, ko_def])
                 )
-            
-            if jishoResult.get("attribution", None) is not None:
-                attrs = ["Jisho API"]
-                for k, v in jishoResult.get("attribution", {}).items():
-                    if v is not False:
-                        attrs.append(k)
-                attr = "Results from "+", ".join(attrs)
-                e.set_footer(text=attr)
 
+            e.set_footer(text=" ・ ".join(filter(None, [attribution, total])))
             sendEmbeds.append(e)
         return sendEmbeds
 
     async def fallbackEmbed(self, ctx, rawText, footer=""):
         text = urllib.parse.quote(rawText, safe='')
         e = discord.Embed(color=(await ctx.embed_colour()), title=rawText)
-        e.add_field(name="Jisho", value=f"https://jisho.org/search/{text}")
+        e.add_field(name="Krdict (한국어기초사전)", value=f"https://krdict.korean.go.kr/eng/dicSearch/search?nation=eng&nationCode=6&mainSearchWord={text}")
         e.add_field(name="Wiktionary", value=f"https://en.wiktionary.org/w/index.php?fulltext=0&search={text}")
-        e.add_field(name="DeepL Translate", value=f"https://deepl.com/translator#ja/en/{text}")
+        e.add_field(name="DeepL Translate", value=f"https://deepl.com/translator#ko/en/{text}")
         e.add_field(name="Google Translate", value=f"https://translate.google.com/?text={text}")
 
         if footer:
@@ -107,29 +113,25 @@ class Kodict(commands.Cog):
 
     # Bot Commands
 
-    @commands.command(name="jishosearch", aliases=["jisho"])
-    async def jishosearch(self, ctx, *, text):
-        """Search Japanese dictionary
+    @commands.command(name="kodict", aliases=["krdict"])
+    async def kodict(self, ctx, *, text):
+        """Search Korean dictionary
         
-        By default, searches Jisho using Japanese and Romaji. When searching in English, please use  **`"quotes"`** .
+        Uses the Krdict (한국어기초사전) Open API"""
+        xmlTree = await self.fetchKrdict(text)
 
-        > ✅  東京, toukyou, or "tokyo"
-        > ❌  tokyo
-        """
-        jishoJson = await self.fetchJisho(text)
-
-        if jishoJson is not False:
-            sendEmbeds = await self.jishoEmbeds(ctx, jishoJson)
+        if xmlTree is False:
+            fallback_embed = await self.fallbackEmbed(ctx, text, "No Krdict search results found. Please try other sources.")
+            return await ctx.send(embed=fallback_embed)
+        elif xmlTree is not None:
+            sendEmbeds = await self.kodictEmbeds(ctx, xmlTree)
             await menu(ctx, pages=sendEmbeds, controls=DEFAULT_CONTROLS, message=None, page=0, timeout=30)
-        elif jishoJson is False:
-            fallback_embed = await self.fallbackEmbed(ctx, text, "No Jisho search results found. Please try other sources.")
-            return await ctx.send(embed=fallback_embed)
         else:
-            fallback_embed = await self.fallbackEmbed(ctx, text, "Could not connect to Jisho API")
+            fallback_embed = await self.fallbackEmbed(ctx, text, "Could not connect to Krdict API")
             return await ctx.send(embed=fallback_embed)
 
-    @commands.command(name="jasearch", aliases=["jpsearch"])
-    async def jasearch(self, ctx, *, text):
-        """Search Japanese vocabulary and translation websites"""
+    @commands.command(name="kosearch", aliases=["krsearch"])
+    async def kosearch(self, ctx, *, text):
+        """Search Korean vocabulary and translation websites"""
         fallback_embed = await self.fallbackEmbed(ctx, text)
         return await ctx.send(embed=fallback_embed)
