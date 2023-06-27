@@ -30,7 +30,7 @@ class Kodict(commands.Cog):
             print("Error: Krdict API key not set")
             return None
         try:
-            krdictUrl = f"https://krdict.korean.go.kr/api/search?key={krdictKey}&q={text}&translated=y&trans_lang=1"
+            krdictUrl = f"https://krdict.korean.go.kr/api/search?key={krdictKey}&q={urllib.parse.quote(text, safe='')}&translated=y&trans_lang=1"
             async with aiohttp.ClientSession() as session:
                 # TODO: Consider using certifi in the future
                 async with session.get(krdictUrl, ssl=False) as resp:
