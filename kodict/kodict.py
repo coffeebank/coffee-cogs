@@ -128,7 +128,11 @@ class Kodict(commands.Cog):
     async def kodict(self, ctx, *, text):
         """Search Korean dictionary
         
-        Uses the Krdict (한국어기초사전) Open API"""
+        Uses the Krdict (한국어기초사전) Open API
+
+        Currently, only searching in Korean is supported.
+        - Korean Hanja is variant-sensitive (must be in Korean, not Chinese/Japanese)
+        - Searching in English is not yet supported"""
         xmlTree = await self.fetchKrdict(text)
 
         if xmlTree is False:
