@@ -50,13 +50,13 @@ class Kodict(commands.Cog):
     async def kodictEmbeds(self, ctx, xmlTree):
         sendEmbeds = []
 
-        attribution = "Results by 한국어기초사전"
+        attribution = "Results from Krdict (한국어기초사전)"
         try:
-            total = str(min(int(xmlTree.find("total").text), 10))+" results"
+            total = str(min(int(xmlTree.find("total").text), 10))
         except AttributeError:
             total = None
 
-        for krResult in xmlTree.findall("item"):
+        for resIdx, krResult in enumerate(xmlTree.findall("item")):
             word = str(krResult.find("word").text)
             link = str(krResult.find("link").text)
 
@@ -93,7 +93,7 @@ class Kodict(commands.Cog):
                   value="\n".join([en_def, ko_def])
                 )
 
-            e.set_footer(text=" ・ ".join(filter(None, [attribution, total])))
+            e.set_footer(text=" ・ ".join(filter(None, [str(attribution), str(resIdx+1)+"/"+str(total)])))
             sendEmbeds.append(e)
         return sendEmbeds
 
