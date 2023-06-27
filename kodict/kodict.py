@@ -80,17 +80,28 @@ class Kodict(commands.Cog):
             desc_body = " ・ ".join(filter(None, [pronunciation, origin, parts_of_speech, word_grade]))
             e = discord.Embed(color=(await ctx.embed_colour()), title=word, url=link, description=desc_body)
 
-            for krrSense in krResult.findall("sense"):
-                idx = str(krrSense.find("sense_order").text)
-                ko_def = str(krrSense.find("definition").text)
+            for idx, krrSense in enumerate(krResult.findall("sense")):
+                try:
+                    senseIdx = str(krrSense.find("sense_order").text)
+                except AttributeError:
+                    senseIdx = idx+1 
+                try:
+                    ko_def = str(krrSense.find("definition").text)
+                except AttributeError:
+                    ko_def = None
 
-                en_trans = krrSense.find("translation")
-                en_word = str(en_trans.find("trans_word").text)
-                en_def = str(en_trans.find("trans_dfn").text)
+                try:
+                    en_trans = krrSense.find("translation")
+                    en_word = str(en_trans.find("trans_word").text)
+                    en_def = str(en_trans.find("trans_dfn").text)
+                except AttributeError:
+                    en_trans = None
+                    en_word = ""
+                    en_def = f"[See translation on DeepL](https://www.deepl.com/translator#ko/en/{urllib.parse.quote(ko_def, safe='')})"
 
                 e.add_field(
-                  name=str(idx)+". "+en_word, 
-                  value="\n".join([en_def, ko_def])
+                  name=str(senseIdx)+". "+str(en_word), 
+                  value="\n".join(filter(None, [en_def, ko_def]))
                 )
 
             e.set_footer(text=" ・ ".join(filter(None, [str(attribution), str(resIdx+1)+"/"+str(total)])))
