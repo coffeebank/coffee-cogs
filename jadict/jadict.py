@@ -65,10 +65,17 @@ class Jadict(commands.Cog):
                 see_also = ""
                 if len(sense.get("see_also", [])) > 0:
                     see_also = "\n*See also: " + str(", ".join(sense.get("see_also", []))) + "*"
+                links = ""
+                if len(sense.get("links", [])) > 0:
+                    links += "\n"
+                    for sl in sense.get("links", []):
+                        if sl.get("url") is not None:
+                            links += f"[{sl.get('text', 'Link')}]({sl.get('url')}), "
+                    links = links[:-2] # remove last comma and space
 
                 e.add_field(
                     name=str(index+1)+". "+english_definitions, 
-                    value="*"+parts_of_speech+"*"+tags+see_also,
+                    value="*"+parts_of_speech+"*"+tags+see_also+links,
                     inline=True
                 )
             
