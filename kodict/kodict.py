@@ -57,19 +57,19 @@ class Kodict(commands.Cog):
             total = None
 
         for krResult in xmlTree.findall("item"):
-            word = krResult.find("word").text
-            link = krResult.find("link").text
+            word = str(krResult.find("word").text)
+            link = str(krResult.find("link").text)
 
             try:
                 parts_of_speech = "` "+str(krResult.find("pos").text)+" `"
             except AttributeError:
                 parts_of_speech = None
             try:
-                origin = krResult.find("origin").text
+                origin = str(krResult.find("origin").text)
             except AttributeError:
                 origin = None
             try:
-                pronunciation = krResult.find("pronunciation").text
+                pronunciation = str(krResult.find("pronunciation").text)
             except AttributeError:
                 pronunciation = None
             try:
@@ -81,12 +81,12 @@ class Kodict(commands.Cog):
             e = discord.Embed(color=(await ctx.embed_colour()), title=word, url=link, description=desc_body)
 
             for krrSense in krResult.findall("sense"):
-                idx = krrSense.find("sense_order").text
-                ko_def = krrSense.find("definition").text
+                idx = str(krrSense.find("sense_order").text)
+                ko_def = str(krrSense.find("definition").text)
 
                 en_trans = krrSense.find("translation")
-                en_word = en_trans.find("trans_word").text
-                en_def = en_trans.find("trans_dfn").text
+                en_word = str(en_trans.find("trans_word").text)
+                en_def = str(en_trans.find("trans_dfn").text)
 
                 e.add_field(
                   name=str(idx)+". "+en_word, 
