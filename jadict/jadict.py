@@ -45,14 +45,16 @@ class Jadict(commands.Cog):
             is_common = ""
             if jishoResult.get("is_common", None) is True:
                 is_common = " ・ Common"
-            jlpt = ""
+            tags = ""
             if len(jishoResult.get("jlpt", [])) > 0:
-                jlpt = " ・ "+str(", ".join(jishoResult.get("jlpt", [])))
+                tags += " ・ "+str(", ".join(jishoResult.get("jlpt", [])))
+            if len(jishoResult.get("tags", [])) > 0:
+                tags += " ・ "+str(", ".join(jishoResult.get("tags", [])))
 
             if kanji != "None":
-                e = discord.Embed(color=(await ctx.embed_colour()), title=kanji, description=reading+is_common+jlpt)
+                e = discord.Embed(color=(await ctx.embed_colour()), title=kanji, description=reading+is_common+tags)
             else:
-                e = discord.Embed(color=(await ctx.embed_colour()), title=reading, description=is_common+jlpt)
+                e = discord.Embed(color=(await ctx.embed_colour()), title=reading, description=is_common+tags)
 
             for index, sense in enumerate(jishoResult.get("senses", [])):
                 parts_of_speech = str(", ".join(sense.get("parts_of_speech", [])))
