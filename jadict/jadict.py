@@ -40,6 +40,10 @@ class Jadict(commands.Cog):
     async def jishoEmbeds(self, ctx, jishoJson):
         sendEmbeds = []
         for jishoResult in jishoJson.get("data", []):
+            if jishoResult.get("slug"):
+                jisho_src = f"https://jisho.org/word/{jishoResult.get('slug')}"
+            else:
+                jisho_src = None
             kanji = str(jishoResult["japanese"][0].get("word", None))
             reading = str(jishoResult["japanese"][0].get("reading", None))
             is_common = ""
@@ -52,9 +56,9 @@ class Jadict(commands.Cog):
                 tags += " ・ "+str(", ".join(jishoResult.get("tags", [])))
 
             if kanji != "None":
-                e = discord.Embed(color=(await ctx.embed_colour()), title=kanji, description=reading+is_common+tags)
+                e = discord.Embed(color=(await ctx.embed_colour()), title=kanji, url=jisho_src, description=reading+is_common+tags)
             else:
-                e = discord.Embed(color=(await ctx.embed_colour()), title=reading, description=is_common+tags)
+                e = discord.Embed(color=(await ctx.embed_colour()), title=reading, url=jisho_src, description=is_common+tags)
 
             for index, sense in enumerate(jishoResult.get("senses", [])):
                 parts_of_speech = str(", ".join(sense.get("parts_of_speech", [])))
