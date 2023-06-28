@@ -59,7 +59,7 @@ class Kodict(commands.Cog):
           "관형사": "Modifier",
           "부사": "Adverb",
           "감탄사": "Interjection",
-          "접사": "Affix",
+          "접사": "Prefix/Suffix",
           "의존 명사": "Dependent Noun",
           "보조 동사": "Auxiliary Verb",
           "보조 형용사": "Auxiliary Adjective",
