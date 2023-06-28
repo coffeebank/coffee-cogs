@@ -55,10 +55,10 @@ class Jadict(commands.Cog):
 
             if kanji and kana:
                 # word == kanji -> show kana, romaji
-                reading = kana+" "+JadictUtils.to_romaji(kana)
+                reading = kana+" "+JadictUtils.to_romaji(str(kana))
             else:
                 # word == kana -> show only romaji
-                reading = JadictUtils.to_romaji(kana)
+                reading = JadictUtils.to_romaji(str(word))
 
             is_common = None
             if jishoResult.get("is_common", None) is True:
