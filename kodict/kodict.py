@@ -50,13 +50,20 @@ class Kodict(commands.Cog):
 
     def koPos(self, text):
         parts_of_speech_blocks = {
+          "명사": "Noun",
+          "대명사": "Pronoun",
+          "수사": "Number",
+          "조사": "Particle",
+          "동사": "Verb",
           "형용사": "Adjective",
+          "관형사": "Modifier",
           "부사": "Adverb",
           "감탄사": "Interjection",
-          "명사": "Noun",
-          "접사": "Prefix/Suffix",
+          "접사": "Affix",
+          "의존 명사": "Dependent Noun",
+          "보조 동사": "Auxiliary Verb",
+          "보조 형용사": "Auxiliary Adjective",
           "어미": "Suffix",
-          "동사": "Verb",
         }
         return parts_of_speech_blocks.get(text, None)
 
@@ -83,11 +90,10 @@ class Kodict(commands.Cog):
 
             parts_of_speech = None
             try:
-                pos_none = ["품사 없음"]
-                if krResult.find("pos").text and (krResult.find("pos").text not in pos_none):
+                if krResult.find("pos").text and (krResult.find("pos").text != "품사 없음"):
                     parts_of_speech_raw = str(krResult.find("pos").text)
-                    level_gauge = self.koPos(parts_of_speech_raw)
-                    parts_of_speech = "` "+" ".join(filter(None, [parts_of_speech_raw, level_gauge]))+" `"
+                    eng_pos = self.koPos(parts_of_speech_raw)
+                    parts_of_speech = "` "+" ".join(filter(None, [parts_of_speech_raw, eng_pos]))+" `"
             except AttributeError:
                 pass
 
