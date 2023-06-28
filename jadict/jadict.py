@@ -41,7 +41,9 @@ class Jadict(commands.Cog):
         
     async def jishoEmbeds(self, ctx, jishoJson):
         sendEmbeds = []
-        for jishoResult in jishoJson.get("data", []):
+        total = len(jishoJson.get("data", []))
+
+        for idx, jishoResult in enumerate(jishoJson.get("data", [])):
             if jishoResult.get("slug"):
                 jisho_src = f"https://jisho.org/word/{jishoResult.get('slug')}"
             else:
@@ -104,7 +106,7 @@ class Jadict(commands.Cog):
                     if v is not False:
                         attrs.append(k)
                 attr = "Results from "+", ".join(attrs)
-                e.set_footer(text=attr)
+                e.set_footer(text=attr+" ・ "+str(idx+1)+"/"+str(total))
 
             sendEmbeds.append(e)
         return sendEmbeds
