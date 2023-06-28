@@ -47,6 +47,22 @@ class Kodict(commands.Cog):
             print(e)
             return None
 
+    def koPos(self, text):
+        parts_of_speech_blocks = {
+          "명사": "Noun",
+          "동사": "Verb",
+          "접사": "Prefix/Suffix"
+        }
+        return parts_of_speech_blocks.get(text, None)
+
+    def koWordGrade(self, text):
+        word_grade_blocks = {
+          "초급": "Beginner",
+          "중급": "Intermediate",
+          "고급": "Advanced",
+        }
+        return word_grade_blocks.get(text, None)
+
     async def kodictEmbeds(self, ctx, xmlTree):
         sendEmbeds = []
 
@@ -60,10 +76,15 @@ class Kodict(commands.Cog):
             word = str(krResult.find("word").text)
             link = str(krResult.find("link").text)
 
+            parts_of_speech = None
             try:
-                parts_of_speech = "` "+str(krResult.find("pos").text)+" `"
+                if krResult.find("pos").text:
+                    parts_of_speech_raw = str(krResult.find("pos").text)
+                    level_gauge = self.koPos(parts_of_speech_raw)
+                    parts_of_speech = "` "+" ".join(filter(None, [parts_of_speech_raw, level_gauge]))+" `"
             except AttributeError:
-                parts_of_speech = None
+                pass
+
             try:
                 origin = str(krResult.find("origin").text)
             except AttributeError:
@@ -73,7 +94,9 @@ class Kodict(commands.Cog):
             except AttributeError:
                 pronunciation = None
             try:
-                word_grade = "🏫 ` "+str(krResult.find("word_grade").text)+" `"
+                word_grade_raw = str(krResult.find("word_grade").text)
+                level_gauge = self.koWordGrade(word_grade_raw)
+                word_grade = "` "+" ".join(filter(None, [word_grade_raw, level_gauge]))+" `"
             except AttributeError:
                 word_grade = None
 
