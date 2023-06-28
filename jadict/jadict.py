@@ -79,6 +79,8 @@ class Jadict(commands.Cog):
 
             for index, sense in enumerate(jishoResult.get("senses", [])):
                 parts_of_speech = str(", ".join(sense.get("parts_of_speech", [])))
+                if len(parts_of_speech) > 0:
+                    parts_of_speech = "*"+parts_of_speech+"*"
                 english_definitions = str("; ".join(sense.get("english_definitions", [])))
                 tags = ""
                 if len(sense.get("tags", [])) > 0:
@@ -96,7 +98,7 @@ class Jadict(commands.Cog):
 
                 e.add_field(
                     name=str(index+1)+". "+english_definitions, 
-                    value="*"+parts_of_speech+"*"+tags+see_also+links,
+                    value=(parts_of_speech+tags+see_also+links or "-"),
                     inline=True
                 )
             
