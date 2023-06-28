@@ -127,14 +127,15 @@ class Jadict(commands.Cog):
 
     # Bot Commands
 
-    @commands.command(name="jishosearch", aliases=["jisho"])
-    async def jishosearch(self, ctx, *, text):
+    @commands.command(name="jadict", aliases=["jpdict", "jisho", "jishosearch"])
+    async def jadict(self, ctx, *, text):
         """Search Japanese dictionary
-        
-        By default, searches Jisho using Japanese and Romaji. When searching in English, please use  **`"quotes"`** .
 
+        Uses material from [Jisho](https://jisho.org), JMdict, JMnedict, DBpedia, and Wikipedia.
+        
+        By default, searches using Japanese and Romaji. When searching in English, please use  **`"quotes"`** .
         > ✅  東京, toukyou, or "tokyo"
-        > ❌  tokyo
+        > ✅  らーめん, raamen, or "ramen"
         """
         jishoJson = await self.fetchJisho(text)
 
