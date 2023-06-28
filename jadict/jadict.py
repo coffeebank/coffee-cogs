@@ -6,6 +6,8 @@ import asyncio
 import aiohttp
 import json
 
+from .jadict_utils import JadictUtils
+
 class Jadict(commands.Cog):
     """Japanese dictionary bot. Searches Jisho using Jisho API."""
 
@@ -44,21 +46,34 @@ class Jadict(commands.Cog):
                 jisho_src = f"https://jisho.org/word/{jishoResult.get('slug')}"
             else:
                 jisho_src = None
-            kanji = str(jishoResult["japanese"][0].get("word", None))
-            reading = str(jishoResult["japanese"][0].get("reading", None))
-            is_common = ""
-            if jishoResult.get("is_common", None) is True:
-                is_common = " ・ Common"
-            tags = ""
-            if len(jishoResult.get("jlpt", [])) > 0:
-                tags += " ・ "+str(", ".join(jishoResult.get("jlpt", [])))
-            if len(jishoResult.get("tags", [])) > 0:
-                tags += " ・ "+str(", ".join(jishoResult.get("tags", [])))
 
-            if kanji != "None":
-                e = discord.Embed(color=(await ctx.embed_colour()), title=kanji, url=jisho_src, description=reading+is_common+tags)
+            kanji = jishoResult["japanese"][0].get("word", None)
+            kana = jishoResult["japanese"][0].get("reading", None)
+            word = kanji or kana
+
+            if kanji and kana:
+                # word == kanji -> show kana, romaji
+                reading = kana+" "+JadictUtils.to_romaji(kana)
             else:
-                e = discord.Embed(color=(await ctx.embed_colour()), title=reading, url=jisho_src, description=is_common+tags)
+                # word == kana -> show only romaji
+                reading = JadictUtils.to_romaji(kana)
+
+            is_common = None
+            if jishoResult.get("is_common", None) is True:
+                is_common = "Common"
+            jlpt = None
+            if len(jishoResult.get("jlpt", [])) > 0:
+                jlpt = str(", ".join(jishoResult.get("jlpt", [])))
+            tags = None
+            if len(jishoResult.get("tags", [])) > 0:
+                tags = str(", ".join(jishoResult.get("tags", [])))
+
+            e = discord.Embed(
+              color=(await ctx.embed_colour()),
+              title=str(word),
+              url=jisho_src,
+              description=" ・ ".join(filter(None, [reading, is_common, jlpt, tags]))
+            )
 
             for index, sense in enumerate(jishoResult.get("senses", [])):
                 parts_of_speech = str(", ".join(sense.get("parts_of_speech", [])))
