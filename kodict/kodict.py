@@ -169,7 +169,7 @@ class Kodict(commands.Cog):
     async def kodict(self, ctx, *, text):
         """Search Korean dictionary
         
-        Uses the Krdict (한국어기초사전) Open API
+        Uses material by the [National Institute of Korean Language](https://korean.go.kr/), including [Krdict (한국어기초사전)](https://krdict.korean.go.kr/eng/).
 
         Currently, only searching in Korean is supported.
         - Korean Hanja is variant-sensitive (must be in Korean, not Chinese/Japanese)
