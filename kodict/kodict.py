@@ -6,6 +6,7 @@ import asyncio
 import aiohttp
 import defusedxml.ElementTree as ET
 import json
+from korean_romanizer.romanizer import Romanizer
 
 class Kodict(commands.Cog):
     """Korean dictionary bot. Searches National Institute of Korean Language's Korean-English Learners' Dictionary."""
@@ -91,13 +92,19 @@ class Kodict(commands.Cog):
                 pass
 
             try:
+                pronunciation_kr = str(krResult.find("pronunciation").text)
+            except AttributeError:
+                pronunciation_kr = None
+            try:
+                romanization = str(Romanizer(str(word)).romanize())
+            except:
+                romanization = None
+            pronunciation = " ".join(filter(None, [pronunciation_kr, romanization]))
+            
+            try:
                 origin = str(krResult.find("origin").text)
             except AttributeError:
                 origin = None
-            try:
-                pronunciation = str(krResult.find("pronunciation").text)
-            except AttributeError:
-                pronunciation = None
             try:
                 word_grade_raw = str(krResult.find("word_grade").text)
                 level_gauge = self.koWordGrade(word_grade_raw)
