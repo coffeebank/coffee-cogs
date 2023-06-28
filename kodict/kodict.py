@@ -49,9 +49,13 @@ class Kodict(commands.Cog):
 
     def koPos(self, text):
         parts_of_speech_blocks = {
+          "형용사": "Adjective",
+          "부사": "Adverb",
+          "감탄사": "Interjection",
           "명사": "Noun",
+          "접사": "Prefix/Suffix",
+          "어미": "Suffix",
           "동사": "Verb",
-          "접사": "Prefix/Suffix"
         }
         return parts_of_speech_blocks.get(text, None)
 
@@ -78,7 +82,8 @@ class Kodict(commands.Cog):
 
             parts_of_speech = None
             try:
-                if krResult.find("pos").text:
+                pos_none = ["품사 없음"]
+                if krResult.find("pos").text and (krResult.find("pos").text not in pos_none):
                     parts_of_speech_raw = str(krResult.find("pos").text)
                     level_gauge = self.koPos(parts_of_speech_raw)
                     parts_of_speech = "` "+" ".join(filter(None, [parts_of_speech_raw, level_gauge]))+" `"
