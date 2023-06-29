@@ -13,7 +13,7 @@ Inspired by Pleco and Jisho.
 
 ## Installation
 
-See [Getting Started](/coffee-cogs/start)
+See [Getting Started](/start)
 
 **Note: After installing the cog, please run  `[p]setzidian update`  to fetch the dictionary.**
 
