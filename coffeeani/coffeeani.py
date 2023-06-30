@@ -162,12 +162,12 @@ class Coffeeani(commands.Cog):
         cleantext = re.sub(cleanr, "", description)
         return cleantext
 
-    def description_parser(self, description):  # Limits text to 400characters and 5 lines and adds "..." at the end
+    def description_parser(self, description):  # Limits text to 600characters and 5 lines and adds "..." at the end
         description = self.clean_spoilers(description)
         description = self.clean_html(description)
         description = "\n".join(description.split("\n")[:5])
-        if len(description) > 400:
-            return description[:400] + "..."
+        if len(description) > 600:
+            return description[:600] + "..."
         else:
             return description
 
