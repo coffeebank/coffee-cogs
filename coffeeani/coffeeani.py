@@ -241,11 +241,21 @@ class Coffeeani(commands.Cog):
                 embed.color = 3447003
                 embed.description = self.description_parser(description)
                 embed.set_image(url=f"https://img.anili.st/media/{anime_manga['id']}")
+
+                eps_chaps_name = None
+                eps_chaps_value = None
+                if cmd == "ANIME" and anime_manga.get("episodes", None) not in [None, "None"]:
+                    eps_chaps_name = "Episodes"
+                    eps_chaps_value = anime_manga.get("episodes", None)
+                if cmd == "MANGA" and anime_manga.get("chapters", None) not in [None, "None"]:
+                    eps_chaps_name = "Chapters"
+                    eps_chaps_value = anime_manga.get("chapters", None)
+                if eps_chaps_name is not None:
+                    embed.add_field(name=str(eps_chaps_name), value=str(eps_chaps_value))
+
                 if cmd == "ANIME":
-                    embed.add_field(name="Episodes", value=anime_manga.get("episodes", "N/A"))
                     embed.set_footer(text="Status : " + MediaStatusToString[anime_manga["status"]] + ", Next episode : " + time_left + ", Powered by Anilist ・ "+str(idx+1)+"/"+str(idx_total))
                 else:
-                    embed.add_field(name="Chapters", value=anime_manga.get("chapters", "N/A"))
                     embed.set_footer(text="Status : " + MediaStatusToString.get(anime_manga.get("status"), "N/A") + ", Powered by Anilist ・ "+str(idx+1)+"/"+str(idx_total))
                 if external_links:
                     embed.add_field(name="Streaming and/or Info sites", value=external_links)
