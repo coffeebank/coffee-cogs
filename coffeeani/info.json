@@ -4,10 +4,10 @@
   "name" : "coffeeani",
   "disabled" : false,
   "hidden" : false,
-  "description": "You can search anime, manga, users and characters from Anilist!\n\nForked from anisearch by Jintaku and Wyn.",
+  "description": "You can search anime, manga (manhwa/manhua), users and characters from Anilist!\n\nForked from anisearch by Jintaku and Wyn.",
   "install_msg": "Installed Anisearch! Have fun.",
   "short": "Search Anilist for anime, manga, users, characters",
-  "tags" : ["anime", "manga", "anilist", "list"],
+  "tags" : ["anime", "manga", "anilist", "list", "漫画", "만화", "漫画"],
   "permissions": ["add_reactions", "embed_links"],
   "end_user_data_statement": "This cog does not persistently store data or metadata about users."
 }

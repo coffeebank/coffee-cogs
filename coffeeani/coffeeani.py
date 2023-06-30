@@ -129,7 +129,7 @@ query ($id: Int, $page: Int, $search: String) {
 """
 
 class Coffeeani(commands.Cog):
-    """Search for anime, manga, characters and users using Anilist"""
+    """Search for anime, manga (manhwa/manhua), characters and users using Anilist"""
 
     def __init__(self):
         self.url = "https://graphql.anilist.co"
@@ -358,10 +358,10 @@ class Coffeeani(commands.Cog):
         except TypeError:
             await ctx.send("No anime was found or there was an error in the process")
 
-    @commands.command()
+    @commands.command(aliases=["manhwa", "manhua"])
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def manga(self, ctx, *, entered_title):
-        """Searches for manga using Anilist"""
+        """Searches for manga, manhwa, and manhua using Anilist"""
 
         try:
             cmd = "MANGA"
@@ -370,10 +370,10 @@ class Coffeeani(commands.Cog):
             if embeds is not None:
                 await menu(ctx, pages=embeds, controls=DEFAULT_CONTROLS, message=None, page=0, timeout=30)
             else:
-                await ctx.send("No mangas were found or there was an error in the process")
+                await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
 
         except TypeError:
-            await ctx.send("No mangas were found or there was an error in the process")
+            await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
 
     @commands.command()
     async def character(self, ctx, *, entered_title):
