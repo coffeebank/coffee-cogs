@@ -232,6 +232,10 @@ class Coffeeani(commands.Cog):
                     if i + 1 == len(anime_manga["externalLinks"]):
                         external_links = external_links[:-2]
 
+                country_of_origin = ""
+                if anime_manga.get("countryOfOrigin", None) is not None:
+                    country_of_origin += ":flag_"+str(anime_manga.get("countryOfOrigin", None)).lower()+": "
+
                 embed = discord.Embed(title=title)
                 embed.url = link
                 embed.color = 3447003
@@ -254,7 +258,7 @@ class Coffeeani(commands.Cog):
                 am_names = am_name_native + anime_manga.get('synonyms', [])
                 if len(am_names) <= 0:
                     am_names = ["N/A"]
-                embed.add_field(name="Names", value=self.description_parser(', '.join(am_names)), inline=False)
+                embed.add_field(name="Names", value=country_of_origin+self.description_parser(', '.join(am_names)), inline=False)
                 embeds.append(embed)
 
             return embeds, data
