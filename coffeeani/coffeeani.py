@@ -212,8 +212,9 @@ class Coffeeani(commands.Cog):
 
             # a list of embeds
             embeds = []
+            idx_total = len(data)
 
-            for anime_manga in data:
+            for idx, anime_manga in enumerate(data):
                 # Sets up various variables for Embed
                 link = f"https://anilist.co/{cmd.lower()}/{anime_manga['id']}"
                 description = anime_manga["description"]
@@ -238,10 +239,10 @@ class Coffeeani(commands.Cog):
                 embed.set_image(url=f"https://img.anili.st/media/{anime_manga['id']}")
                 if cmd == "ANIME":
                     embed.add_field(name="Episodes", value=anime_manga.get("episodes", "N/A"))
-                    embed.set_footer(text="Status : " + MediaStatusToString[anime_manga["status"]] + ", Next episode : " + time_left + ", Powered by Anilist")
+                    embed.set_footer(text="Status : " + MediaStatusToString[anime_manga["status"]] + ", Next episode : " + time_left + ", Powered by Anilist ・ "+str(idx+1)+"/"+str(idx_total))
                 else:
                     embed.add_field(name="Chapters", value=anime_manga.get("chapters", "N/A"))
-                    embed.set_footer(text="Status : " + MediaStatusToString.get(anime_manga.get("status"), "N/A") + ", Powered by Anilist")
+                    embed.set_footer(text="Status : " + MediaStatusToString.get(anime_manga.get("status"), "N/A") + ", Powered by Anilist ・ "+str(idx+1)+"/"+str(idx_total))
                 if external_links:
                     embed.add_field(name="Streaming and/or Info sites", value=external_links)
                 if anime_manga["bannerImage"]:
