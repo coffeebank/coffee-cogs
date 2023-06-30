@@ -17,7 +17,7 @@ title: "kodict"
 
 **CHA-KO is the Korean Discord bot that delivers language and dictionary information to students, travelers, and kpop/kdrama enthusiasts alike.**
 
-Korean, with its unique alphabet, is a fascinating language language that draws learners from around the world. However, the journey to fluency can be challenging. Learners often struggle with understanding the language's structure, pronunciation, Hanja, and the cultural nuances inherent to Korean.
+Korean, with its unique alphabet, is a fascinating language that draws learners from around the world. However, the journey to fluency can be challenging. Learners often struggle with understanding the language's structure, pronunciation, Hanja, and the cultural nuances inherent to Korean.
 
 **CHA-KO** is a unified turnkey solution for searching dictionary sources, displaying Hangul Romanization, word definitions/origins, and links to relevant external sources.
 
