@@ -162,12 +162,12 @@ class Coffeeani(commands.Cog):
         cleantext = re.sub(cleanr, "", description)
         return cleantext
 
-    def description_parser(self, description):  # Limits text to 600characters and 5 lines and adds "..." at the end
+    def description_parser(self, description):  # Limits text to characters and 5 lines and adds "..." at the end
         description = self.clean_spoilers(description)
         description = self.clean_html(description)
         description = "\n".join(description.split("\n")[:5])
-        if len(description) > 600:
-            return description[:600] + "..."
+        if len(description) > 500:
+            return description[:500] + "..."
         else:
             return description
 
@@ -221,9 +221,15 @@ class Coffeeani(commands.Cog):
                 title = anime_manga["title"]["english"] or anime_manga["title"]["romaji"]
                 if anime_manga.get("nextAiringEpisode"):
                     seconds = anime_manga["nextAiringEpisode"]["timeUntilAiring"]
-                    time_left = str(datetime.timedelta(seconds=seconds))
+                    time_left = "Next episode in "+str(datetime.timedelta(seconds=seconds))
                 else:
-                    time_left = "Never"
+                    time_left = None
+
+                embed = discord.Embed(title=title)
+                embed.url = link
+                embed.color = 3447003
+                embed.description = self.description_parser(description)
+                embed.set_image(url=f"https://img.anili.st/media/{anime_manga['id']}")
 
                 external_links = ""
                 for i in range(0, len(anime_manga["externalLinks"])):
@@ -232,43 +238,38 @@ class Coffeeani(commands.Cog):
                     if i + 1 == len(anime_manga["externalLinks"]):
                         external_links = external_links[:-2]
 
+                info_format = str(anime_manga.get("format", cmd)).replace("_", " ")
+                info_status = "Status: "+str(MediaStatusToString.get(str(anime_manga.get("status", None))))
+                info_epschaps = None
+                if cmd == "ANIME" and anime_manga.get("episodes", None) not in [None, "None"]:
+                    info_epschaps = "Episodes: "+str(anime_manga.get("episodes", None))
+                if cmd == "MANGA" and anime_manga.get("chapters", None) not in [None, "None"]:
+                    info_epschaps = "Chapters: "+str(anime_manga.get("chapters", None))
+                info_links = f"[Anilist]({link})"
+                if anime_manga.get("idMal", None):
+                    info_links += f", [MAL](https://myanimelist.net/{cmd.lower()}/{anime_manga.get('idMal', None)})"
+                info = "\n".join(filter(None, [info_epschaps, info_links]))
+
                 country_of_origin = ""
                 if anime_manga.get("countryOfOrigin", None) is not None:
                     country_of_origin += ":flag_"+str(anime_manga.get("countryOfOrigin", None)).lower()+": "
 
-                embed = discord.Embed(title=title)
-                embed.url = link
-                embed.color = 3447003
-                embed.description = self.description_parser(description)
-                embed.set_image(url=f"https://img.anili.st/media/{anime_manga['id']}")
-
-                eps_chaps_name = None
-                eps_chaps_value = None
-                if cmd == "ANIME" and anime_manga.get("episodes", None) not in [None, "None"]:
-                    eps_chaps_name = "Episodes"
-                    eps_chaps_value = anime_manga.get("episodes", None)
-                if cmd == "MANGA" and anime_manga.get("chapters", None) not in [None, "None"]:
-                    eps_chaps_name = "Chapters"
-                    eps_chaps_value = anime_manga.get("chapters", None)
-                if eps_chaps_name is not None:
-                    embed.add_field(name=str(eps_chaps_name), value=str(eps_chaps_value))
-
-                if cmd == "ANIME":
-                    embed.set_footer(text="Status : " + MediaStatusToString[anime_manga["status"]] + ", Next episode : " + time_left + ", Powered by Anilist ・ "+str(idx+1)+"/"+str(idx_total))
-                else:
-                    embed.set_footer(text="Status : " + MediaStatusToString.get(anime_manga.get("status"), "N/A") + ", Powered by Anilist ・ "+str(idx+1)+"/"+str(idx_total))
+                if info is not None:
+                    embed.add_field(name=str(info_status), value=str(info), inline=True)
                 if external_links:
-                    embed.add_field(name="Streaming and/or Info sites", value=external_links)
+                    embed.add_field(name="Links", value=external_links)
                 if anime_manga["bannerImage"]:
                     embed.set_image(url=anime_manga["bannerImage"])
-                embed.add_field(name="You can find out more", value=f"[Anilist]({link}), [MAL](https://myanimelist.net/{cmd.lower()}/{anime_manga['idMal']})")
                 am_name_native = []
                 am_name_native.append(anime_manga['title'].get('native', None))
                 am_name_native.append(anime_manga['title'].get('romaji', None))
-                am_names = am_name_native + anime_manga.get('synonyms', [])
-                if len(am_names) <= 0:
-                    am_names = ["N/A"]
-                embed.add_field(name="Names", value=country_of_origin+self.description_parser(', '.join(am_names)), inline=False)
+                am_names = am_name_native
+                if len(am_names) > 0:
+                    embed.add_field(name="Names", value=country_of_origin+self.description_parser(', '.join(am_names)), inline=True)
+                if cmd == "ANIME":
+                    embed.set_footer(text=" ・ ".join(filter(None, [info_format, time_left, "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
+                else:
+                    embed.set_footer(text=" ・ ".join(filter(None, [info_format, "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
                 embeds.append(embed)
 
             return embeds, data
