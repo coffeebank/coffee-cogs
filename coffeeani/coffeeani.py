@@ -38,6 +38,11 @@ query ($id: Int, $page: Int, $search: String, $type: MediaType) {
             countryOfOrigin
             format
             synonyms
+            tags {
+                name
+                isMediaSpoiler
+            }
+            genres
         }
     }
 }
@@ -266,6 +271,11 @@ class Coffeeani(commands.Cog):
                 am_names = am_name_native
                 if len(am_names) > 0:
                     embed.add_field(name="Names", value=country_of_origin+self.description_parser(', '.join(am_names)), inline=True)
+                if len(anime_manga.get("tags", [])) > 0:
+                    am_tags = [str(t.get("name", None)) for t in anime_manga.get("tags", []) if t.get("isMediaSpoiler", None) is not True]
+                    am_tags_spoilers = ["||"+str(t.get("name", None))+"||" for t in anime_manga.get("tags", []) if t.get("isMediaSpoiler", None) is True]
+                    embed.add_field(name="Tags", value=", ".join(am_tags+am_tags_spoilers), inline=True)
+
                 if cmd == "ANIME":
                     embed.set_footer(text=" ・ ".join(filter(None, [info_format, time_left, "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
                 else:
@@ -374,10 +384,10 @@ class Coffeeani(commands.Cog):
         except TypeError:
             await ctx.send("No anime was found or there was an error in the process")
 
-    @commands.command(aliases=["manhwa", "manhua"])
+    @commands.command(aliases=["manhwa", "manhua", "lightnovel"])
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def manga(self, ctx, *, entered_title):
-        """Searches for manga, manhwa, and manhua using Anilist"""
+        """Searches for manga, manhwa, manhua, and light novels using Anilist"""
 
         try:
             cmd = "MANGA"
