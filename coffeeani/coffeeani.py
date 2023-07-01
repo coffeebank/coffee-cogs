@@ -134,7 +134,7 @@ query ($id: Int, $page: Int, $search: String) {
 """
 
 class Coffeeani(commands.Cog):
-    """Search for anime, manga (manhwa/manhua), characters and users using Anilist"""
+    """Search anime, manga (manhwa/manhua/light novels), users, and characters from Anilist. See series info, status, episodes/chapters, and tags."""
 
     def __init__(self):
         self.url = "https://graphql.anilist.co"
@@ -401,7 +401,7 @@ class Coffeeani(commands.Cog):
         except TypeError:
             await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
 
-    @commands.command()
+    @commands.command(name="animecharacter", aliases=["animechar"])
     async def character(self, ctx, *, entered_title):
         """Searches for characters using Anilist"""
 
@@ -416,7 +416,13 @@ class Coffeeani(commands.Cog):
         except TypeError:
             await ctx.send("No characters were found or there was an error in the process")
 
-    @commands.command()
+    @commands.group()
+    async def anilist(self, ctx: commands.Context):
+        """Search Anilist"""
+        if not ctx.invoked_subcommand:
+            pass
+
+    @anilist.command()
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def user(self, ctx, *, entered_title):
         """Searches users using Anilist"""
