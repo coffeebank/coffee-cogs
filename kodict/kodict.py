@@ -1,4 +1,4 @@
-from redbot.core import Config, commands, checks
+from redbot.core import Config, app_commands, commands, checks
 from redbot.core.utils.menus import menu, commands, DEFAULT_CONTROLS
 import urllib.parse
 import discord
@@ -165,7 +165,8 @@ class Kodict(commands.Cog):
 
     # Bot Commands
 
-    @commands.command(name="kodict", aliases=["krdict"])
+    @commands.hybrid_command(name="kodict", aliases=["krdict"])
+    @app_commands.describe(text="Search Korean dictionary. Korean (Hangul/Hanja) supported.")
     async def kodict(self, ctx, *, text):
         """Search Korean dictionary
         
@@ -186,7 +187,8 @@ class Kodict(commands.Cog):
             fallback_embed = await self.fallbackEmbed(ctx, text, "Could not connect to Krdict API")
             return await ctx.send(embed=fallback_embed)
 
-    @commands.command(name="kosearch", aliases=["krsearch"])
+    @commands.hybrid_command(name="kosearch", aliases=["krsearch"])
+    @app_commands.describe(text="Search Korean vocabulary and translation websites")
     async def kosearch(self, ctx, *, text):
         """Search Korean vocabulary and translation websites"""
         fallback_embed = await self.fallbackEmbed(ctx, text)
