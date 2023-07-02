@@ -1,5 +1,5 @@
 from redbot.core import Config, app_commands, commands, checks
-from redbot.core.utils.menus import menu, commands, DEFAULT_CONTROLS
+from redbot.core.utils.views import SimpleMenu
 import urllib.parse
 import discord
 import asyncio
@@ -146,7 +146,7 @@ class Kodict(commands.Cog):
                 )
 
             e.set_footer(text=" ・ ".join(filter(None, [str(attribution), str(resIdx+1)+"/"+str(total)])))
-            sendEmbeds.append(e)
+            sendEmbeds.append({"embed": e})
         return sendEmbeds
 
     async def fallbackEmbed(self, ctx, rawText, footer=""):
@@ -182,7 +182,7 @@ class Kodict(commands.Cog):
             return await ctx.send(embed=fallback_embed)
         elif xmlTree is not None:
             sendEmbeds = await self.kodictEmbeds(ctx, xmlTree)
-            await menu(ctx, pages=sendEmbeds, controls=DEFAULT_CONTROLS, message=None, page=0, timeout=30)
+            await SimpleMenu(pages=sendEmbeds, timeout=90).start(ctx)
         else:
             fallback_embed = await self.fallbackEmbed(ctx, text, "Could not connect to Krdict API")
             return await ctx.send(embed=fallback_embed)
