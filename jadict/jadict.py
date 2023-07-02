@@ -131,7 +131,7 @@ class Jadict(commands.Cog):
     # Bot Commands
 
     @commands.hybrid_command(name="jadict", aliases=["jpdict", "jisho", "jishosearch"])
-    @app_commands.describe(text="By default, searches using Japanese and Romaji. When searching in English, please use  \"quotes\"")
+    @app_commands.describe(text="Search Japanese dictionary. By default, searches using Japanese and Romaji. When searching in English, please use  \"quotes\"")
     async def jadict(self, ctx, *, text):
         """Search Japanese dictionary
 
