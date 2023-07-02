@@ -1,4 +1,4 @@
-from redbot.core import Config, commands, checks
+from redbot.core import Config, app_commands, commands, checks
 from redbot.core.utils.menus import menu, commands, DEFAULT_CONTROLS
 import urllib.parse
 import discord
@@ -11,8 +11,9 @@ from .jadict_utils import JadictUtils
 class Jadict(commands.Cog):
     """Japanese dictionary bot. Searches Jisho using Jisho API."""
 
-    def __init__(self):
+    def __init__(self, bot):
         self.config = Config.get_conf(self, identifier=806715409318936616)
+        self.bot = bot
 
     # This cog does not store any End User Data
     async def red_get_data_for_user(self, *, user_id: int):
@@ -129,7 +130,8 @@ class Jadict(commands.Cog):
 
     # Bot Commands
 
-    @commands.command(name="jadict", aliases=["jpdict", "jisho", "jishosearch"])
+    @commands.hybrid_command(name="jadict", aliases=["jpdict", "jisho", "jishosearch"])
+    @app_commands.describe(text="By default, searches using Japanese and Romaji. When searching in English, please use  \"quotes\"")
     async def jadict(self, ctx, *, text):
         """Search Japanese dictionary
 
@@ -151,7 +153,8 @@ class Jadict(commands.Cog):
             fallback_embed = await self.fallbackEmbed(ctx, text, "Could not connect to Jisho API")
             return await ctx.send(embed=fallback_embed)
 
-    @commands.command(name="jasearch", aliases=["jpsearch"])
+    @commands.hybrid_command(name="jasearch", aliases=["jpsearch"])
+    @app_commands.describe(text="Search Japanese vocabulary and translation websites")
     async def jasearch(self, ctx, *, text):
         """Search Japanese vocabulary and translation websites"""
         fallback_embed = await self.fallbackEmbed(ctx, text)
