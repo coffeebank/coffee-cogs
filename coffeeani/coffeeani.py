@@ -1,10 +1,11 @@
+from redbot.core import Config, app_commands, commands, checks
+from redbot.core.utils.views import SimpleMenu
 import asyncio
 import datetime
 import json
 import re
 import aiohttp
 import discord
-from redbot.core.utils.menus import menu, commands, DEFAULT_CONTROLS
 
 SEARCH_ANIME_MANGA_QUERY = """
 query ($id: Int, $page: Int, $search: String, $type: MediaType) {
@@ -267,7 +268,7 @@ class Coffeeani(commands.Cog):
                     embed.set_footer(text=" ・ ".join(filter(None, [info_format, time_left, "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
                 else:
                     embed.set_footer(text=" ・ ".join(filter(None, [info_format, "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
-                embeds.append(embed)
+                embeds.append({"embed": embed})
 
             return embeds, data
 
@@ -354,71 +355,78 @@ class Coffeeani(commands.Cog):
         else:
             return None
 
-    @commands.command()
+    @commands.hybrid_command()
+    @app_commands.describe(title="Search for anime")
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
-    async def anime(self, ctx, *, entered_title):
+    async def anime(self, ctx, *, title):
         """Searches for anime using Anilist"""
+        entered_title = title
 
         try:
             cmd = "ANIME"
             embeds, data = await self._search_anime_manga(ctx, cmd, entered_title)
 
             if embeds is not None:
-                await menu(ctx, pages=embeds, controls=DEFAULT_CONTROLS, message=None, page=0, timeout=30)
+                await SimpleMenu(pages=embeds, timeout=90).start(ctx)
             else:
                 await ctx.send("No anime was found or there was an error in the process")
 
         except TypeError:
             await ctx.send("No anime was found or there was an error in the process")
 
-    @commands.command(aliases=["manhwa", "manhua", "lightnovel"])
+    @commands.hybrid_command(aliases=["manhwa", "manhua", "lightnovel"])
+    @app_commands.describe(title="Search for manga/manhwa/manhua and light novels")
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
-    async def manga(self, ctx, *, entered_title):
+    async def manga(self, ctx, *, title):
         """Searches for manga, manhwa, manhua, and light novels using Anilist"""
+        entered_title = title
 
         try:
             cmd = "MANGA"
             embeds, data = await self._search_anime_manga(ctx, cmd, entered_title)
 
             if embeds is not None:
-                await menu(ctx, pages=embeds, controls=DEFAULT_CONTROLS, message=None, page=0, timeout=30)
+                await SimpleMenu(pages=embeds, timeout=90).start(ctx)
             else:
                 await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
 
         except TypeError:
             await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
 
-    @commands.command(name="animecharacter", aliases=["animechar"])
-    async def character(self, ctx, *, entered_title):
+    @commands.hybrid_command(name="animecharacter", aliases=["animechar"])
+    @app_commands.describe(name="Search for an anime/manga character")
+    async def character(self, ctx, *, name):
         """Searches for characters using Anilist"""
+        entered_title = name
 
         try:
             embeds, data = await self._search_character(ctx, entered_title)
 
             if embeds is not None:
-                await menu(ctx, pages=embeds, controls=DEFAULT_CONTROLS, message=None, page=0, timeout=30)
+                await SimpleMenu(pages=embeds, timeout=90).start(ctx)
             else:
                 await ctx.send("No characters were found or there was an error in the process")
 
         except TypeError:
             await ctx.send("No characters were found or there was an error in the process")
 
-    @commands.group()
+    @commands.hybrid_group(name="anilist")
     async def anilist(self, ctx: commands.Context):
         """Search Anilist"""
         if not ctx.invoked_subcommand:
             pass
 
-    @anilist.command()
-    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
-    async def user(self, ctx, *, entered_title):
+    @anilist.command(name="user")
+    @app_commands.describe(username="Search Anilist for a user")
+    async def user(self, ctx, *, username: str):
         """Searches users using Anilist"""
+        entered_title = username
 
         try:
             embeds, data = await self._search_user(ctx, entered_title)
 
             if embeds is not None:
-                await menu(ctx, pages=embeds, controls=DEFAULT_CONTROLS, message=None, page=0, timeout=30)
+                await SimpleMenu(pages=embeds, timeout=90).start(ctx)
             else:
                 await ctx.send("No users were found or there was an error in the process")
 
