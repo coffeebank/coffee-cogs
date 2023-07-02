@@ -1,5 +1,5 @@
 from redbot.core import Config, app_commands, commands, checks
-from redbot.core.utils.menus import menu, commands, DEFAULT_CONTROLS
+from redbot.core.utils.views import SimpleMenu
 import urllib.parse
 import discord
 import asyncio
@@ -111,7 +111,7 @@ class Jadict(commands.Cog):
                 attr = "Results from "+", ".join(attrs)
                 e.set_footer(text=attr+" ・ "+str(idx+1)+"/"+str(total))
 
-            sendEmbeds.append(e)
+            sendEmbeds.append({"embed": e})
         return sendEmbeds
 
     async def fallbackEmbed(self, ctx, rawText, footer=""):
@@ -145,7 +145,7 @@ class Jadict(commands.Cog):
 
         if jishoJson is not False:
             sendEmbeds = await self.jishoEmbeds(ctx, jishoJson)
-            await menu(ctx, pages=sendEmbeds, controls=DEFAULT_CONTROLS, message=None, page=0, timeout=30)
+            await SimpleMenu(pages=sendEmbeds, timeout=90).start(ctx)
         elif jishoJson is False:
             fallback_embed = await self.fallbackEmbed(ctx, text, "No Jisho search results found. Please try other sources.")
             return await ctx.send(embed=fallback_embed)
