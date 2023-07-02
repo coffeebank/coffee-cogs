@@ -196,19 +196,6 @@ class Coffeeani(commands.Cog):
                 return await response.json()
 
     async def _search_anime_manga(self, ctx, cmd, entered_title):
-
-        # Outputs MediaStatuses to strings
-        MediaStatusToString = {
-            # Has completed and is no longer being released
-            "FINISHED": "Finished",
-            # Currently releasing
-            "RELEASING": "Releasing",
-            # To be released at a later date
-            "NOT_YET_RELEASED": "Not yet released",
-            # Ended before the work could be finished
-            "CANCELLED": "Cancelled",
-        }
-
         variables = {"search": entered_title, "page": 1, "type": cmd}
 
         data = (await self._request(SEARCH_ANIME_MANGA_QUERY, variables))["data"]["Page"]["media"]
@@ -244,7 +231,7 @@ class Coffeeani(commands.Cog):
                         external_links = external_links[:-2]
 
                 info_format = str(anime_manga.get("format", cmd)).replace("_", " ")
-                info_status = "Status: "+str(MediaStatusToString.get(str(anime_manga.get("status", None))))
+                info_status = "Status: "+str(anime_manga.get("status", None)).lower().replace("_", " ").capitalize()
                 info_epschaps = None
                 if cmd == "ANIME" and anime_manga.get("episodes", None) not in [None, "None"]:
                     info_epschaps = "Episodes: "+str(anime_manga.get("episodes", None))
