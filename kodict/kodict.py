@@ -1,12 +1,13 @@
 from redbot.core import Config, app_commands, commands, checks
 from redbot.core.utils.views import SimpleMenu
-import urllib.parse
 import discord
-import asyncio
-import aiohttp
-import defusedxml.ElementTree as ET
 import json
-from korean_romanizer.romanizer import Romanizer
+import urllib.parse
+
+import aiohttp
+import asyncio
+
+from .kodict_utils import KodictUtils
 
 class Kodict(commands.Cog):
     """Korean dictionary bot. Searches National Institute of Korean Language's Korean-English Learners' Dictionary."""
@@ -24,165 +25,87 @@ class Kodict(commands.Cog):
 
     # Utility Commands
 
-    async def fetchKrdict(self, text):
-        krdictKeyObj = await self.bot.get_shared_api_tokens("krdict")
-        krdictKey = krdictKeyObj.get("api_key")
-        if krdictKey is None:
-            print("Error: Krdict API key not set")
+    async def fallbackEmbed(self, ctx, rawText, footer=""):
+        text = urllib.parse.quote(rawText, safe='')
+        deeplResult = await self.fetchDeepl(rawText)
+
+        if deeplResult not in [False, None]:
+            e = discord.Embed(color=(await ctx.embed_colour()), title=rawText, description=deeplResult)
+        else:
+            e = discord.Embed(color=(await ctx.embed_colour()), title=rawText)
+        e.add_field(name="Krdict (한국어기초사전)", value=f"https://krdict.korean.go.kr/eng/dicSearch/search?nation=eng&nationCode=6&mainSearchWord={text}")
+        e.add_field(name="Wiktionary", value=f"https://en.wiktionary.org/w/index.php?fulltext=0&search={text}")
+        if deeplResult in [False, None]:
+            e.add_field(name="DeepL Translate", value=f"https://deepl.com/translator#ko/en/{text}")
+        e.add_field(name="Google Translate", value=f"https://translate.google.com/?text={text}")
+
+        if footer:
+            e.set_footer(text=footer)
+        return e
+
+    async def fetchDeepl(self, text):
+        # Don't use pypi deepl: dependency conflict w/ idna; uses non-async requests
+        deeplKeyObj = await self.bot.get_shared_api_tokens("deepl")
+        deeplKey = deeplKeyObj.get("api_key")
+        if deeplKey is None:
+            print("Error: DeepL API key not set")
             return None
         try:
-            krdictUrl = f"https://krdict.korean.go.kr/api/search?key={krdictKey}&q={urllib.parse.quote(text, safe='')}&translated=y&trans_lang=1"
+            deeplUrl = "https://api-free.deepl.com/v2/translate"
+            payload = f"text={urllib.parse.quote(text, safe='')}&source_lang=EN&target_lang=KO"
+            headers = {
+                "Authorization": "DeepL-Auth-Key "+str(deeplKey),
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
             async with aiohttp.ClientSession() as session:
-                # TODO: Consider using certifi in the future
-                async with session.get(krdictUrl, ssl=False) as resp:
-                    krdictXmlRaw = await resp.text()
-                    krdictXml = ET.fromstring(krdictXmlRaw)
+                async with session.post(deeplUrl, headers=headers, data=payload) as resp:
+                    deeplJson = await resp.json()
 
-                    # Check if there are results
+                    # Check if it actually translated
                     try:
-                        krdictXml.findall("item")[0]
-                        return krdictXml
+                        deepl_translated_text = deeplJson["translations"][0].get("text")
+                        if text == deepl_translated_text:
+                            # Deepl failed to translate properly
+                            return False
+                        return str(deepl_translated_text)
                     except:
                         return False
         except Exception as e:
             print(e)
             return None
 
-    def koPos(self, text):
-        parts_of_speech_blocks = {
-          "명사": "Noun",
-          "대명사": "Pronoun",
-          "수사": "Number",
-          "조사": "Particle",
-          "동사": "Verb",
-          "형용사": "Adjective",
-          "관형사": "Modifier",
-          "부사": "Adverb",
-          "감탄사": "Interjection",
-          "접사": "Prefix/Suffix",
-          "의존 명사": "Dependent Noun",
-          "보조 동사": "Auxiliary Verb",
-          "보조 형용사": "Auxiliary Adjective",
-          "어미": "Suffix",
-        }
-        return parts_of_speech_blocks.get(text, None)
-
-    def koWordGrade(self, text):
-        word_grade_blocks = {
-          "초급": "Beginner",
-          "중급": "Intermediate",
-          "고급": "Advanced",
-        }
-        return word_grade_blocks.get(text, None)
-
-    async def kodictEmbeds(self, ctx, xmlTree):
-        sendEmbeds = []
-
-        attribution = "Results from Krdict (한국어기초사전)"
-        try:
-            total = str(min(int(xmlTree.find("total").text), 10))
-        except AttributeError:
-            total = None
-
-        for resIdx, krResult in enumerate(xmlTree.findall("item")):
-            word = str(krResult.find("word").text)
-            link = str(krResult.find("link").text)
-
-            parts_of_speech = None
-            try:
-                if krResult.find("pos").text and (krResult.find("pos").text != "품사 없음"):
-                    parts_of_speech_raw = str(krResult.find("pos").text)
-                    eng_pos = self.koPos(parts_of_speech_raw)
-                    parts_of_speech = "` "+" ".join(filter(None, [parts_of_speech_raw, eng_pos]))+" `"
-            except AttributeError:
-                pass
-
-            try:
-                pronunciation_kr = str(krResult.find("pronunciation").text)
-            except AttributeError:
-                pronunciation_kr = None
-            try:
-                romanization = str(Romanizer(str(word)).romanize())
-            except:
-                romanization = None
-            pronunciation = " ".join(filter(None, [pronunciation_kr, romanization]))
-            
-            try:
-                origin = str(krResult.find("origin").text)
-            except AttributeError:
-                origin = None
-            try:
-                word_grade_raw = str(krResult.find("word_grade").text)
-                level_gauge = self.koWordGrade(word_grade_raw)
-                word_grade = "` "+" ".join(filter(None, [word_grade_raw, level_gauge]))+" `"
-            except AttributeError:
-                word_grade = None
-
-            desc_body = " ・ ".join(filter(None, [pronunciation, origin, parts_of_speech, word_grade]))
-            e = discord.Embed(color=(await ctx.embed_colour()), title=word, url=link, description=desc_body)
-
-            for idx, krrSense in enumerate(krResult.findall("sense")):
-                try:
-                    senseIdx = str(krrSense.find("sense_order").text)
-                except AttributeError:
-                    senseIdx = idx+1 
-                try:
-                    ko_def = str(krrSense.find("definition").text)
-                except AttributeError:
-                    ko_def = None
-
-                try:
-                    en_trans = krrSense.find("translation")
-                    en_word = str(en_trans.find("trans_word").text)
-                    en_def = str(en_trans.find("trans_dfn").text)
-                except AttributeError:
-                    en_trans = None
-                    en_word = ""
-                    en_def = f"[See translation on DeepL](https://www.deepl.com/translator#ko/en/{urllib.parse.quote(ko_def, safe='')})"
-
-                e.add_field(
-                  name=str(senseIdx)+". "+str(en_word), 
-                  value="\n".join(filter(None, [en_def, ko_def]))
-                )
-
-            e.set_footer(text=" ・ ".join(filter(None, [str(attribution), str(resIdx+1)+"/"+str(total)])))
-            sendEmbeds.append({"embed": e})
-        return sendEmbeds
-
-    async def fallbackEmbed(self, ctx, rawText, footer=""):
-        text = urllib.parse.quote(rawText, safe='')
-        e = discord.Embed(color=(await ctx.embed_colour()), title=rawText)
-        e.add_field(name="Krdict (한국어기초사전)", value=f"https://krdict.korean.go.kr/eng/dicSearch/search?nation=eng&nationCode=6&mainSearchWord={text}")
-        e.add_field(name="Wiktionary", value=f"https://en.wiktionary.org/w/index.php?fulltext=0&search={text}")
-        e.add_field(name="DeepL Translate", value=f"https://deepl.com/translator#ko/en/{text}")
-        e.add_field(name="Google Translate", value=f"https://translate.google.com/?text={text}")
-
-        if footer:
-            e.set_footer(text=footer)
-        return e
-  
-
 
     # Bot Commands
 
     @commands.hybrid_command(name="kodict", aliases=["krdict"])
     @app_commands.describe(text="Search Korean dictionary. Korean (Hangul/Hanja) supported.")
-    async def kodict(self, ctx, *, text):
+    async def kodict(self, ctx, *, text: str):
         """Search Korean dictionary
         
         Uses material by the [National Institute of Korean Language](https://korean.go.kr/), including [Krdict (한국어기초사전)](https://krdict.korean.go.kr/eng/).
 
-        Currently, only searching in Korean is supported.
-        - Korean Hanja is variant-sensitive (must be in Korean, not Chinese/Japanese)
-        - Searching in English is not yet supported"""
-        xmlTree = await self.fetchKrdict(text)
+        By default, searches using Korean (Hangul/Hanja) and English.
+        > ✅  신문, 新聞, newspaper
+        > ✅  만화, 漫畫, comics
+        """
+        krdictKeyObj = await self.bot.get_shared_api_tokens("krdict")
+        krdictKey = krdictKeyObj.get("api_key", None)
+        krResults = None
 
-        if xmlTree is False:
+        # Fetch using Krdict API
+        if krdictKey is not None:
+            krResults = await KodictUtils.krdictFetchApi(krdictKey, text)
+        # Fetch using Krdict Scraper
+        if krResults in [None, False]:
+            krResults = await KodictUtils.krdictFetchScraper(text)
+
+        # Return data
+        if krResults:
+            sendEmbeds = await KodictUtils.kodictEmbedKrdict(ctx, krResults)
+            await SimpleMenu(pages=sendEmbeds, timeout=90).start(ctx)
+        elif krResults is False:
             fallback_embed = await self.fallbackEmbed(ctx, text, "No Krdict search results found. Please try other sources.")
             return await ctx.send(embed=fallback_embed)
-        elif xmlTree is not None:
-            sendEmbeds = await self.kodictEmbeds(ctx, xmlTree)
-            await SimpleMenu(pages=sendEmbeds, timeout=90).start(ctx)
         else:
             fallback_embed = await self.fallbackEmbed(ctx, text, "Could not connect to Krdict API")
             return await ctx.send(embed=fallback_embed)
