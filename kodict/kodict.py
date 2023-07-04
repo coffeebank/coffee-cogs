@@ -7,7 +7,7 @@ import urllib.parse
 import aiohttp
 import asyncio
 
-from .kodict_utils import KodictUtils
+from .kodict_utils import *
 
 class Kodict(commands.Cog):
     """Korean dictionary bot. Searches National Institute of Korean Language's Korean-English Learners' Dictionary."""
@@ -94,14 +94,14 @@ class Kodict(commands.Cog):
 
         # Fetch using Krdict API
         if krdictKey is not None:
-            krResults = await KodictUtils.krdictFetchApi(krdictKey, text)
+            krResults = await krdictFetchApi(krdictKey, text)
         # Fetch using Krdict Scraper
         if krResults in [None, False]:
-            krResults = await KodictUtils.krdictFetchScraper(text)
+            krResults = await krdictFetchScraper(text)
 
         # Return data
         if krResults:
-            sendEmbeds = await KodictUtils.kodictEmbedKrdict(ctx, krResults)
+            sendEmbeds = await kodictEmbedKrdict(ctx, krResults)
             await SimpleMenu(pages=sendEmbeds, timeout=90).start(ctx)
         elif krResults is False:
             fallback_embed = await self.fallbackEmbed(ctx, text, "No Krdict search results found. Please try other sources.")
