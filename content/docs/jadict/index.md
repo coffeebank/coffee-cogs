@@ -39,10 +39,6 @@ This bot does not require any APIs.
 - Word origins in Kanji
 - Parts of speech
 
-### Coming soon
-
-- Sentence translation
-
 
 ## Commands
 

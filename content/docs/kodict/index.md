@@ -38,15 +38,10 @@ https://krdict.korean.go.kr/openApi/openApiInfo
 ## Features
 
 - Search dictionary entries in Korean (Hangul, Hanja)
+- Search dictionary entries in English
 - Pronunciation in Hangul and Romanization
 - Word origins in Hanja
 - Parts of speech
-
-### Coming soon
-
-- Search dictionary entries in Korean Romanization
-- Search dictionary entries in English
-- Sentence translation
 
 
 ## Commands
