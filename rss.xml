@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Coffee Cogs ☕ - RSS]]></title><description><![CDATA[Coffee Cogs ☕]]></description><link>https://coffeebank.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Sat, 01 Jul 2023 10:04:47 GMT</lastBuildDate><item><title><![CDATA[No title]]></title><description><![CDATA[Still on Red 3.4? See Coffee-cogs docs for Red 3.4 >]]></description><link>https://coffeebank.github.io/</link><guid isPermaLink="false">https://coffeebank.github.io/</guid><content:encoded>&lt;h1 align=&quot;center&quot;&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Coffee Cogs ☕ - RSS]]></title><description><![CDATA[Coffee Cogs ☕]]></description><link>https://coffeebank.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 04 Jul 2023 09:32:50 GMT</lastBuildDate><item><title><![CDATA[No title]]></title><description><![CDATA[Still on Red 3.4? See Coffee-cogs docs for Red 3.4 >]]></description><link>https://coffeebank.github.io/</link><guid isPermaLink="false">https://coffeebank.github.io/</guid><content:encoded>&lt;h1 align=&quot;center&quot;&gt;
   coffee-cogs
 &lt;/h1&gt;
 &lt;div id=&quot;supportdiscord&quot;&gt;&lt;/div&gt;
@@ -172,10 +172,6 @@ Discohook will not export the needed JSON if it says &quot;Invalid URL&quot; (ev
 &lt;li&gt;Word origins in Kanji&lt;/li&gt;
 &lt;li&gt;Parts of speech&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3 id=&quot;coming-soon&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#coming-soon&quot; aria-label=&quot;coming soon permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Coming soon&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;Sentence translation&lt;/li&gt;
-&lt;/ul&gt;
 &lt;h2 id=&quot;commands&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#commands&quot; aria-label=&quot;commands permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Commands&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;[p]jadict&lt;/code&gt; : Searches Japanese dictionary&lt;/li&gt;
@@ -199,15 +195,10 @@ Discohook will not export the needed JSON if it says &quot;Invalid URL&quot; (ev
 &lt;h2 id=&quot;features&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#features&quot; aria-label=&quot;features permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Features&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;Search dictionary entries in Korean (Hangul, Hanja)&lt;/li&gt;
+&lt;li&gt;Search dictionary entries in English&lt;/li&gt;
 &lt;li&gt;Pronunciation in Hangul and Romanization&lt;/li&gt;
 &lt;li&gt;Word origins in Hanja&lt;/li&gt;
 &lt;li&gt;Parts of speech&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&quot;coming-soon&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#coming-soon&quot; aria-label=&quot;coming soon permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Coming soon&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;Search dictionary entries in Korean Romanization&lt;/li&gt;
-&lt;li&gt;Search dictionary entries in English&lt;/li&gt;
-&lt;li&gt;Sentence translation&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&quot;commands&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#commands&quot; aria-label=&quot;commands permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Commands&lt;/h2&gt;
 &lt;ul&gt;
