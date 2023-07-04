@@ -30,9 +30,9 @@ word_grade_blocks = {
   "고급": "Advanced",
 }
 
-async def kodictEmbedKrdict(ctx, krdict_results):
+async def kodictEmbedKrdict(ctx, krdict_results, attribution: list[str]=["Krdict (한국어기초사전)"]):
     sendEmbeds = []
-    attribution = "Results from Krdict (한국어기초사전)"
+    attribution = "Results from "+", ".join(attribution)
     try:
         total = str(min(int(krdict_results.total_results), 10))
     except:
@@ -123,3 +123,29 @@ def krdictFetchChecker(response):
 async def krdictFetchScraper(text: str):
     response = krdict.scraper.search(query=text, translation_language="english")
     return krdictFetchChecker(response)
+
+async def deeplFetchApi(api_key: str, text: str):
+    deeplUrl = "https://api-free.deepl.com/v2/translate"
+    payload = f"text={urllib.parse.quote(text, safe='')}&source_lang=EN&target_lang=KO"
+    headers = {
+        "Authorization": "DeepL-Auth-Key "+str(api_key),
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(deeplUrl, headers=headers, data=payload) as resp:
+                deeplJson = await resp.json()
+                # Check if it actually translated
+                return deeplFetchChecker(text, deeplJson)
+    except Exception:
+        return None
+
+def deeplFetchChecker(text: str, deeplJson):
+    try:
+        deepl_translated_text = deeplJson["translations"][0].get("text")
+        if text == deepl_translated_text:
+            # Deepl failed to translate properly
+            return False
+        return str(deepl_translated_text)
+    except Exception:
+        return False

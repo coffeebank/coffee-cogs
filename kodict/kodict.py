@@ -91,6 +91,7 @@ class Kodict(commands.Cog):
         krdictKeyObj = await self.bot.get_shared_api_tokens("krdict")
         krdictKey = krdictKeyObj.get("api_key", None)
         krResults = None
+        attribution = ["Krdict (한국어기초사전)"]
 
         # Fetch using Krdict API
         if krdictKey is not None:
@@ -99,9 +100,25 @@ class Kodict(commands.Cog):
         if krResults in [None, False]:
             krResults = await krdictFetchScraper(text)
 
+        # Fetch using DeepL + Krdict
+        if krResults in [None, False]:
+            deeplKeyObj = await self.bot.get_shared_api_tokens("deepl")
+            deeplKey = deeplKeyObj.get("api_key", None)
+            deeplResults = None
+            if deeplKey is not None:
+                deeplResults = await deeplFetchApi(deeplKey, text)
+            if deeplResults not in [None, False]:
+                attribution.append("DeepL")
+                # Try again using Krdict API
+                if krdictKey is not None:
+                    krResults = await krdictFetchApi(krdictKey, deeplResults)
+                # Try again using Krdict Scraper
+                if krResults in [None, False]:
+                    krResults = await krdictFetchScraper(deeplResults)
+
         # Return data
         if krResults:
-            sendEmbeds = await kodictEmbedKrdict(ctx, krResults)
+            sendEmbeds = await kodictEmbedKrdict(ctx, krResults, attribution)
             await SimpleMenu(pages=sendEmbeds, timeout=90).start(ctx)
         elif krResults is False:
             fallback_embed = await self.fallbackEmbed(ctx, text, "No Krdict search results found. Please try other sources.")
