@@ -30,7 +30,7 @@ word_grade_blocks = {
   "고급": "Advanced",
 }
 
-async def kodictEmbedKrdict(ctx, krdict_results, attribution: list[str]=["Krdict (한국어기초사전)"]):
+async def embedKrdict(ctx, krdict_results, attribution: list[str]=["Krdict (한국어기초사전)"]):
     sendEmbeds = []
     attribution = "Results from "+", ".join(attribution)
     try:
@@ -105,6 +105,17 @@ async def kodictEmbedKrdict(ctx, krdict_results, attribution: list[str]=["Krdict
         e.set_footer(text=" ・ ".join(filter(None, [str(attribution), str(resIdx+1)+"/"+str(total)])))
         sendEmbeds.append({"embed": e})
     return sendEmbeds
+
+async def embedFallback(ctx, raw_text, footer=None):
+    text = urllib.parse.quote(raw_text, safe='')
+    e = discord.Embed(color=(await ctx.embed_colour()), title=raw_text)
+    e.add_field(name="Krdict (한국어기초사전)", value=f"https://krdict.korean.go.kr/eng/dicSearch/search?nation=eng&nationCode=6&mainSearchWord={text}")
+    e.add_field(name="Wiktionary", value=f"https://en.wiktionary.org/w/index.php?fulltext=0&search={text}")
+    e.add_field(name="DeepL Translate", value=f"https://deepl.com/translator#ko/en/{text}")
+    e.add_field(name="Google Translate", value=f"https://translate.google.com/?text={text}")
+    if footer:
+        e.set_footer(text=footer)
+    return e
 
 async def krdictFetchApi(api_key: str, text: str):
     krdict.set_key(api_key)
