@@ -66,15 +66,19 @@ class Kodict(commands.Cog):
             pass
 
         # Return data
-        if krResults:
-            sendEmbeds = await embedKrdict(krResults, attribution, embed_colour)
-            await SimpleMenu(pages=sendEmbeds, timeout=90).replace(ctx, loadframe)
-        elif krResults is False:
-            fallback_embed = await embedFallback(text, "No Krdict search results found. Please try other sources.", embed_colour)
-            await ctx.send(embed=fallback_embed)
-        else:
-            fallback_embed = await embedFallback(text, "Could not connect to Krdict API", embed_colour)
-            await ctx.send(embed=fallback_embed)
+        try:
+            if krResults:
+                sendEmbeds = await embedKrdict(krResults, attribution, embed_colour)
+                await SimpleMenu(pages=sendEmbeds, timeout=90).replace(ctx, loadframe)
+            elif krResults is False:
+                fallback_embed = await embedFallback(text, "No Krdict search results found. Please try other sources.", embed_colour)
+                await ctx.send(embed=fallback_embed)
+            else:
+                fallback_embed = await embedFallback(text, "Could not connect to Krdict API", embed_colour)
+                await ctx.send(embed=fallback_embed)
+        except Exception:
+            # User cancelled operation, ctx will return NotFound
+            pass
 
     @commands.hybrid_command(name="kosearch", aliases=["krsearch"])
     @app_commands.describe(text="Search Korean vocabulary and translation websites")
