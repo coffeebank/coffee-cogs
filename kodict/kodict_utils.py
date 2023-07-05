@@ -59,18 +59,6 @@ async def fetchKrdict(text, krdictKey=None):
         krResults = await krdictFetchScraper(text)
     return krResults
 
-async def embedKrdict(krdict_results, attribution: list[str]=["Krdict (한국어기초사전)"], embed_color: discord.Colour=None):
-    sendEmbeds = []
-    attribution = "Results from "+", ".join(attribution)
-    try:
-        total = str(min(int(krdict_results.total_results), 10))
-    except:
-        total = "..."
-    for resIdx, krResult in enumerate(krdict_results.results):
-        e = await krdictEmbedSenses(krResult, str(resIdx), str(total), attribution, embed_color)
-        sendEmbeds.append({"content": "", "embed": e})
-    return sendEmbeds
-
 async def krdictFetchApi(api_key: str, text: str):
     krdict.set_key(api_key)
     response = await krdict.search(query=text, translation_language="english", raise_api_errors=True)
@@ -89,7 +77,19 @@ async def krdictFetchScraper(text: str):
     response = await krdict.scraper.search(query=text, translation_language="english")
     return krdictFetchChecker(response)
 
-async def krdictEmbedSenses(krResult, idx: str, total: str, attribution: str, embed_colour: discord.Colour=None):
+async def embedKrdict(krdict_results, attribution: list[str]=["Krdict (한국어기초사전)"], embed_color: discord.Colour=None):
+    sendEmbeds = []
+    attribution = "Results from "+", ".join(attribution)
+    try:
+        total = str(min(int(krdict_results.total_results), 10))
+    except:
+        total = "..."
+    for resIdx, krResult in enumerate(krdict_results.results):
+        e = await krdictEmbedSenses(krResult, str(resIdx), str(total), attribution, embed_color)
+        sendEmbeds.append({"content": "", "embed": e})
+    return sendEmbeds
+
+async def krdictEmbedSenses(krResult, resIdx: str, total: str, attribution: str, embed_colour: discord.Colour=None):
     word = str(krResult.word)
     link = str(krResult.url)
     # Pronunciation
@@ -130,7 +130,7 @@ async def krdictEmbedSenses(krResult, idx: str, total: str, attribution: str, em
     e = discord.Embed(title=word, url=link, description=desc_body, colour=embed_colour)
     for idx, krrSense in enumerate(krResult.definitions):
         await krdictEmbedDefinitions(krrSense, e, idx)
-    e.set_footer(text=" ・ ".join(filter(None, [str(attribution), str(idx+1)+"/"+str(total)])))
+    e.set_footer(text=" ・ ".join(filter(None, [str(attribution), str(resIdx+1)+"/"+str(total)])))
     return e
 
 async def krdictEmbedDefinitions(krrSense, embed: discord.Embed, idx: int):
