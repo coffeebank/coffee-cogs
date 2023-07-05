@@ -85,11 +85,11 @@ async def embedKrdict(krdict_results, attribution: list[str]=["Krdict (한국어
     except:
         total = "..."
     for resIdx, krResult in enumerate(krdict_results.results):
-        e = await krdictEmbedSenses(krResult, str(resIdx), str(total), attribution, embed_color)
+        e = await krdictEmbedSenses(krResult, resIdx, str(total), attribution, embed_color)
         sendEmbeds.append({"content": "", "embed": e})
     return sendEmbeds
 
-async def krdictEmbedSenses(krResult, resIdx: str, total: str, attribution: str, embed_colour: discord.Colour=None):
+async def krdictEmbedSenses(krResult, resIdx: int, total: str, attribution: str, embed_colour: discord.Colour=None):
     word = str(krResult.word)
     link = str(krResult.url)
     # Pronunciation
