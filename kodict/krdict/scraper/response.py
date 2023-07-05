@@ -665,7 +665,7 @@ def _read_media_urls(doc, is_video):
 
     return [img[0].get('src')]
 
-def _read_multimedia(word_info, multimedia_elements, target_code, fetch_multimedia):
+async def _read_multimedia(word_info, multimedia_elements, target_code, fetch_multimedia):
     for li_elem in multimedia_elements:
         a_elem = li_elem.cssselect('a')[0]
 
@@ -695,7 +695,7 @@ def _read_multimedia(word_info, multimedia_elements, target_code, fetch_multimed
 
         if fetch_multimedia:
             media_info['content_urls'] = _read_media_urls(
-                send_multimedia_request({
+                await send_multimedia_request({
                     'multimedia_type': 3 if is_video else 1,
                     'target_code': target_code,
                     'definition_order': def_order,
@@ -826,7 +826,7 @@ def _read_view_header_box(word_info, dl_elements, headword, lang_info, is_transl
         elif info_type in (_ALL_REFERENCE_STR, _SENTENCE_REFERENCE_STR):
             word_info['reference'] = dd_el.text_content().strip()
 
-def _read_view_content(doc, target_code, lang_info, kwargs, results=None):
+async def _read_view_content(doc, target_code, lang_info, kwargs, results=None):
     result_div = doc.cssselect('div.search_detail')
 
     if not result_div:
@@ -892,7 +892,7 @@ def _read_view_content(doc, target_code, lang_info, kwargs, results=None):
         result_div.cssselect('div.idiom_wrap > div'),
         lang_info
     )
-    _read_multimedia(
+    await _read_multimedia(
         word_info,
         result_div.cssselect('div.multi_list div.sliderkit-nav li'),
         target_code,
@@ -904,7 +904,7 @@ def _read_view_content(doc, target_code, lang_info, kwargs, results=None):
         'word_info': word_info
     }], 1
 
-def _read_response(*args):
+async def _read_response(*args):
     doc, response_type, target_code, lang_info, scndary_trans_langs, kwargs = args
 
     readers = {
@@ -945,7 +945,7 @@ def _read_response(*args):
     return result, total
 
 
-def parse_response(*args):
+async def parse_response(*args):
     """
     Transforms a scraped HTTP response into a response object.
     """
@@ -957,7 +957,7 @@ def parse_response(*args):
     if response_type not in _RESPONSE_TYPES:
         raise ValueError
 
-    results, total = _read_response(
+    results, total = await _read_response(
         doc,
         response_type,
         target_code,

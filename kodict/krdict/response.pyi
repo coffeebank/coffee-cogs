@@ -1,5 +1,5 @@
 from typing import Any
-from requests import Response
+from aiohttp import Response
 
 from .types import ViewResponse
 from .main import ErrorResponse, TSearchResponse

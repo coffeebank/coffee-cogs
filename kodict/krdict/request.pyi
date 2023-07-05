@@ -1,5 +1,5 @@
 from typing import Any, Literal, Tuple
-from requests import Response
+from aiohttp import Response
 from .main import TSearchType
 
 def send_request(

@@ -5,7 +5,7 @@ Provides functions that query the Korean Learners' Dictionary API.
 from .request import send_request
 from .response import parse_response
 
-def advanced_search(**kwargs):
+async def advanced_search(**kwargs):
     """
     Performs an advanced search on the Korean Learners' Dictionary API.
     Returns an object with contents dependent on the value of the ``search_type``
@@ -42,9 +42,9 @@ def advanced_search(**kwargs):
     - ``subject_category``: A subject category to filter by.
     """
 
-    return parse_response(kwargs, *send_request(kwargs, True))
+    return parse_response(kwargs, *await send_request(kwargs, True))
 
-def search(**kwargs):
+async def search(**kwargs):
     """
     Performs a search on the Korean Learners' Dictionary API.
     Returns an object with contents dependent on the value of the ``search_type``
@@ -65,9 +65,9 @@ def search(**kwargs):
     should be included.
     """
 
-    return parse_response(kwargs, *send_request(kwargs, False))
+    return parse_response(kwargs, *await send_request(kwargs, False))
 
-def view(**kwargs):
+async def view(**kwargs):
     """
     Performs a view query on the Korean Learners' Dictionary API.
     Returns either an object with information about a dictionary entry, or an error object
@@ -85,4 +85,4 @@ def view(**kwargs):
     should be included.
     """
 
-    return parse_response(kwargs, *send_request(kwargs, False, 'view'))
+    return parse_response(kwargs, *await send_request(kwargs, False, 'view'))

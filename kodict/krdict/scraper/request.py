@@ -3,7 +3,8 @@ Handles making requests to the dictionary website.
 """
 
 from os import path
-import requests
+import aiohttp
+import asyncio
 from lxml import html
 from .constants import _VIEW_URL
 from ..types import (
@@ -873,20 +874,21 @@ def get_language_query(nation, code):
 
     return f'/{nation}', f'nation={nation}&nationCode={code}&'
 
-def send_scrape_request(url):
+async def send_scrape_request(url):
     """
     Sends a request to a URL with the necessary headers for scraping,
     and returns an lxml node.
     """
 
     try:
-        response = requests.get(url, headers={'Accept-Language': '*'}, verify=_PEM_PATH)
-        response.raise_for_status()
-        return html.fromstring(response.text)
-    except requests.exceptions.RequestException as exc:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers={'Accept-Language': '*'}, ssl=False) as response:
+                response.raise_for_status()
+                return html.fromstring(await response.text())
+    except Exception as exc:
         raise exc
 
-def send_request(kwargs, response_type):
+async def send_request(kwargs, response_type):
     """
     Sends a request to a URL based on input parameters.
     """
@@ -904,7 +906,7 @@ def send_request(kwargs, response_type):
     url, url_kr, req_url = build_request_url(kwargs, response_type, lang_info)
 
     return (
-        send_scrape_request(req_url),
+        await send_scrape_request(req_url),
         'word' if response_type == 'advanced' else response_type,
         url_kr,
         kwargs,
@@ -916,7 +918,7 @@ def send_request(kwargs, response_type):
         trans_language_info
     )
 
-def send_multimedia_request(kwargs):
+async def send_multimedia_request(kwargs):
     """
     Sends a request to retrieve multimedia information.
     """
@@ -933,8 +935,9 @@ def send_multimedia_request(kwargs):
     )
 
     try:
-        response = requests.get(url, headers={'Accept-Language': '*'}, verify=_PEM_PATH)
-        response.raise_for_status()
-        return html.fromstring(response.text)
-    except requests.exceptions.RequestException as exc:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers={'Accept-Language': '*'}, ssl=False) as response:
+                response.raise_for_status()
+                return html.fromstring(await response.text())
+    except Exception as exc:
         raise exc

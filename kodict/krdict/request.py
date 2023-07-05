@@ -3,7 +3,8 @@ Transforms input parameters into API-compliant dicts.
 """
 
 from os import path
-import requests
+import aiohttp
+import asyncio
 
 from .types import (
     isiterable,
@@ -125,7 +126,7 @@ def _transform_params(params, search_type):
     return params
 
 
-def send_request(kwargs, advanced=False, search_type=None):
+async def send_request(kwargs, advanced=False, search_type=None):
     """
     Sends a request to the API endpoint matching ``search_type``.
     Returns a tuple that contains the response object, the transformed
@@ -148,10 +149,12 @@ def send_request(kwargs, advanced=False, search_type=None):
         params['advanced'] = 'y'
 
     try:
-        response = requests.get(url, params, verify=_PEM_PATH)
-        response.raise_for_status()
-        return (response, params, search_type)
-    except requests.exceptions.RequestException as exc:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, params=params, ssl=False) as response:
+                raw_response = await response.text()
+                response.raise_for_status()
+                return (raw_response, params, search_type)
+    except Exception as exc:
         raise exc
 
 def set_key(key):

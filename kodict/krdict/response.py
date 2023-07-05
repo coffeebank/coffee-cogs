@@ -112,7 +112,7 @@ def parse_response(kwargs, api_response, request_params, search_type):
     - ``search_type``: The type of search which was performed.
     """
 
-    raw_response = _parse_xml(api_response.text)
+    raw_response = _parse_xml(api_response)
 
     if kwargs.get('raise_api_errors', False) and 'error' in raw_response:
         error = raw_response['error']

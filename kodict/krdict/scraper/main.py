@@ -6,7 +6,7 @@ from .request import send_request
 from .response import parse_response
 
 
-def advanced_search(**kwargs):
+async def advanced_search(**kwargs):
     """
     Performs an advanced search on the Korean Learners' Dictionary.
 
@@ -34,9 +34,9 @@ def advanced_search(**kwargs):
     - ``search_conditions``: An array of search condition objects to filter by.
     """
 
-    return parse_response(*send_request(kwargs, 'advanced'))
+    return await parse_response(*await send_request(kwargs, 'advanced'))
 
-def fetch_semantic_category_words(**kwargs):
+async def fetch_semantic_category_words(**kwargs):
     """
     Fetches words that belong to the provided semantic category.
 
@@ -51,9 +51,9 @@ def fetch_semantic_category_words(**kwargs):
     - ``translation_language``: A language for which translations should be included.
     """
 
-    return parse_response(*send_request(kwargs, 'semantic_category'))
+    return await parse_response(*await send_request(kwargs, 'semantic_category'))
 
-def fetch_subject_category_words(**kwargs):
+async def fetch_subject_category_words(**kwargs):
     """
     Fetches words that belong to one of the provided subject categories.
 
@@ -68,9 +68,9 @@ def fetch_subject_category_words(**kwargs):
     - ``translation_language``: A language for which translations should be included.
     """
 
-    return parse_response(*send_request(kwargs, 'subject_category'))
+    return await parse_response(*await send_request(kwargs, 'subject_category'))
 
-def fetch_word_of_the_day(**kwargs):
+async def fetch_word_of_the_day(**kwargs):
     """
     Fetches information about the word of the day by scraping the dictionary website.
 
@@ -81,9 +81,9 @@ def fetch_word_of_the_day(**kwargs):
     - ``translation_language``: The language for which translations should be included.
     """
 
-    return parse_response(*send_request(kwargs, 'word_of_the_day'))
+    return await parse_response(*await send_request(kwargs, 'word_of_the_day'))
 
-def search(**kwargs):
+async def search(**kwargs):
     """
     Performs a search on the Korean Learners' Dictionary.
     Returns a response object matching the value of the
@@ -101,9 +101,9 @@ def search(**kwargs):
     - ``translation_language``: The language for which translations should be included.
     """
 
-    return parse_response(*send_request(kwargs, kwargs.get('search_type', 'word')))
+    return await parse_response(*await send_request(kwargs, kwargs.get('search_type', 'word')))
 
-def view(**kwargs):
+async def view(**kwargs):
     """
     Performs a view query on the Korean Learners' Dictionary.
     Returns either a response object with information about a dictionary entry.
@@ -115,4 +115,4 @@ def view(**kwargs):
     - ``translation_language``: The language for which translations should be included.
     """
 
-    return parse_response(*send_request(kwargs, 'view'))
+    return await parse_response(*await send_request(kwargs, 'view'))
