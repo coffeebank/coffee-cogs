@@ -36,12 +36,12 @@ class Kodict(commands.Cog):
         > ✅  신문, 新聞, newspaper
         > ✅  만화, 漫畫, comics
         """
+        loadframe = await SimpleMenu(pages=[{'content': 'Searching...'}], timeout=90).start(ctx)
         attribution = ["Krdict (한국어기초사전)"]
         try:
             embed_colour = await ctx.embed_colour()
         except Exception:
             pass
-        loadframe = await SimpleMenu(pages=[{'content': 'Searching...'}], timeout=90).start(ctx)
 
         # Attempt data fetch, but embedFallback if failed
         krdictKeyObj = await self.bot.get_shared_api_tokens("krdict")
