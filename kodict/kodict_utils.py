@@ -4,8 +4,9 @@ import urllib.parse
 import aiohttp
 import asyncio
 from korean_romanizer.romanizer import Romanizer
-import krdict
 import lxml
+
+import kodict.krdict as krdict
 
 parts_of_speech_blocks = {
   "명사": "Noun",
@@ -119,7 +120,7 @@ async def embedFallback(ctx, raw_text, footer=None):
 
 async def krdictFetchApi(api_key: str, text: str):
     krdict.set_key(api_key)
-    response = krdict.search(query=text, translation_language="english", raise_api_errors=True)
+    response = await krdict.search(query=text, translation_language="english", raise_api_errors=True)
     return krdictFetchChecker(response)
 
 def krdictFetchChecker(response):
@@ -132,7 +133,7 @@ def krdictFetchChecker(response):
         return None
 
 async def krdictFetchScraper(text: str):
-    response = krdict.scraper.search(query=text, translation_language="english")
+    response = await krdict.scraper.search(query=text, translation_language="english")
     return krdictFetchChecker(response)
 
 async def deeplFetchApi(api_key: str, text: str):
