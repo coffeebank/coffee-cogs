@@ -3,7 +3,7 @@
   "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by the website at <https://coffeebank.github.io/coffee-cogs/kodict>\n\n**Note: This cog requires an API key (free) from Krdict (한국어기초사전) Open API.**\nSee the documentation site above for more setup details.",
   "name" : "kodict",
   "short" : "Korean dictionary bot",
-  "requirements" : ["asyncio", "aiohttp", "cssselect", "korean_romanizer", "krdict.py", "lxml", "requests"],
+  "requirements" : ["asyncio", "aiohttp", "cssselect", "korean_romanizer", "lxml"],
   "description" : "Korean dictionary bot. Searches National Institute of Korean Language's Korean-English Learners' Dictionary (한국어기초사전) using their Open API.",
   "permissions" : [],
   "min_python_version": [3,9,0],

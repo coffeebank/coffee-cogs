@@ -1,0 +1,220 @@
+"""
+Contains types defined by the krdict package.
+"""
+
+from .exceptions import KRDictException
+from .enums import (
+    Classification,
+    MultimediaType,
+    OriginType,
+    PartOfSpeech,
+    ResponseType,
+    SearchMethod,
+    SearchTarget,
+    SearchType,
+    SortMethod,
+    TargetLanguage,
+    TranslationLanguage,
+    VocabularyLevel,
+    SemanticCategory,
+    SubjectCategory,
+    ScrapedResponseType,
+    ScraperSearchTarget,
+    ScraperTargetLanguage,
+    ScraperTranslationLanguage,
+    ScraperVocabularyLevel
+)
+from .main import (
+    AbbreviationInfo,
+    CategoryInfo,
+    ConjugationInfo,
+    DefinitionInfo,
+    DefinitionResponse,
+    DefinitionResponseData,
+    DefinitionSearchResult,
+    ErrorResponse,
+    ExampleInfo,
+    ExampleResponse,
+    ExampleResponseData,
+    ExampleSearchResult,
+    IdiomProverbResponse,
+    IdiomProverbResponseData,
+    IdiomProverbSearchResult,
+    MultimediaInfo,
+    OriginalLanguageInfo,
+    PartialDefinitionInfo,
+    PartialSearchDefinition,
+    PatternInfo,
+    PronunciationInfo,
+    ReferenceInfo,
+    RelatedInfo,
+    SearchDefinition,
+    SearchResponseData,
+    SearchResult,
+    SearchTranslation,
+    SubwordInfo,
+    ViewResponse,
+    ViewResponseData,
+    ViewResult,
+    WordInfo,
+    WordResponse,
+    WordResponseData,
+    WordSearchResult,
+)
+from .scraper import (
+    ScrapedAbbreviationInfo,
+    ScrapedConjugationInfo,
+    ScrapedDefinitionInfo,
+    ScrapedDefinitionResponse,
+    ScrapedDefinitionResponseData,
+    ScrapedDefinitionSearchResult,
+    ScrapedDerivativeInfo,
+    ScrapedExampleInfo,
+    ScrapedExampleResponse,
+    ScrapedExampleResponseData,
+    ScrapedExampleSearchResult,
+    ScrapedHanjaInfo,
+    ScrapedIdiomProverbResponse,
+    ScrapedIdiomProverbResponseData,
+    ScrapedIdiomProverbSearchResult,
+    ScrapedMultimediaInfo,
+    ScrapedOriginalLanguageInfo,
+    ScrapedPartialDefinitionInfo,
+    ScrapedPatternInfo,
+    ScrapedPronunciationInfo,
+    ScrapedRelatedInfo,
+    ScrapedResponseData,
+    ScrapedSearchResult,
+    ScrapedSubwordInfo,
+    ScrapedTranslationURLInfo,
+    ScrapedViewResponse,
+    ScrapedViewResponseData,
+    ScrapedViewResult,
+    ScrapedWordInfo,
+    ScrapedWordResponse,
+    ScrapedWordResponseData,
+    ScrapedWordSearchResult,
+    WordOfTheDayData,
+    WordOfTheDayResponse
+)
+
+
+def isiterable(obj, exclude=None):
+    """
+    Returns True if a type is iterable,
+    or False otherwise.
+
+    Types passed to ``exclude`` will be
+    considered not iterable.
+    """
+
+    if any(isinstance(obj, cls) for cls in exclude or ()):
+        return False
+
+    try:
+        iter(obj)
+        return True
+    except TypeError:
+        return False
+
+
+__all__ = [
+    'isiterable',
+    'KRDictException',
+
+    # enums
+    'Classification',
+    'MultimediaType',
+    'OriginType',
+    'PartOfSpeech',
+    'ResponseType',
+    'SemanticCategory',
+    'SubjectCategory',
+    'ScrapedResponseType',
+    'ScraperSearchTarget',
+    'ScraperTargetLanguage',
+    'ScraperTranslationLanguage',
+    'ScraperVocabularyLevel',
+    'SearchMethod',
+    'SearchTarget',
+    'SearchType',
+    'SortMethod',
+    'TargetLanguage',
+    'TranslationLanguage',
+    'VocabularyLevel',
+
+    # response types
+    'DefinitionResponse',
+    'ErrorResponse',
+    'ExampleResponse',
+    'IdiomProverbResponse',
+    'ViewResponse',
+    'WordResponse',
+    'ScrapedDefinitionResponse',
+    'ScrapedExampleResponse',
+    'ScrapedIdiomProverbResponse',
+    'ScrapedViewResponse',
+    'ScrapedWordResponse',
+    'WordOfTheDayResponse',
+
+    # response objects
+    'AbbreviationInfo',
+    'CategoryInfo',
+    'ConjugationInfo',
+    'DefinitionInfo',
+    'DefinitionResponseData',
+    'DefinitionSearchResult',
+    'ExampleInfo',
+    'ExampleResponseData',
+    'ExampleSearchResult',
+    'IdiomProverbResponseData',
+    'IdiomProverbSearchResult',
+    'MultimediaInfo',
+    'OriginalLanguageInfo',
+    'PartialDefinitionInfo',
+    'PartialSearchDefinition',
+    'PatternInfo',
+    'PronunciationInfo',
+    'ReferenceInfo',
+    'RelatedInfo',
+    'SearchDefinition',
+    'SearchResponseData',
+    'SearchResult',
+    'SearchTranslation',
+    'SubwordInfo',
+    'ViewResponseData',
+    'ViewResult',
+    'WordInfo',
+    'WordResponseData',
+    'WordSearchResult',
+
+    # scraper response objects
+    'ScrapedAbbreviationInfo',
+    'ScrapedConjugationInfo',
+    'ScrapedDefinitionInfo',
+    'ScrapedDefinitionResponseData',
+    'ScrapedDefinitionSearchResult',
+    'ScrapedDerivativeInfo',
+    'ScrapedExampleInfo',
+    'ScrapedExampleResponseData',
+    'ScrapedExampleSearchResult',
+    'ScrapedHanjaInfo',
+    'ScrapedIdiomProverbResponseData',
+    'ScrapedIdiomProverbSearchResult',
+    'ScrapedMultimediaInfo',
+    'ScrapedOriginalLanguageInfo',
+    'ScrapedPartialDefinitionInfo',
+    'ScrapedPatternInfo',
+    'ScrapedPronunciationInfo',
+    'ScrapedRelatedInfo',
+    'ScrapedResponseData',
+    'ScrapedSearchResult',
+    'ScrapedSubwordInfo',
+    'ScrapedTranslationURLInfo',
+    'ScrapedViewResponseData',
+    'ScrapedViewResult',
+    'ScrapedWordInfo',
+    'ScrapedWordResponseData',
+    'ScrapedWordSearchResult',
+    'WordOfTheDayData',
+]
