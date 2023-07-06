@@ -63,7 +63,7 @@ class Kodict(commands.Cog):
                 deepl_embed = await embed_deepl(text, results.get("deepl"), None, embed_colour)
                 await response.edit(content="", embed=deepl_embed)
             else:
-                fallback_embed = await embed_fallback(text, None, "Could not connect to Krdict API", embed_colour)
+                fallback_embed = await embed_fallback(text, None, "No results from Krdict API.", embed_colour)
                 await response.edit(content="", embed=fallback_embed)
         except Exception:
             # User cancelled operation, ctx will return NotFound

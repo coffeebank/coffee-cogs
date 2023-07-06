@@ -11,7 +11,8 @@ async def fetch_all(text, krdict_key=None, deepl_key=None):
         return {"krdict": results}
     # Try DeepL
     deepl_text = await fetch_deepl(text, deepl_key)
-    results = await fetch_krdict(deepl_text, krdict_key)
+    if deepl_text:
+        results = await fetch_krdict(deepl_text, krdict_key)
     if results:
         return {"krdict": results, "deepl": deepl_text}
     else:
