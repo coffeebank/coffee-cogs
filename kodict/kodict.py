@@ -1,7 +1,5 @@
 from redbot.core import Config, app_commands, commands, checks
 import discord
-import json
-import urllib.parse
 
 import aiohttp
 import asyncio
