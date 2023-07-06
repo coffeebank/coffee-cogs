@@ -42,7 +42,7 @@ class Kodict(commands.Cog):
         try:
             embed_colour = await ctx.embed_colour()
         except Exception:
-            pass
+            embed_colour = None
 
         krdict_key_obj = await self.bot.get_shared_api_tokens("krdict")
         krdict_key = krdict_key_obj.get("api_key", None)
