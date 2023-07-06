@@ -43,12 +43,18 @@ async def fetch_krdict(text, krdict_key=None):
 
 async def krdict_fetch_api(api_key: str, text: str):
     krdict.set_key(api_key)
-    response = await krdict.search(query=text, translation_language="english", raise_api_errors=True)
-    return krdict_fetch_checker(response)
+    try:
+        response = await krdict.search(query=text, translation_language="english", raise_api_errors=True)
+        return krdict_fetch_checker(response)
+    except Exception:
+        return None
 
 async def krdict_fetch_scraper(text: str):
-    response = await krdict.scraper.search(query=text, translation_language="english")
-    return krdict_fetch_checker(response)
+    try:
+        response = await krdict.scraper.search(query=text, translation_language="english")
+        return krdict_fetch_checker(response)
+    except Exception:
+        return None
 
 def krdict_fetch_checker(response):
     try:
