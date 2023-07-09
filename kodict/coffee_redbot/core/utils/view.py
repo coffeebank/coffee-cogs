@@ -4,16 +4,14 @@ import discord
 
 from discord.ext.commands import BadArgument
 from typing import TYPE_CHECKING, Any, List, Optional, Union, Dict
-from redbot.core.i18n import Translator
-from redbot.vendored.discord.ext import menus
-from redbot.core.commands.converter import get_dict_converter
+from ...vendored.discord.ext import menus
 
 if TYPE_CHECKING:
     from redbot.core.commands import Context
 
-__all__ = ("SimpleMenu", "SetApiModal", "SetApiView", "ConfirmView")
+__all__ = ("SimpleMenu")
 
-_ = Translator("UtilsViews", __file__)
+_ = lambda x: str(x)
 
 _ACCEPTABLE_PAGE_TYPES = Union[Dict[str, Union[str, discord.Embed]], discord.Embed, str]
 

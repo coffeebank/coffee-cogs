@@ -1,14 +1,19 @@
-from redbot.core import Config, app_commands, commands, checks
 import discord
+try:
+    # Red-DiscordBot
+    from redbot.core import Config, app_commands, commands
+except (ImportError, ModuleNotFoundError):
+    # Discord.py
+    from discord import app_commands
+    from discord.ext import commands
+    from main import Config
 
 import aiohttp
 import asyncio
+import kodict_core
 
-from kodict.utils import *
-from kodict.utils_deepl import *
-from kodict.utils_discord import *
-from kodict.utils_krdict import *
-from kodict.redbot.core.utils.view import SimpleMenu
+from .utils import *
+from .coffee_redbot.core.utils.view import SimpleMenu
 
 class Kodict(commands.Cog):
     """Korean dictionary bot. Searches National Institute of Korean Language's Korean-English Learners' Dictionary."""
@@ -37,35 +42,10 @@ class Kodict(commands.Cog):
         > ✅  신문, 新聞, newspaper
         > ✅  만화, 漫畫, comics
         """
-        # Respond early to prevent slash interaction from expiring
-        response = await SimpleMenu(pages=[{'content': 'Searching...'}], timeout=90).start(ctx)
-        try:
-            embed_colour = await ctx.embed_colour()
-        except Exception:
-            embed_colour = None
-
+        embed_colour = await self.bot.get_embed_colour(self)
         krdict_key_obj = await self.bot.get_shared_api_tokens("krdict")
-        krdict_key = krdict_key_obj.get("api_key", None)
-        krdict_key_obj = await self.bot.get_shared_api_tokens("deepl")
-        deepl_key = krdict_key_obj.get("api_key", None)
-        results = await fetch_all(text, krdict_key, deepl_key)
-
-        try:
-            if results.get("krdict", None):
-                attribution = ["Krdict (한국어기초사전)"]
-                if results.get("deepl", None):
-                    attribution.append("DeepL")
-                send_embeds = await embed_krdict(results.get("krdict"), attribution, embed_colour)
-                await SimpleMenu(pages=send_embeds, timeout=90).replace(ctx, response)
-            elif results.get("deepl", None):
-                deepl_embed = await embed_deepl(text, results.get("deepl"), None, embed_colour)
-                await response.edit(content="", embed=deepl_embed)
-            else:
-                fallback_embed = await embed_fallback(text, None, "No results from Krdict API.", embed_colour)
-                await response.edit(content="", embed=fallback_embed)
-        except Exception:
-            # User cancelled operation, ctx will return NotFound
-            pass
+        deepl_key_obj = await self.bot.get_shared_api_tokens("deepl")
+        await command_kodict(ctx, text, krdict_key_obj.get("api_key", None), deepl_key_obj.get("api_key", None), embed_colour)
 
     @commands.hybrid_command(name="kosearch", aliases=["krsearch"])
     @app_commands.describe(text="Search Korean vocabulary and translation websites")
