@@ -57,7 +57,7 @@ async def embed_deepl(text, deepl_results=None, description=None, embed_colour: 
         deepl_results = "\n".join([deepl_results, str(Romanizer(str(deepl_results)).romanize())])
     desc = "\n".join(filter(None, [text_romanization, description]))
     e = discord.Embed(title=str(text), description=desc, colour=embed_colour)
-    e.add_field(name="Translation", value=str(deepl_results), inline=False)
+    e.add_field(name="Translation", value=">>> "+str(deepl_results), inline=False)
     e.add_field(name="More Links", value=" ・ ".join(alt_links), inline=False)
     e.set_footer(text="Results from DeepL. No Krdict search results found.")
     return e
