@@ -245,7 +245,12 @@ class Coffeeani(commands.Cog):
 
                 country_of_origin = ""
                 if anime_manga.get("countryOfOrigin", None) is not None:
-                    country_of_origin += ":flag_"+str(anime_manga.get("countryOfOrigin", None)).lower()+": "
+                    coo = anime_manga.get("countryOfOrigin", None)
+                    country_of_origin += ":flag_"+str(coo).lower()+": "
+                    if coo == "KR" and info_format == "MANGA":
+                        info_format = "MANHWA"
+                    if coo == "CN" and info_format == "MANGA":
+                        info_format = "MANHUA"
 
                 if info is not None:
                     embed.add_field(name=str(info_status), value=str(info), inline=True)
