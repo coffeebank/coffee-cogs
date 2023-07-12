@@ -44,6 +44,15 @@ query ($id: Int, $page: Int, $search: String, $type: MediaType) {
                 isMediaSpoiler
             }
             genres
+      			studios {
+              edges {
+                node {
+                  name
+                  siteUrl
+                }
+                isMain
+              }
+      			}
         }
     }
 }
@@ -224,6 +233,22 @@ class Coffeeani(commands.Cog):
                 embed.description = self.description_parser(description)
                 embed.set_image(url=f"https://img.anili.st/media/{anime_manga['id']}")
 
+                studios = None
+                studios_count = 0
+                if len(anime_manga["studios"].get("edges", [])) > 0:
+                    studios_full_arr = anime_manga["studios"].get("edges", [])
+                    studios_main_arr = [
+                        "["+str(stu["node"].get("name", "-"))+"]("+str(stu["node"].get("siteUrl", link))+")"
+                        for stu in studios_full_arr if stu.get("isMain", None) == True
+                    ]
+                    studios_count = len(studios_full_arr) - len(studios_main_arr)
+                    if len(studios_main_arr) > 0 and studios_count > 1:
+                        studios = ", ".join(studios_main_arr)+" + "+str(studios_count)+" others"
+                    elif len(studios_main_arr) > 0 and studios_count > 0:
+                        studios = ", ".join(studios_main_arr)+" + "+str(studios_count)+" other"
+                    elif len(studios_main_arr) > 0:
+                        studios = ", ".join(studios_main_arr)
+
                 external_links = ""
                 for i in range(0, len(anime_manga["externalLinks"])):
                     ext_link = anime_manga["externalLinks"][i]
@@ -254,8 +279,10 @@ class Coffeeani(commands.Cog):
 
                 if info is not None:
                     embed.add_field(name=str(info_status), value=str(info), inline=True)
+                if studios:
+                    embed.add_field(name="Studios", value=studios, inline=True)
                 if external_links:
-                    embed.add_field(name="Links", value=external_links)
+                    embed.add_field(name="Links", value=external_links, inline=True)
                 if anime_manga["bannerImage"]:
                     embed.set_image(url=anime_manga["bannerImage"])
                 am_name_native = []
@@ -267,7 +294,10 @@ class Coffeeani(commands.Cog):
                 if len(anime_manga.get("tags", [])) > 0:
                     am_tags = [str(t.get("name", None)) for t in anime_manga.get("tags", []) if t.get("isMediaSpoiler", None) is not True]
                     am_tags_spoilers = ["||"+str(t.get("name", None))+"||" for t in anime_manga.get("tags", []) if t.get("isMediaSpoiler", None) is True]
-                    embed.add_field(name="Tags", value=", ".join(am_tags+am_tags_spoilers), inline=True)
+                    if len(anime_manga.get("tags", [])) > 11:
+                        embed.add_field(name="Tags", value=", ".join(am_tags+am_tags_spoilers), inline=False)
+                    else:
+                        embed.add_field(name="Tags", value=", ".join(am_tags+am_tags_spoilers), inline=True)
 
                 if cmd == "ANIME":
                     embed.set_footer(text=" ・ ".join(filter(None, [info_format, time_left, "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
@@ -393,10 +423,10 @@ class Coffeeani(commands.Cog):
             if embeds is not None:
                 await SimpleMenu(pages=embeds, timeout=90).start(ctx)
             else:
-                await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
+                await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
 
         except TypeError:
-            await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
+            await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
 
     @commands.hybrid_command(name="animecharacter", aliases=["animechar"])
     @app_commands.describe(name="Search for an anime/manga character")
