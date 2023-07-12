@@ -11,6 +11,10 @@ from .coffee_redbot.core.utils.view import SimpleMenu
 
 ## Utility Commands
 
+def truncate(text: str, max: int, extension: str="…"):
+    return text[:max]+extension
+
+
 async def embed_krdict(krdict_results, attribution: list[str]=["Krdict (한국어기초사전)"], embed_color: discord.Colour=None):
     sendEmbeds = []
     attribution = "Results from "+", ".join(attribution)
@@ -49,22 +53,27 @@ async def embed_deepl(text, deepl_results=None, description=None, embed_colour: 
       f"Wiktionary: [EN](https://en.wiktionary.org/w/index.php?fulltext=0&search={safe_text}), [KO](https://ko.wiktionary.org/w/index.php?fulltext=0&search={safe_text})",
       f"Google Translate: [EN](https://translate.google.com/?text={safe_text})"
     ]
+    if len(" ・ ".join(alt_links)) > 1013:
+        alt_links = [
+            "Wiktionary: [EN](https://en.wiktionary.org), [KO](https://ko.wiktionary.org)",
+            "Google Translate: [EN](https://translate.google.com)"
+        ]
     if Romanizer(str(text)).romanize() != text:
-        text_romanization = str(Romanizer(str(text)).romanize())
+        text_romanization = truncate(str(Romanizer(str(text)).romanize()), 250)
     else:
         text_romanization = None
     if Romanizer(str(deepl_results)).romanize() != deepl_results:
         deepl_results = "\n".join([deepl_results, str(Romanizer(str(deepl_results)).romanize())])
     desc = "\n".join(filter(None, [text_romanization, description]))
-    e = discord.Embed(title=str(text), description=desc, colour=embed_colour)
-    e.add_field(name="Translation", value=">>> "+str(deepl_results), inline=False)
+    e = discord.Embed(title=truncate(str(text), 100), description=desc, colour=embed_colour)
+    e.add_field(name="Translation", value=">>> "+truncate(str(deepl_results), 1019), inline=False)
     e.add_field(name="More Links", value=" ・ ".join(alt_links), inline=False)
     e.set_footer(text="Results from DeepL. No Krdict search results found.")
     return e
 
 async def embed_fallback(text, description=None, footer=None, embed_colour: discord.Colour=None):
     safe_text = urllib.parse.quote(text, safe='')
-    e = discord.Embed(title=str(text), description=description, colour=embed_colour)
+    e = discord.Embed(title=truncate(str(text), 100), description=description, colour=embed_colour)
     e.add_field(name="Krdict (한국어기초사전)", value=f"https://krdict.korean.go.kr/eng/dicSearch/search?nation=eng&nationCode=6&mainSearchWord={safe_text}")
     e.add_field(name="Wiktionary", value=f"https://en.wiktionary.org/w/index.php?fulltext=0&search={safe_text}")
     e.add_field(name="DeepL Translate", value=f"https://deepl.com/translator#ko/en/{safe_text}")
@@ -93,6 +102,7 @@ async def command_kodict(ctx, text: str, krdict_key=None, deepl_key=None, embed_
         else:
             fallback_embed = await embed_fallback(text, None, "No results from Krdict API.", embed_colour)
             await response.edit(content="", embed=fallback_embed)
-    except Exception:
+    except Exception as err:
         # User cancelled operation, ctx will return NotFound
+        await response.edit(content="Error: Please try again. Possible issues include: cancelled command, network errors, or text is too long.")
         pass
