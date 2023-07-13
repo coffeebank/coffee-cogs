@@ -12,8 +12,9 @@ from .coffee_redbot.core.utils.view import SimpleMenu
 ## Utility Commands
 
 def truncate(text: str, max: int, extension: str="…"):
-    return text[:max]+extension
-
+    if len(text) > max:
+        return text[:max-1]+extension
+    else: return text
 
 async def embed_krdict(krdict_results, attribution: list[str]=["Krdict (한국어기초사전)"], embed_color: discord.Colour=None):
     sendEmbeds = []
@@ -59,11 +60,11 @@ async def embed_deepl(text, deepl_results=None, description=None, embed_colour: 
             "Google Translate: [EN](https://translate.google.com)"
         ]
     if Romanizer(str(text)).romanize() != text:
-        text_romanization = truncate(str(Romanizer(str(text)).romanize()), 250)
+        text_romanization = str(Romanizer(str(text)).romanize())
     else:
         text_romanization = None
     if Romanizer(str(deepl_results)).romanize() != deepl_results:
-        deepl_results = "\n".join([deepl_results, str(Romanizer(str(deepl_results)).romanize())])
+        deepl_results = "\n".join([deepl_results, truncate(str(Romanizer(str(deepl_results)).romanize()), 250)])
     desc = "\n".join(filter(None, [text_romanization, description]))
     e = discord.Embed(title=truncate(str(text), 100), description=desc, colour=embed_colour)
     e.add_field(name="Translation", value=">>> "+truncate(str(deepl_results), 1019), inline=False)
