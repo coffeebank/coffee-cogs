@@ -7,141 +7,7 @@ import re
 import aiohttp
 import discord
 
-SEARCH_ANIME_MANGA_QUERY = """
-query ($id: Int, $page: Int, $search: String, $type: MediaType) {
-    Page (page: $page, perPage: 10) {
-        media (id: $id, search: $search, type: $type) {
-            id
-            idMal
-            description(asHtml: false)
-            title {
-                english
-                romaji
-                native
-            }
-            coverImage {
-                medium
-                color
-            }
-            bannerImage
-            averageScore
-            meanScore
-            status
-            episodes
-            chapters
-            externalLinks {
-                url
-                site
-            }
-            nextAiringEpisode {
-                timeUntilAiring
-            }
-            countryOfOrigin
-            format
-            synonyms
-            tags {
-                name
-                isMediaSpoiler
-            }
-            genres
-      			studios {
-              edges {
-                node {
-                  name
-                  siteUrl
-                }
-                isMain
-              }
-      			}
-        }
-    }
-}
-"""
-
-SEARCH_CHARACTER_QUERY = """
-query ($id: Int, $page: Int, $search: String) {
-  Page(page: $page, perPage: 10) {
-    characters(id: $id, search: $search) {
-      id
-      description (asHtml: true),
-      name {
-        first
-        last
-        native
-      }
-      image {
-        large
-      }
-      media {
-        nodes {
-          id
-          type
-          title {
-            romaji
-            english
-            native
-            userPreferred
-          }
-        }
-      }
-    }
-  }
-}
-"""
-
-SEARCH_USER_QUERY = """
-query ($id: Int, $page: Int, $search: String) {
-    Page (page: $page, perPage: 10) {
-        users (id: $id, search: $search) {
-            id
-            name
-            siteUrl
-            avatar {
-                    large
-            }
-            about (asHtml: true),
-            stats {
-                watchedTime
-                chaptersRead
-            }
-            favourites {
-            manga {
-              nodes {
-                id
-                title {
-                  romaji
-                  english
-                  native
-                  userPreferred
-                }
-              }
-            }
-            characters {
-              nodes {
-                id
-                name {
-                  first
-                  last
-                  native
-                }
-              }
-            }
-            anime {
-              nodes {
-                id
-                title {
-                  romaji
-                  english
-                  native
-                  userPreferred
-                }
-              }
-            }
-            }
-        }
-    }
-}
-"""
+from .utils import *
 
 class Coffeeani(commands.Cog):
     """Search anime, manga (manhwa/manhua/light novels), users, and characters from Anilist. See series info, status, episodes/chapters, and tags."""
@@ -214,6 +80,8 @@ class Coffeeani(commands.Cog):
 
             # a list of embeds
             embeds = []
+            # TODO: Setup 18+ filtering
+            # embeds_adult = []
             idx_total = len(data)
 
             for idx, anime_manga in enumerate(data):
@@ -263,7 +131,11 @@ class Coffeeani(commands.Cog):
                     info_epschaps = "Episodes: "+str(anime_manga.get("episodes", None))
                 if cmd == "MANGA" and anime_manga.get("chapters", None) not in [None, "None"]:
                     info_epschaps = "Chapters: "+str(anime_manga.get("chapters", None))
-                info_links = f"[Anilist]({link})"
+
+                info_links = ""
+                if anime_manga.get("isAdult", None) == True:
+                    info_links += "🔞 "
+                info_links += f"[Anilist]({link})"
                 if anime_manga.get("idMal", None):
                     info_links += f", [MAL](https://myanimelist.net/{cmd.lower()}/{anime_manga.get('idMal', None)})"
                 info = "\n".join(filter(None, [info_epschaps, info_links]))
@@ -277,10 +149,18 @@ class Coffeeani(commands.Cog):
                     if coo == "CN" and info_format == "MANGA":
                         info_format = "MANHUA"
 
+                relations = []
+                if anilist_get_relations(anime_manga, cmd):
+                    for rel in anilist_get_relations(anime_manga, cmd):
+                        relations.append(f"[{rel.get('series_format')}]({rel.get('link', 'https://anilist.co')})")
+
                 if info is not None:
                     embed.add_field(name=str(info_status), value=str(info), inline=True)
                 if studios:
                     embed.add_field(name="Studios", value=studios, inline=True)
+                # TODO: Setup relations
+                # if relations:
+                #     embed.add_field(name="Relations", value=", ".join(relations), inline=True)
                 if external_links:
                     embed.add_field(name="Links", value=external_links, inline=True)
                 if anime_manga["bannerImage"]:
@@ -303,8 +183,15 @@ class Coffeeani(commands.Cog):
                     embed.set_footer(text=" ・ ".join(filter(None, [info_format, time_left, "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
                 else:
                     embed.set_footer(text=" ・ ".join(filter(None, [info_format, "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
-                embeds.append({"embed": embed})
 
+            # TODO: Setup 18+ filtering
+            #     if anime_manga.get("isAdult", None) == True:
+            #         embeds_adult.append({"embed": embed})
+            #     else:
+            #         embeds.append({"embed": embed})
+
+            # return embeds+embeds_adult, data
+                embeds.append({"embed": embed})
             return embeds, data
 
         else:
