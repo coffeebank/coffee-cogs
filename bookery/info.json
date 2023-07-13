@@ -1,0 +1,11 @@
+{
+  "author" : ["coffeebank"],
+  "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by the website at <https://coffeebank.github.io/coffee-cogs/bookery>",
+  "name" : "bookery",
+  "short" : "Search books and find more about a book.",
+  "requirements" : ["asyncio", "aiohttp"],
+  "description" : "Search books and find more about a book. Results from Google Books API.",
+  "permissions" : [],
+  "end_user_data_statement" : "This cog does not store any End User Data.",
+  "tags" : ["google play", "booktok"]
+}
