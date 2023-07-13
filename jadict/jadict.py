@@ -72,7 +72,7 @@ class Jadict(commands.Cog):
                 tags = str(", ".join(jishoResult.get("tags", [])))
 
             e = discord.Embed(
-              color=(await self.bot.get_embed_colour()),
+              color=(await self.bot.get_embed_colour(self)),
               title=str(word),
               url=jisho_src,
               description=" ・ ".join(filter(None, [reading, is_common, jlpt, tags]))
@@ -116,7 +116,7 @@ class Jadict(commands.Cog):
 
     async def fallbackEmbed(self, ctx, rawText, footer=""):
         text = urllib.parse.quote(rawText, safe='')
-        e = discord.Embed(color=(await self.bot.get_embed_colour()), title=rawText)
+        e = discord.Embed(color=(await self.bot.get_embed_colour(self)), title=rawText)
         e.add_field(name="Jisho", value=f"https://jisho.org/search/{text}")
         e.add_field(name="Wiktionary", value=f"https://en.wiktionary.org/w/index.php?fulltext=0&search={text}")
         e.add_field(name="DeepL Translate", value=f"https://deepl.com/translator#ja/en/{text}")
