@@ -37,5 +37,5 @@ class Bookery(commands.Cog):
         results_max = results.get("items", [])[:10]
         embeds = []
         for res in results_max:
-            embeds.append(embed_google_books(res))
+            embeds.append(embed_google_books(res, (await self.bot.get_embed_colour(self))))
         return await SimpleMenu(pages=embeds, timeout=90).start(ctx)

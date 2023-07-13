@@ -35,7 +35,7 @@ def embed_google_books(book_result, embed_colour: discord.Colour=None):
         except AttributeError:
             thumbnail = thumbnail.get(next(iter(thumbnail)), None)
 
-    e = discord.Embed(title=title, url=info_link, description="\n".join(filter(None, [
+    e = discord.Embed(title=title, url=info_link, colour=embed_colour, description="\n".join(filter(None, [
         subtitle,
         description
     ])))
