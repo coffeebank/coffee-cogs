@@ -65,6 +65,10 @@ export default function Sidebar() {
           link: "/bartender"
         },
         {
+          title: "bookery",
+          link: "/bookery"
+        },
+        {
           title: "coffeeani",
           link: "/coffeeani"
         },
@@ -131,11 +135,11 @@ export default function Sidebar() {
   ]
 
   return (
-    <aside className="w-full min-h-screen md:pt-nav flex flex-col justify-between px-2 gap-6">
+    <aside className="flex flex-col gap-6 justify-between px-2 w-full min-h-screen md:pt-nav">
       <header>
         <div className="w-full px-4 md:pt-1 md:pb-4 min-h-[4rem] flex items-center align-middle justify-between md:block">
           <Link to="/" aria-label="Go to home page">
-            <h1 className="font-bold text-xl text-black/90 dark:text-white/90">Coffee Cogs ☕</h1>
+            <h1 className="text-xl font-bold text-black/90 dark:text-white/90">Coffee Cogs ☕</h1>
           </Link>
           <div className="md:hidden">
             <button className="dark:text-gray-200">
@@ -143,7 +147,7 @@ export default function Sidebar() {
             </button>
           </div>
         </div>
-        <nav className="pt-4 px-8 md:px-0">
+        <nav className="px-8 pt-4 md:px-0">
           {sidebarItems.map(({ title, heading, items }) => {
             let keyNum = Math.floor(Math.random() * (99 - 11) + 11);
 
