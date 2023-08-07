@@ -80,8 +80,9 @@ class Pinboard(commands.Cog):
         e = discord.Embed(color=(await ctx.embed_colour()), title=pinnedMsgName, description=description)
 
         for key, value in pinStore[pinnedMsgName]["content"].items():
-            # userObj = self.bot.get_user(int(key))
             userObj = ctx.guild.get_member(int(key))
+            if userObj is None:
+                continue
             payload = str(value)+"\u000a\u200b"
             e.add_field(name=userObj.display_name, value=payload, inline=True)
 
