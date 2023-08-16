@@ -149,26 +149,29 @@ def make_result_single(jishoResult):
     # Senses
     senses = []
     for index, sense in enumerate(jishoResult.get("senses", [])):
-        parts_of_speech = str(", ".join(sense.get("parts_of_speech", [])))
-        if len(parts_of_speech) > 0:
+        parts_of_speech = None
+        if len(sense.get("parts_of_speech")) > 0:
+            parts_of_speech = str(", ".join(sense.get("parts_of_speech", [])))
             parts_of_speech = "*"+parts_of_speech+"*"
-        english_definitions = str("; ".join(sense.get("english_definitions", [])))
-        sense_tags = ""
+        english_definitions = None
+        if sense.get("english_definitions"):
+            english_definitions = str("; ".join(sense.get("english_definitions", [])))
+        sense_tags = None
         if len(sense.get("tags", [])) > 0:
-            sense_tags = "\n*Tags: " + str(", ".join(sense.get("tags", []))) + "*"
-        see_also = ""
+            sense_tags = "*Tags: " + str(", ".join(sense.get("tags", []))) + "*"
+        see_also = None
         if len(sense.get("see_also", [])) > 0:
-            see_also = "\n*See also: " + str(", ".join(sense.get("see_also", []))) + "*"
-        links = ""
+            see_also = "*See also: " + str(", ".join(sense.get("see_also", []))) + "*"
+        links = None
         if len(sense.get("links", [])) > 0:
-            links += "\n"
+            links = ""
             for sl in sense.get("links", []):
                 if sl.get("url") is not None:
                     links += f"[{sl.get('text', 'Link')}]({sl.get('url')}), "
             links = links[:-2] # remove last comma and space
         senses.append({
-            "name": str(index+1)+". "+english_definitions, 
-            "value": (parts_of_speech+sense_tags+see_also+links or "-"),
+            "name": str(index+1)+". "+english_definitions,
+            "value": ("\n".join(filter(None, [parts_of_speech, sense_tags, see_also, links])) or "-"),
         })
 
     return {
