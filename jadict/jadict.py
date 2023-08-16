@@ -6,7 +6,7 @@ import asyncio
 import aiohttp
 import json
 
-from .jadict_utils import JadictUtils
+from .jadict_utils import *
 
 class Jadict(commands.Cog):
     """Japanese dictionary bot. Searches Jisho using Jisho API."""
@@ -24,93 +24,23 @@ class Jadict(commands.Cog):
 
     # Utility Commands
 
-    async def makeJsonRequest(self, url):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
-                reqdata = await resp.json()
-                return reqdata
-
-    async def fetchJisho(self, text):
-        try:
-            jishoJson = await self.makeJsonRequest(f"http://jisho.org/api/v1/search/words?keyword={text}")
-            if len(jishoJson.get("data", [])) > 0:
-                return jishoJson
-            else:
-                return False
-        except:
-            return None
-        
-    async def jishoEmbeds(self, ctx, jishoJson):
+    async def jishoResultsEmbeds(self, ctx, jishoResult):
         sendEmbeds = []
-        total = len(jishoJson.get("data", []))
-
-        for idx, jishoResult in enumerate(jishoJson.get("data", [])):
-            if jishoResult.get("slug"):
-                jisho_src = f"https://jisho.org/word/{jishoResult.get('slug')}"
-            else:
-                jisho_src = None
-
-            kanji = jishoResult["japanese"][0].get("word", None)
-            kana = jishoResult["japanese"][0].get("reading", None)
-            word = kanji or kana
-
-            if kanji and kana:
-                # word == kanji -> show kana, romaji
-                reading = kana+" "+JadictUtils.to_romaji(str(kana))
-            else:
-                # word == kana -> show only romaji
-                reading = JadictUtils.to_romaji(str(word))
-
-            is_common = None
-            if jishoResult.get("is_common", None) is True:
-                is_common = "Common"
-            jlpt = None
-            if len(jishoResult.get("jlpt", [])) > 0:
-                jlpt = str(", ".join(jishoResult.get("jlpt", [])))
-            tags = None
-            if len(jishoResult.get("tags", [])) > 0:
-                tags = str(", ".join(jishoResult.get("tags", [])))
-
+        total = len(jishoResult or [])
+        for idx, jisho_results in enumerate(jishoResult):
             e = discord.Embed(
               color=(await self.bot.get_embed_colour(self)),
-              title=str(word),
-              url=jisho_src,
-              description=" ・ ".join(filter(None, [reading, is_common, jlpt, tags]))
+              title=jisho_results["title"],
+              url=jisho_results["url"],
+              description=jisho_results["description"]
             )
-
-            for index, sense in enumerate(jishoResult.get("senses", [])):
-                parts_of_speech = str(", ".join(sense.get("parts_of_speech", [])))
-                if len(parts_of_speech) > 0:
-                    parts_of_speech = "*"+parts_of_speech+"*"
-                english_definitions = str("; ".join(sense.get("english_definitions", [])))
-                tags = ""
-                if len(sense.get("tags", [])) > 0:
-                    tags = "\n*Tags: " + str(", ".join(sense.get("tags", []))) + "*"
-                see_also = ""
-                if len(sense.get("see_also", [])) > 0:
-                    see_also = "\n*See also: " + str(", ".join(sense.get("see_also", []))) + "*"
-                links = ""
-                if len(sense.get("links", [])) > 0:
-                    links += "\n"
-                    for sl in sense.get("links", []):
-                        if sl.get("url") is not None:
-                            links += f"[{sl.get('text', 'Link')}]({sl.get('url')}), "
-                    links = links[:-2] # remove last comma and space
-
+            for sense in jisho_results["senses"]:
                 e.add_field(
-                    name=str(index+1)+". "+english_definitions, 
-                    value=(parts_of_speech+tags+see_also+links or "-"),
+                    name=sense["name"], 
+                    value=sense["value"],
                     inline=True
                 )
-            
-            if jishoResult.get("attribution", None) is not None:
-                attrs = ["Jisho API"]
-                for k, v in jishoResult.get("attribution", {}).items():
-                    if v is not False:
-                        attrs.append(k)
-                attr = "Results from "+", ".join(attrs)
-                e.set_footer(text=attr+" ・ "+str(idx+1)+"/"+str(total))
-
+            e.set_footer(text=" ・ ".join(filter(None, [jisho_results["attribution"], str(idx+1)+"/"+str(total)])))
             sendEmbeds.append({"embed": e})
         return sendEmbeds
 
@@ -141,10 +71,11 @@ class Jadict(commands.Cog):
         > ✅  東京, toukyou, or "tokyo"
         > ✅  らーめん, raamen, or "ramen"
         """
-        jishoJson = await self.fetchJisho(text)
+        jishoJson = await fetchJisho(text)
 
-        if jishoJson is not False:
-            sendEmbeds = await self.jishoEmbeds(ctx, jishoJson)
+        if jishoJson not in [False, None]:
+            jisho_results = make_results(jishoJson)
+            sendEmbeds = await self.jishoResultsEmbeds(ctx, jisho_results)
             await SimpleMenu(pages=sendEmbeds, timeout=90).start(ctx)
         elif jishoJson is False:
             fallback_embed = await self.fallbackEmbed(ctx, text, "No Jisho search results found. Please try other sources.")
