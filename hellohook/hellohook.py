@@ -63,10 +63,10 @@ class Hellohook(commands.Cog):
             greetMessageStr = greetMessageStr.replace("https://&&SERVERCOUNTORD&&", str(self.ordinalize_num(userObj.guild.member_count)))
         greetMessageJson = json.loads(str(greetMessageStr))
         # Patch fix: send() got an unexpected keyword argument 'attachments'
-        if "attachments" in greetMessageJson:
+        if greetMessageJson.get("attachments", False) is not False:
             greetMessageJson.pop("attachments")
         # Create embed
-        if greetMessageJson["embeds"]:
+        if greetMessageJson.get("embeds", None) not in ["null", None, []]:
             # For loops not working for some reason? Force patching to add support for 2 embeds
             e = discord.Embed.from_dict(greetMessageJson["embeds"][0])
             try:
@@ -83,7 +83,7 @@ class Hellohook(commands.Cog):
                 **{k: v for k, v in greetMessageJson.items() if v is not None}
             )
         except Exception as err:
-            print(err)
+            print("[hellohook] Error:", err)
             return err
 
     async def inviteFetch(ctx, guildObj, inviteLink: str):
@@ -308,12 +308,14 @@ class Hellohook(commands.Cog):
             try:
                 greetWebhook = SyncWebhook.from_url(greetWebhook)
                 await self.hellohookSender(greetWebhook, ctx.message.author, greetMessage)
-            except:
+            except Exception as err:
+                print("[hellohook] Error:", err)
                 await ctx.send("Error: Hellohook Greet message failed. Is your webhook deleted, or your message empty?")
             try:
                 leaveWebhook = SyncWebhook.from_url(leaveWebhook)
                 await self.hellohookSender(leaveWebhook, ctx.message.author, leaveMessage)
-            except:
+            except Exception as err:
+                print("[hellohook] Error:", err)
                 await ctx.send("Error: Hellohook Leave message failed. Is your webhook deleted, or your message empty?")
         except Exception as err:
             await ctx.send("Error: "+str(err))
