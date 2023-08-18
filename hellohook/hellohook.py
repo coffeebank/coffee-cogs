@@ -83,7 +83,9 @@ class Hellohook(commands.Cog):
                 **{k: v for k, v in greetMessageJson.items() if v is not None}
             )
         except Exception as err:
-            print("[hellohook] Error:", err)
+            print("[hellohook] Error at hellohookSender:")
+            print("[hellohook] >", err)
+            print("[hellohook] >", webhook, userObj, greetMessage)
             return err
 
     async def inviteFetch(ctx, guildObj, inviteLink: str):
@@ -309,15 +311,29 @@ class Hellohook(commands.Cog):
                 greetWebhook = SyncWebhook.from_url(greetWebhook)
                 await self.hellohookSender(greetWebhook, ctx.message.author, greetMessage)
             except Exception as err:
-                print("[hellohook] Error:", err)
+                print("[hellohook] Error at hellohooktest > greetWebhook > hellohookSender:")
+                print("[hellohook] >", err)
+                print("[hellohook] >", greetWebhook, ctx.message.author, greetMessage)
                 await ctx.send("Error: Hellohook Greet message failed. Is your webhook deleted, or your message empty?")
             try:
                 leaveWebhook = SyncWebhook.from_url(leaveWebhook)
                 await self.hellohookSender(leaveWebhook, ctx.message.author, leaveMessage)
             except Exception as err:
-                print("[hellohook] Error:", err)
+                print("[hellohook] Error at hellohooktest > leaveWebhook > hellohookSender:")
+                print("[hellohook] >", err)
+                print("[hellohook] >", leaveWebhook, ctx.message.author, greetMessage)
                 await ctx.send("Error: Hellohook Leave message failed. Is your webhook deleted, or your message empty?")
         except Exception as err:
+            print("[hellohook] Error at hellohooktest:")
+            print("[hellohook] >", err)
+            print("[hellohook] >",
+                "hellohookEnabled:", hellohookEnabled,
+                "greetWebhook:", greetWebhook,
+                "greetMessage:", greetMessage,
+                "leaveEnabled:", leaveEnabled,
+                "leaveWebhook:", leaveWebhook,
+                "leaveMessage:", leaveMessage
+            )
             await ctx.send("Error: "+str(err))
 
     @hellohook.command(name="toggle")
@@ -381,7 +397,9 @@ class Hellohook(commands.Cog):
         invMsgPred = await ctx.bot.wait_for("message")
         try:
             invMsgJson = json.loads(invMsgPred.clean_content)
-        except:
+        except Exception as err:
+            print("[hellohook] Error at hhinvadd > invMsgJson:")
+            print("[hellohook] >", err)
             return await ctx.send("Error: Invalid JSON.... setup exited.")
 
         # Set message
@@ -421,7 +439,9 @@ class Hellohook(commands.Cog):
             inviteList[inviteLink][field] = updatedContentHere
             await self.config.guild(ctx.guild).inviteList.set(inviteList)
             return await ctx.message.add_reaction("✅")
-        except:
+        except Exception as err:
+            print("[hellohook] Error at hhinvedit:")
+            print("[hellohook] >", err)
             await ctx.send("Error: Could not update. Did you type it in the format:\nINVITELINKCODE   FIELD   NEW_CONTENT_HERE")
 
     @hhinv.command(name="remove")
@@ -456,7 +476,9 @@ class Hellohook(commands.Cog):
                         "message": inviteList[str(ni.id)]["message"],
                         "roles": inviteList[str(ni.id)].get("roles", None),
                     }
-            except:
+            except Exception as err:
+                print("[hellohook] Error at hhinvsync:")
+                print("[hellohook] >", err)
                 pass
         # Replace previous config, cache old one
         await self.config.guild(ctx.guild).oldInviteList.set(inviteList)
@@ -475,7 +497,9 @@ class Hellohook(commands.Cog):
             e.add_field(name="Greet Message", value='```json\n' + str(json.dumps(inviteList[io]["message"]))[:1011]+'```', inline=False)
             e.add_field(name="Roles", value='```json\n' + str(inviteList[io].get("roles", None))[:1011]+'```', inline=False)
             await ctx.send(embed=e)
-          except:
+          except Exception as err:
+            print("[hellohook] Error at hhinvsettings > inviteList:")
+            print("[hellohook] >", err)
             e = discord.Embed(color=(await ctx.embed_colour()), title=io, description="Data error:\n"+str(inviteList[io]))
             await ctx.send(embed=e)
         return
@@ -498,7 +522,9 @@ class Hellohook(commands.Cog):
                         await self.hellohookSender(invHook, userObj, savedInvites[str(gio.code)]["message"])
                         # End early if webhook exists and was sent successfully
                         # return
-                except:
+                except Exception as err:
+                    print("[hellohook] Error at hhinvtest > guildInvites:")
+                    print("[hellohook] >", err)
                     pass
         await ctx.send("Ended test")
 
@@ -537,7 +563,9 @@ class Hellohook(commands.Cog):
                         await self.hellohookSender(invHook, userObj, savedInvites[str(gio.code)]["message"])
                         # End early if webhook exists and was sent successfully
                         return
-                except:
+                except Exception as err:
+                    print("[hellohook] Error at on_member_join > guildInvites:")
+                    print("[hellohook] >", err)
                     pass
 
         # Otherwise, use default welcome
