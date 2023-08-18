@@ -82,13 +82,27 @@ All live in harmony forevermore.
 
 First, check your Red Bot console.
 
+#### send() got an unexpected keyword argument
+
 If it says `send() got an unexpected keyword argument '####'`, please let me know in the [Support Discord](/discord) or file a GitHub bug report.
 
 As of 10 June 2022, this has been patched, but may happen again in the future.
 
+#### No module named
+
+As of Red 3.5, you may start running into an error `No module named requests`. Shut down your Red bot, then run `pip install requests` before `redbot #####` to start it back up.
+
+For any other package, run `pip install PACKAGENAMEHERE`.
+
+Afterwards, re-set your hellohook greet/leave message (even with no changes) to force an update.
+
+As of 17 August 2023, this has been patched, but may happen again in the future. Hellohook doesn't explicitly use `requests`, but I've added it to the info.json.
+
 ### **How do I send a webhook styled as the person who joined?**
 
-This feature is not recommended. But, Hellohook is open-source, so I encourage you to customize the bot by [forking the code](#forking-hellohook).
+This feature is not recommended. Hellohook does not officially support this feature, since it may be against Discord's ToS.
+
+But, Hellohook is open-source, so you are free to customize the bot by [forking the code](#forking-hellohook).
 
 In the code, find the marker MM101, and add the code below:
 
