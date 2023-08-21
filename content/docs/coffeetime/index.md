@@ -1,10 +1,11 @@
 ---
 title: "coffeetime"
+description: "Check timezones, user times, or times in specific places."
 ---
 
 # coffeetime
 
-<component-coghero cog="coffeetime"></component-coghero>
+<component-coghero cog="coffeetime" desc="Check timezones, user times, or times in specific places."></component-coghero>
 
 ## Timezone Picker
 

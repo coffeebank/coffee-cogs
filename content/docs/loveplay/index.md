@@ -1,5 +1,6 @@
 ---
 title: "loveplay"
+description: "Send love to other members of the server with reaction gifs from Purrbot API. Does not require a user @mention (say '=hug server' all you like!). Includes: blush, cuddle, dance, hug, kiss, lick, neko, nom, pat, poke, slap. Also includes a custom reaction gif builder that works for any gif type from the Purrbot API."
 ---
 
 # loveplay
