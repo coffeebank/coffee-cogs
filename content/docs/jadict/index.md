@@ -26,7 +26,9 @@ The Japanese language is one of the most intricate and beautiful languages in th
 
 ## Getting Started
 
-The public bot invite link is still in development. Please [self-host this bot](/start) or [join the Discord](https://coffeebank.github.io/discord) to stay tuned!
+[Public bot (free), hosted by Thyme Dev >](https://thymedev.github.io/docs/cha/ja)
+
+You can also [self-host this bot](/start) or [join the Discord](https://coffeebank.github.io/discord) for updates and news!
 
 This bot does not require any APIs.
 
