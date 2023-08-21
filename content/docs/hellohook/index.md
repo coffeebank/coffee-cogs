@@ -4,9 +4,9 @@ description: "Create your own welcome bot with a custom profile picture! Set the
 cogname: "hellohook"
 ---
 
-<img src="./hellohook.jpg" alt="Logo: a resting cat being scratched in the chin" class="h-24 aspect-square rounded mb-2" />
+<img src="./hellohook.jpg" alt="Logo: a resting cat being scratched in the chin" class="mb-2 h-24 rounded aspect-square" />
 
-<span class="px-3 py-1 rounded-full bg-green-600 text-white text-xs select-none">✅ Works on Red 3.5</span>
+<span class="px-3 py-1 text-xs text-white bg-green-600 rounded-full select-none">✅ Works on Red 3.5</span>
 
 # Hellohook
 
@@ -82,21 +82,23 @@ All live in harmony forevermore.
 
 First, check your Red Bot console.
 
+#### No module named
+
+As of Red 3.5, you may have run into an error `No module named requests`. Shut down your Red bot, then run `pip install requests` before `redbot #####` to start it back up.
+
+For any other module/package, run `pip install PACKAGENAMEHERE`.
+
+Afterwards, re-set your hellohook greet/leave message (even with no changes) to force an update.
+
+As of 17 August 2023, this has been patched, but may happen again in the future, and with different modules/packages. If it does, please let me know in the [Support Discord](/discord) or file a GitHub bug report.
+
 #### send() got an unexpected keyword argument
 
 If it says `send() got an unexpected keyword argument '####'`, please let me know in the [Support Discord](/discord) or file a GitHub bug report.
 
 As of 10 June 2022, this has been patched, but may happen again in the future.
 
-#### No module named
-
-As of Red 3.5, you may start running into an error `No module named requests`. Shut down your Red bot, then run `pip install requests` before `redbot #####` to start it back up.
-
-For any other package, run `pip install PACKAGENAMEHERE`.
-
-Afterwards, re-set your hellohook greet/leave message (even with no changes) to force an update.
-
-As of 17 August 2023, this has been patched, but may happen again in the future. Hellohook doesn't explicitly use `requests`, but I've added it to the info.json.
+<br />
 
 ### **How do I send a webhook styled as the person who joined?**
 
@@ -111,6 +113,8 @@ In the code, find the marker MM101, and add the code below:
             greetMessageJson["username"] = userObj.display_name
             greetMessageJson["avatar_url"] = userObj.display_avatar.url
 ```
+
+<br />
 
 ## Forking Hellohook
 
