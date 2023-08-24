@@ -26,6 +26,9 @@ query ($id: Int, $page: Int, $search: String, $type: MediaType) {
             averageScore
             meanScore
             status
+            source
+            startDate
+            endDate
             episodes
             chapters
             volumes
@@ -44,7 +47,7 @@ query ($id: Int, $page: Int, $search: String, $type: MediaType) {
                 isMediaSpoiler
             }
             genres
-      			studios {
+            studios {
               edges {
                 node {
                   name
@@ -52,9 +55,9 @@ query ($id: Int, $page: Int, $search: String, $type: MediaType) {
                 }
                 isMain
               }
-      			}
-      			relations {
-      			  nodes {
+            }
+            relations {
+              nodes {
                 id
                 title {
                   romaji
@@ -67,8 +70,8 @@ query ($id: Int, $page: Int, $search: String, $type: MediaType) {
                 seasonYear
                 countryOfOrigin
               }
-      			}
-      			isAdult
+            }
+            isAdult
         }
     }
 }
@@ -214,6 +217,19 @@ def anilist_get_info_links(media_result, link, cmd):
     else:
         return None
 
+def anilist_get_info_start_end(media_result):
+    info_start = None
+    if media_result.get("startDate", None):
+        info_start = f"▶️ {media_result['startDate'].get('year', 'YYYY')}-{media_result['startDate'].get('month', 'MM')}-{media_result['startDate'].get('day', 'DD')}"
+    info_end = None
+    if media_result.get("endDate", None):
+        info_end = f"✅ {media_result['endDate'].get('year', 'YYYY')}-{media_result['endDate'].get('month', 'MM')}-{media_result['endDate'].get('day', 'DD')}"
+    info_start_end = " ".join(filter(None, [info_start, info_end]))
+    if info_start_end:
+        return info_start_end
+    else:
+        return None
+
 def anilist_get_names(media_result):
     am_name_native = []
     am_name_native.append(media_result['title'].get('native', None))
@@ -310,8 +326,9 @@ async def search_anime_manga(cmd, entered_title, isDiscord=False):
         info_format = anilist_get_format(anime_manga.get("format", cmd), anilist_get_country_of_origin(anime_manga))
         info_status = "Status: "+str(anime_manga.get("status", None)).lower().replace("_", " ").capitalize()
         info_epschaps = anilist_get_info_episodes_chapters(anime_manga, cmd)
+        info_start_end = anilist_get_info_start_end(anime_manga)
         info_links = anilist_get_info_links(anime_manga, link, cmd)
-        info = "\n".join(filter(None, [info_epschaps, info_links]))
+        info = "\n".join(filter(None, [info_epschaps, info_start_end, info_links]))
         country_of_origin = anilist_get_country_of_origin(anime_manga)
         country_of_origin_flag_str = ":flag_"+str(country_of_origin).lower()+": "
         relations = anilist_get_relations(anime_manga, cmd)
@@ -331,6 +348,7 @@ async def search_anime_manga(cmd, entered_title, isDiscord=False):
           'info_format': info_format,
           'info_status': info_status,
           'info_epschaps': info_epschaps,
+          'info_start_end': info_start_end,
           'info_links': info_links,
           'info': info,
           'country_of_origin': country_of_origin,
