@@ -48,9 +48,9 @@ class Coffeeani(commands.Cog):
                     tags_inline = False
                 embed.add_field(name="Tags", value=", ".join(am["tags"]), inline=tags_inline)
             if cmd == "ANIME":
-                embed.set_footer(text=" ・ ".join(filter(None, [am["info_format"], am["time_left"], "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
+                embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), am["time_left"], "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
             else:
-                embed.set_footer(text=" ・ ".join(filter(None, [am["info_format"], "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
+                embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
             embeds.append({"embed": embed})
         return embeds
 
