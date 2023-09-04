@@ -8,6 +8,7 @@ import aiohttp
 import discord
 
 from .utils_anilist import *
+from .utils_mangadex import *
 
 class Coffeeani(commands.Cog):
     """Search anime, manga (manhwa/manhua/light novels), users, and characters from Anilist. See series info, status, episodes/chapters, and tags."""
@@ -51,6 +52,38 @@ class Coffeeani(commands.Cog):
                 embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), am["time_left"], "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
             else:
                 embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
+            embeds.append({"embed": embed})
+        return embeds
+        
+    async def discord_mangadex_embeds(self, ctx, entered_title):
+        embed_data, data = await mangadex_search_manga(entered_title)
+
+        if len(embed_data) <= 0:
+            return None
+
+        embeds = []
+        idx_total = len(embed_data)
+        for idx, am in enumerate(embed_data):
+            embed = discord.Embed(title=am["title"])
+            embed.url = am["link"]
+            embed.color = discord.Colour.from_str("#FF6740") # MangaDex color
+            embed.description = am["embed_description"]
+            embed.set_image(url=am["image"])
+
+            if am["info"]:
+                embed.add_field(name=str(am["info_status"]), value=str(am["info"]), inline=True)
+            if am["studios"]:
+                embed.add_field(name="Studios", value=am["studios"], inline=True)
+            if am["external_links"]:
+                embed.add_field(name="Links", value=am["external_links"], inline=True)
+            if am["names"]:
+                embed.add_field(name="Names", value=am["country_of_origin_flag_str"]+description_parser(', '.join(am["names"])), inline=True)
+            if am["tags"]:
+                tags_inline = True
+                if len(am["tags"]) > 11:
+                    tags_inline = False
+                embed.add_field(name="Tags", value=", ".join(am["tags"]), inline=tags_inline)
+            embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), "Powered by MangaDex", str(idx+1)+"/"+str(idx_total)])))
             embeds.append({"embed": embed})
         return embeds
 
@@ -213,3 +246,23 @@ class Coffeeani(commands.Cog):
 
         except TypeError:
             await ctx.send("No users were found or there was an error in the process")
+
+    @commands.hybrid_command()
+    @app_commands.describe(title="Search MangaDex for manga, manhwa, and manhua")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
+    async def mangadex(self, ctx, *, title):
+        """Search MangaDex
+        
+        Search MangaDex for manga, manhwa, and manhua"""
+        entered_title = title
+
+        try:
+            embeds = await self.discord_mangadex_embeds(ctx, entered_title)
+
+            if embeds is not None:
+                await SimpleMenu(pages=embeds, timeout=90).start(ctx)
+            else:
+                await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
+
+        except TypeError:
+            await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
