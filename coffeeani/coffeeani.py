@@ -192,18 +192,25 @@ class Coffeeani(commands.Cog):
     @app_commands.describe(title="Search for manga/manhwa/manhua and light novels")
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def manga(self, ctx, *, title):
-        """Searches for manga, manhwa, manhua, and light novels using Anilist"""
+        """Searches for manga, manhwa, manhua, and light novels
+        
+        Searches AniList first, then searches MangaDex if there are no results.
+        
+        To search AniList only, use the  **`[p]anilist manga`**  command.
+        To search MangaDex only, use the  **`[p]mangadex`**  command.
+        """
         entered_title = title
 
         try:
             cmd = "MANGA"
-            embeds = await self.discord_anilist_embeds(ctx, cmd, entered_title)
-
-            if embeds is not None:
-                await SimpleMenu(pages=embeds, timeout=90).start(ctx)
-            else:
+            anilist_embeds = await self.discord_anilist_embeds(ctx, cmd, entered_title)
+            if anilist_embeds is not None:
+                await SimpleMenu(pages=anilist_embeds, timeout=90).start(ctx)
+            mangadex_embeds = await self.discord_mangadex_embeds(ctx, entered_title)
+            if mangadex_embeds is not None:
+                await SimpleMenu(pages=mangadex_embeds, timeout=90).start(ctx)
+            if not anilist_embeds and not mangadex_embeds:
                 await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
-
         except TypeError:
             await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
 
@@ -229,6 +236,24 @@ class Coffeeani(commands.Cog):
         """Search Anilist"""
         if not ctx.invoked_subcommand:
             pass
+
+    @anilist.command(name="manga")
+    @app_commands.describe(title="Search AniList for manga/manhwa/manhua and light novels")
+    async def anilist_manga(self, ctx, *, title):
+        """Searches for manga, manhwa, manhua, and light novels using Anilist"""
+        entered_title = title
+
+        try:
+            cmd = "MANGA"
+            embeds = await self.discord_anilist_embeds(ctx, cmd, entered_title)
+
+            if embeds is not None:
+                await SimpleMenu(pages=embeds, timeout=90).start(ctx)
+            else:
+                await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
+
+        except TypeError:
+            await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
 
     @anilist.command(name="user")
     @app_commands.describe(username="Search Anilist for a user")
