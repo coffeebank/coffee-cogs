@@ -24,7 +24,7 @@ EXTERNAL_LINKS_REPLACE_MAP = {
   "ap": "https://www.anime-planet.com/manga/@@@@@",
   "kt": "https://kitsu.io/manga/@@@@@",
   "mal": "https://myanimelist.net/manga/@@@@@",
-  "mu": "https://www.mangaupdates.com/series.html?id=@@@@@",
+  "mu": "https://www.mangaupdates.com/series/@@@@@",
   "nu": "https://www.novelupdates.com/series/@@@@@",
 }
 
