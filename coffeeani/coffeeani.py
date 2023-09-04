@@ -7,20 +7,21 @@ import re
 import aiohttp
 import discord
 
-from .utils import *
+from .utils_anilist import *
+from .utils_mangadex import *
 
 class Coffeeani(commands.Cog):
     """Search anime, manga (manhwa/manhua/light novels), users, and characters from Anilist. See series info, status, episodes/chapters, and tags."""
 
     def __init__(self):
-        self.url = URL
+        self.url = URL_ANILIST
 
     async def red_delete_data_for_user(self, **kwargs):
         """Nothing to delete."""
         return
         
     async def discord_anilist_embeds(self, ctx, cmd, entered_title):
-        embed_data, data = await search_anime_manga(cmd, entered_title, isDiscord=True)
+        embed_data, data = await anilist_search_anime_manga(cmd, entered_title, isDiscord=True)
 
         if len(embed_data) <= 0:
             return None
@@ -53,12 +54,44 @@ class Coffeeani(commands.Cog):
                 embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
             embeds.append({"embed": embed})
         return embeds
+        
+    async def discord_mangadex_embeds(self, ctx, entered_title):
+        embed_data, data = await mangadex_search_manga(entered_title)
+
+        if len(embed_data) <= 0:
+            return None
+
+        embeds = []
+        idx_total = len(embed_data)
+        for idx, am in enumerate(embed_data):
+            embed = discord.Embed(title=am["title"])
+            embed.url = am["link"]
+            embed.color = discord.Colour.from_str("#FF6740") # MangaDex color
+            embed.description = am["embed_description"]
+            embed.set_image(url=am["image"])
+
+            if am["info"]:
+                embed.add_field(name=str(am["info_status"]), value=str(am["info"]), inline=True)
+            if am["studios"]:
+                embed.add_field(name="Studios", value=am["studios"], inline=True)
+            if am["external_links"]:
+                embed.add_field(name="Links", value=am["external_links"], inline=True)
+            if am["names"]:
+                embed.add_field(name="Names", value=am["country_of_origin_flag_str"]+description_parser(', '.join(am["names"])), inline=True)
+            if am["tags"]:
+                tags_inline = True
+                if len(am["tags"]) > 11:
+                    tags_inline = False
+                embed.add_field(name="Tags", value=", ".join(am["tags"]), inline=tags_inline)
+            embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), "Powered by MangaDex", str(idx+1)+"/"+str(idx_total)])))
+            embeds.append({"embed": embed})
+        return embeds
 
     async def search_character(self, ctx, entered_title):
 
         variables = {"search": entered_title, "page": 1}
 
-        data = (await request(SEARCH_CHARACTER_QUERY, variables))["data"]["Page"]["characters"]
+        data = (await anilist_request(SEARCH_CHARACTER_QUERY, variables))["data"]["Page"]["characters"]
 
         if data is not None and len(data) > 0:
 
@@ -91,7 +124,7 @@ class Coffeeani(commands.Cog):
 
         variables = {"search": entered_title, "page": 1}
 
-        data = (await request(SEARCH_USER_QUERY, variables))["data"]["Page"]["users"]
+        data = (await anilist_request(SEARCH_USER_QUERY, variables))["data"]["Page"]["users"]
 
         if data is not None and len(data) > 0:
 
@@ -159,18 +192,25 @@ class Coffeeani(commands.Cog):
     @app_commands.describe(title="Search for manga/manhwa/manhua and light novels")
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def manga(self, ctx, *, title):
-        """Searches for manga, manhwa, manhua, and light novels using Anilist"""
+        """Searches for manga, manhwa, manhua, and light novels
+        
+        Searches AniList first, then searches MangaDex if there are no results.
+        
+        To search AniList only, use the  **`[p]anilist manga`**  command.
+        To search MangaDex only, use the  **`[p]mangadex`**  command.
+        """
         entered_title = title
 
         try:
             cmd = "MANGA"
-            embeds = await self.discord_anilist_embeds(ctx, cmd, entered_title)
-
-            if embeds is not None:
-                await SimpleMenu(pages=embeds, timeout=90).start(ctx)
-            else:
+            anilist_embeds = await self.discord_anilist_embeds(ctx, cmd, entered_title)
+            if anilist_embeds is not None:
+                await SimpleMenu(pages=anilist_embeds, timeout=90).start(ctx)
+            mangadex_embeds = await self.discord_mangadex_embeds(ctx, entered_title)
+            if mangadex_embeds is not None:
+                await SimpleMenu(pages=mangadex_embeds, timeout=90).start(ctx)
+            if not anilist_embeds and not mangadex_embeds:
                 await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
-
         except TypeError:
             await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
 
@@ -197,6 +237,24 @@ class Coffeeani(commands.Cog):
         if not ctx.invoked_subcommand:
             pass
 
+    @anilist.command(name="manga")
+    @app_commands.describe(title="Search AniList for manga/manhwa/manhua and light novels")
+    async def anilist_manga(self, ctx, *, title):
+        """Searches for manga, manhwa, manhua, and light novels using Anilist"""
+        entered_title = title
+
+        try:
+            cmd = "MANGA"
+            embeds = await self.discord_anilist_embeds(ctx, cmd, entered_title)
+
+            if embeds is not None:
+                await SimpleMenu(pages=embeds, timeout=90).start(ctx)
+            else:
+                await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
+
+        except TypeError:
+            await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
+
     @anilist.command(name="user")
     @app_commands.describe(username="Search Anilist for a user")
     async def user(self, ctx, *, username: str):
@@ -213,3 +271,23 @@ class Coffeeani(commands.Cog):
 
         except TypeError:
             await ctx.send("No users were found or there was an error in the process")
+
+    @commands.hybrid_command()
+    @app_commands.describe(title="Search MangaDex for manga, manhwa, and manhua")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
+    async def mangadex(self, ctx, *, title):
+        """Search MangaDex
+        
+        Search MangaDex for manga, manhwa, and manhua"""
+        entered_title = title
+
+        try:
+            embeds = await self.discord_mangadex_embeds(ctx, entered_title)
+
+            if embeds is not None:
+                await SimpleMenu(pages=embeds, timeout=90).start(ctx)
+            else:
+                await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
+
+        except TypeError:
+            await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
