@@ -7,6 +7,7 @@ interface Props extends React.ProfilerProps {
   desc: string,
   repo?: string,
   branch?: string,
+  use_desc_only?: boolean,
 }
 
 interface CogData {
@@ -24,7 +25,7 @@ const CogHero = (props: Props) => {
   return (
     <div>
       <div className="transition-opacity duration-150">
-        <div className="text-xl whitespace-pre-line">{ cogData.description || props.desc || (
+        <div className="text-xl whitespace-pre-line">{ (!props.use_desc_only && cogData.description) || props.desc || (
           <div className="w-full h-16 rounded-lg bg-black/5 dark:bg-white/30 animate-pulse"></div>
         ) }</div>
         {cogData.tags ? (
