@@ -6,6 +6,49 @@ from .utils import *
 
 URL_MANGADEX = "https://api.mangadex.org"
 
+EXTERNAL_LINKS_MAP = {
+  "al": "Anilist",
+  "ap": "Anime-Planet",
+  "amz": "Amazon",
+  "cdj": "CDJapan",
+  "ebj": "ebookjapan",
+  "engtl": "English Translation",
+  "kt": "Kitsu",
+  "mal": "MAL",
+  "mu": "MangaUpdates",
+  "nu": "NovelUpdates",
+}
+
+EXTERNAL_LINKS_REPLACE_MAP = {
+  "al": "https://anilist.co/manga/@@@@@",
+  "ap": "https://www.anime-planet.com/manga/@@@@@",
+  "kt": "https://kitsu.io/manga/@@@@@",
+  "mal": "https://myanimelist.net/manga/@@@@@",
+  "mu": "https://www.mangaupdates.com/series.html?id=@@@@@",
+  "nu": "https://www.novelupdates.com/series/@@@@@",
+}
+
+LANGUAGE_FLAGS_MAP = {
+  "en": "gb",
+  "ja": "jp",
+  "ko": "kr",
+  "pt-br": "br",
+  "th": "th",
+  "vi": "vn",
+  "zh": "cn",
+  "zh-cn": "cn",
+  "zh-hans": "cn",
+  "zh-hans-hk": "hk",
+  "zh-hans-tw": "tw",
+  "zh-hant": "tw",
+  "zh-hant-hk": "hk",
+  "zh-hant-tw": "tw",
+  "zh-hk": "hk",
+  "zh-mo": "mo",
+  "zh-sg": "sg",
+  "zh-tw": "tw",
+}
+
 async def mangadex_request(branch, params):
     url = URL_MANGADEX+"/"+branch
     async with aiohttp.ClientSession() as session:
@@ -37,16 +80,16 @@ async def mangadex_search_manga(query):
         external_links = mangadex_get_external_links(anime_manga)
         info_format = format_manga_type("MANGA", attributes.get("originalLanguage", None))
         info_status = "Status: "+str(attributes.get("status", None)).lower().replace("_", " ").capitalize()
-        info_epschaps = None
+        info_epschaps = mangadex_get_info_epschaps(anime_manga)
         info_start_end = None
         info_start_year = format_string(attributes.get("year", None))
-        info_links = f"[MangaDex]({link})"
+        info_links = mangadex_get_info_links(anime_manga, link)
         info = "\n".join(filter(None, [info_epschaps, info_links]))
         country_of_origin = attributes.get("originalLanguage", None)
-        country_of_origin_flag_str = None
+        country_of_origin_flag_str = mangadex_get_country_of_origin_flag_str(country_of_origin)
         relations = None
-        names = None
-        tags = None
+        names = mangadex_get_names(anime_manga)
+        tags = mangadex_get_tags(anime_manga)
 
         payload = {
           'series_id': series_id,
@@ -109,13 +152,79 @@ def mangadex_get_external_links(anime_manga):
         return None
     external_links = []
     for k, v in links.items():
+        k_lengthen = EXTERNAL_LINKS_MAP.get(str(k).lower(), str(k).lower().capitalize())
         if "http" in v:
-            external_links.append(f"[{str(k).capitalize()}]({str(v)})")
+            external_links.append(f"[{str(k_lengthen)}]({str(v)})")
     if len(external_links) > 0:
         return ", ".join(external_links)
     return None
 
-def get_array_first_key(arr):
-    if arr:
-        return next(iter(arr))
+def mangadex_get_info_epschaps(anime_manga):
+    attributes = anime_manga.get("attributes", {})
+    # TODO: Volumes
+    # volumes = attributes.get("lastVolume", None)
+    chapters = attributes.get("lastChapter", None)
+    if chapters:
+        return f"Chapters: {str(chapters)}"
     return None
+
+def mangadex_get_info_links(anime_manga, link=None):
+    final_links = []
+    attributes = anime_manga.get("attributes", {})
+    if not link:
+        link = mangadex_get_link(attributes.get("id", None))
+    content_rating = attributes.get("contentRating", None)
+    if content_rating and content_rating not in ["safe", "suggestive"]:
+        final_links.append(f"🔞 [MangaDex]({link})")
+    else:
+        final_links.append(f"[MangaDex]({link})")
+    links = attributes.get("links", None)
+    for k, v in links.items():
+        if EXTERNAL_LINKS_REPLACE_MAP.get(str(k), None):
+            k_lengthen = EXTERNAL_LINKS_MAP.get(str(k), str(k).lower().capitalize())
+            url_template = EXTERNAL_LINKS_REPLACE_MAP.get(str(k), None)
+            url = url_template.replace("@@@@@", str(v))
+            final_links.append(f"[{k_lengthen}]({url})")
+    return ", ".join(final_links)
+
+def mangadex_get_country_of_origin_flag_str(language_code: str):
+    if LANGUAGE_FLAGS_MAP.get(str(language_code).lower(), None):
+        return f":flag_{LANGUAGE_FLAGS_MAP.get(str(language_code).lower(), None)}: "
+    else:
+        return f"[{str(language_code).upper()}] "
+
+def mangadex_get_names(anime_manga):
+    names = []
+    attributes = anime_manga.get("attributes", {})
+    original_language = attributes.get("originalLanguage", None)
+    original_language_romanized = None
+    if original_language:
+        original_language_romanized = str(original_language).split("-")[0]+"-ro"
+    title = attributes.get("title", None)
+    if title.get(original_language, None):
+        names.append(title.get(original_language, None))
+    if original_language_romanized and title.get(original_language_romanized, None):
+        names.append(title.get(original_language_romanized, None))
+    alt_titles_arr = attributes.get("altTitles", None)
+    for alt_titles in alt_titles_arr:
+        if alt_titles.get(original_language, None):
+            names.append(alt_titles.get(original_language, None))
+        if original_language_romanized and alt_titles.get(original_language_romanized, None):
+            names.append(alt_titles.get(original_language_romanized, None))
+    return names
+
+def mangadex_get_tags(anime_manga):
+    tags = []
+    tags_other = []
+    attributes = anime_manga.get("attributes", {})
+    tags_arr = attributes.get("tags")
+    for tag_dict in tags_arr:
+        attr = tag_dict.get("attributes", {})
+        attr_group = attr.get("group", None)
+        attr_name = attr.get("name", {})
+        attr_name_en = attr_name.get("en", None)
+        if attr_group == "genre" and attr_name_en:
+            tags.append(attr_name_en)
+        elif attr_name_en:
+            tags_other.append(attr_name_en)
+    return tags+tags_other

@@ -28,6 +28,11 @@ def format_string(string):
         return str(string)
     return None
 
+def get_array_first_key(arr):
+    if arr:
+        return next(iter(arr))
+    return None
+
 def clean_html(description):  # Removes html tags
     if not description:
         return ""

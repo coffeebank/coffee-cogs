@@ -77,7 +77,11 @@ class Coffeeani(commands.Cog):
             if am["external_links"]:
                 embed.add_field(name="Links", value=am["external_links"], inline=True)
             if am["names"]:
-                embed.add_field(name="Names", value=am["country_of_origin_flag_str"]+description_parser(', '.join(am["names"])), inline=True)
+                names_inline = True
+                names_str = description_parser(', '.join(am["names"]))
+                if len(names_str) > 170:
+                    names_inline = False
+                embed.add_field(name="Names", value=am["country_of_origin_flag_str"]+names_str, inline=names_inline)
             if am["tags"]:
                 tags_inline = True
                 if len(am["tags"]) > 11:
