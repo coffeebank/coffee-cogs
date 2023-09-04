@@ -7,20 +7,20 @@ import re
 import aiohttp
 import discord
 
-from .utils import *
+from .utils_anilist import *
 
 class Coffeeani(commands.Cog):
     """Search anime, manga (manhwa/manhua/light novels), users, and characters from Anilist. See series info, status, episodes/chapters, and tags."""
 
     def __init__(self):
-        self.url = URL
+        self.url = URL_ANILIST
 
     async def red_delete_data_for_user(self, **kwargs):
         """Nothing to delete."""
         return
         
     async def discord_anilist_embeds(self, ctx, cmd, entered_title):
-        embed_data, data = await search_anime_manga(cmd, entered_title, isDiscord=True)
+        embed_data, data = await anilist_search_anime_manga(cmd, entered_title, isDiscord=True)
 
         if len(embed_data) <= 0:
             return None
@@ -58,7 +58,7 @@ class Coffeeani(commands.Cog):
 
         variables = {"search": entered_title, "page": 1}
 
-        data = (await request(SEARCH_CHARACTER_QUERY, variables))["data"]["Page"]["characters"]
+        data = (await anilist_request(SEARCH_CHARACTER_QUERY, variables))["data"]["Page"]["characters"]
 
         if data is not None and len(data) > 0:
 
@@ -91,7 +91,7 @@ class Coffeeani(commands.Cog):
 
         variables = {"search": entered_title, "page": 1}
 
-        data = (await request(SEARCH_USER_QUERY, variables))["data"]["Page"]["users"]
+        data = (await anilist_request(SEARCH_USER_QUERY, variables))["data"]["Page"]["users"]
 
         if data is not None and len(data) > 0:
 

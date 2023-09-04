@@ -4,7 +4,7 @@ import datetime
 import json
 import re
 
-URL = "https://graphql.anilist.co"
+URL_ANILIST = "https://graphql.anilist.co"
 
 SEARCH_ANIME_MANGA_QUERY = """
 query ($id: Int, $page: Int, $search: String, $type: MediaType) {
@@ -317,9 +317,9 @@ def anilist_get_tags(media_result, hideSpoilers=False, discordSpoilers=True):
             return am_tags_clean
     return None
 
-async def search_anime_manga(cmd, entered_title, isDiscord=False):
+async def anilist_search_anime_manga(cmd, entered_title, isDiscord=False):
     variables = {"search": entered_title, "page": 1, "type": cmd}
-    raw_data = await request(SEARCH_ANIME_MANGA_QUERY, variables)
+    raw_data = await anilist_request(SEARCH_ANIME_MANGA_QUERY, variables)
     data = raw_data["data"]["Page"]["media"]
 
     if data is None and len(data) <= 0:
@@ -427,7 +427,7 @@ def list_maximum(items):  # Limits to 5 strings than adds "+X more"
     else:
         return items
 
-async def request(query, variables=None):
+async def anilist_request(query, variables=None):
 
     if variables is None:
         variables = {}
@@ -437,5 +437,5 @@ async def request(query, variables=None):
     headers = {"content-type": "application/json"}
 
     async with aiohttp.ClientSession() as session:
-        async with session.post(URL, data=json.dumps(request_json), headers=headers) as response:
+        async with session.post(URL_ANILIST, data=json.dumps(request_json), headers=headers) as response:
             return await response.json()
