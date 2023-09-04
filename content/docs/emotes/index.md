@@ -10,7 +10,7 @@ description: "Custom emote solution for non-nitro users. Use animated emotes in 
 <component-coghero cog="emotes" desc="Custom emote solution for non-nitro users. Use animated emotes in your server, even without Nitro. Make your own emote storage spreadsheet and generate emote-like image links for use in DMs and elsewhere."></component-coghero>
 
 > ⚠️ **Notes**  
-> Due to a recent Discord update, please ensure you are only adding emotes you have permission to use, or are from servers your bot can access. Otherwise, emotes may not display properly.
+> Due to a recent Discord update, please ensure you are only adding emotes that are from servers your bot can access. Otherwise, emotes may not display properly.
 
 <br />
 
