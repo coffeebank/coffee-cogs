@@ -209,14 +209,14 @@ class Coffeeani(commands.Cog):
             cmd = "MANGA"
             anilist_embeds = await self.discord_anilist_embeds(ctx, cmd, entered_title)
             if anilist_embeds is not None:
-                await SimpleMenu(pages=anilist_embeds, timeout=90).start(ctx)
+                return await SimpleMenu(pages=anilist_embeds, timeout=90).start(ctx)
             mangadex_embeds = await self.discord_mangadex_embeds(ctx, entered_title)
             if mangadex_embeds is not None:
-                await SimpleMenu(pages=mangadex_embeds, timeout=90).start(ctx)
+                return await SimpleMenu(pages=mangadex_embeds, timeout=90).start(ctx)
             if not anilist_embeds and not mangadex_embeds:
-                await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
+                return await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
         except TypeError:
-            await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
+            return await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
 
     @commands.hybrid_command(name="animecharacter", aliases=["animechar"])
     @app_commands.describe(name="Search for an anime/manga character")
