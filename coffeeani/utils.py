@@ -9,7 +9,7 @@ def format_manga_type(series_format, country_of_origin: str=""):
     series_format = str(series_format).replace("_", " ")
     if country_of_origin.lower() in ["kr", "ko"] and series_format.lower() == "manga":
         return "MANHWA"
-    if country_of_origin.lower() in ["cn", "zh"] and series_format.lower() == "manga":
+    if country_of_origin.lower().split("-")[0] in ["cn", "zh"] and series_format.lower() == "manga":
         return "MANHUA"
     return series_format
 

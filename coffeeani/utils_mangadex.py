@@ -10,6 +10,7 @@ EXTERNAL_LINKS_MAP = {
   "al": "Anilist",
   "ap": "Anime-Planet",
   "amz": "Amazon",
+  "bw": "bookwalker.jp",
   "cdj": "CDJapan",
   "ebj": "ebookjapan",
   "engtl": "English Translation",

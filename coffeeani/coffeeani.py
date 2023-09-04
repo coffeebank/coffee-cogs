@@ -1,3 +1,6 @@
+# Parts of this file contains code from:
+# Jintaku, Wyn: AGPL-3.0 License
+
 from redbot.core import Config, app_commands, commands, checks
 from redbot.core.utils.views import SimpleMenu
 import asyncio
@@ -11,7 +14,7 @@ from .utils_anilist import *
 from .utils_mangadex import *
 
 class Coffeeani(commands.Cog):
-    """Search anime, manga (manhwa/manhua/light novels), users, and characters from Anilist. See series info, status, episodes/chapters, and tags."""
+    """Search anime, manga (manhwa/manhua/light novels), and characters. See series info, status, episodes/chapters, and tags."""
 
     def __init__(self):
         self.url = URL_ANILIST
