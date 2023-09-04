@@ -257,7 +257,7 @@ class Coffeeani(commands.Cog):
 
     @anilist.command(name="user")
     @app_commands.describe(username="Search Anilist for a user")
-    async def user(self, ctx, *, username: str):
+    async def anilist_user(self, ctx, *, username: str):
         """Searches users using Anilist"""
         entered_title = username
 
