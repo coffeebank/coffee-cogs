@@ -186,12 +186,13 @@ def mangadex_get_info_links(anime_manga, link=None):
     else:
         final_links.append(f"[MangaDex]({link})")
     links = attributes.get("links", None)
-    for k, v in links.items():
-        if EXTERNAL_LINKS_REPLACE_MAP.get(str(k), None):
-            k_lengthen = EXTERNAL_LINKS_MAP.get(str(k), str(k).lower().capitalize())
-            url_template = EXTERNAL_LINKS_REPLACE_MAP.get(str(k), None)
-            url = url_template.replace("@@@@@", str(v))
-            final_links.append(f"[{k_lengthen}]({url})")
+    if links:
+        for k, v in links.items():
+            if EXTERNAL_LINKS_REPLACE_MAP.get(str(k), None):
+                k_lengthen = EXTERNAL_LINKS_MAP.get(str(k), str(k).lower().capitalize())
+                url_template = EXTERNAL_LINKS_REPLACE_MAP.get(str(k), None)
+                url = url_template.replace("@@@@@", str(v))
+                final_links.append(f"[{k_lengthen}]({url})")
     return ", ".join(final_links)
 
 def mangadex_get_country_of_origin_flag_str(language_code: str):
