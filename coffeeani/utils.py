@@ -53,8 +53,8 @@ def description_parser(description):  # Limits text to characters and 5 lines an
     description = clean_spoilers(description)
     description = clean_html(description)
     description = "\n".join(description.split("\n")[:5])
-    if len(description) > 500:
-        return description[:500] + "..."
+    if len(description) > 550:
+        return description[:550] + "..."
     else:
         return description
 
