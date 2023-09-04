@@ -39,11 +39,11 @@ The text this bot will output is in the format `:kyaruA:`, `:kyaruB:`, etc. If y
 
 ### Limitations
 
-Previously, this command could directly output Kyarutail emotes. Due to a Discord update in 2022, this feature no longer works. The old functionality has been moved to `[p]kyaruself`.
+Previously, this command could directly output Kyarutail emotes. Due to a Discord update in 2022, this feature now requires a workaround. The old functionality has been moved to `[p]kyaruself`.
 
 
 ## Disclaimers
 
 This cog does not save or store any images. This cog does not collect user data.
 
-Kyarutail cog is not endorsed by Kyarutail Discord server; the creator of Kyarutail; or Princess Connect! Re:Dive.
+Kyarutail cog is not endorsed by the creator of Kyarutail, Princess Connect! Re:Dive, or the (private) Kyarutail Discord server.
