@@ -65,6 +65,7 @@ async def mangadex_search_manga(query):
         return None
 
     embeds = []
+    embeds_adult = []
     
     for idx, anime_manga in enumerate(raw_data.get("data", [])):
         attributes = anime_manga.get("attributes", {})
@@ -114,8 +115,13 @@ async def mangadex_search_manga(query):
           'names': names,
           'tags': tags,
         }
-        embeds.append(payload)
-    return embeds, raw_data
+
+        content_rating = attributes.get("contentRating", None)
+        if content_rating and content_rating not in ["safe", "suggestive"]:
+            embeds_adult.append(payload)
+        else:
+            embeds.append(payload)
+    return embeds+embeds_adult, raw_data
 
 def mangadex_get_link(id: str):
     return "https://mangadex.org/title/"+id
