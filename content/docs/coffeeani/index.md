@@ -11,7 +11,7 @@ description: "An open-source anime/manga Discord bot for searching anime, manga 
 
 <p class="text-lg font-bold">An open-source anime/manga Discord bot for searching anime, manga (manhwa/manhua), light novels, and anime characters.</p>
 
-The comprehensive Discord bot for searching manga from Anilist, MangaDex, and Batoto.
+The comprehensive Discord bot for searching manga/manhwa/manhua from Anilist, MangaDex, and Batoto.
 
 <div className="grid grid-cols-2 gap-2 aspect-[1216/648]">
 <p className="aspect-[608/648]"><img src="./coffeeani-example-anilist.jpg" alt="Coffeeani example Anilist" /></p>
@@ -33,17 +33,19 @@ The comprehensive Discord bot for searching manga from Anilist, MangaDex, and Ba
 
 ### Anilist
 
-- Search anime, manga (manhwa/manhua), and light novels
-- Search anime characters
+- Search anime
+- Search manga (manhwa/manhua and webtoons)
+- Search light novels
+- Search anime/manga characters
 - Search Anilist users
 
 ### MangaDex
 
-- Search manga (manhwa/manhua)
+- Search manga (manhwa/manhua and webtoons)
 
 ### Batoto
 
-- Search manga (manhwa/manhua)
+- Search manga (manhwa/manhua and webtoons)
 
 
 ## About
