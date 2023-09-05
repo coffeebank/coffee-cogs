@@ -4,10 +4,10 @@
   "name" : "coffeeani",
   "disabled" : false,
   "hidden" : false,
-  "description": "Search anime, manga (manhwa/manhua/light novels), and characters. See series info, status, episodes/chapters, and tags.\n\nSearches Anilist and MangaDex.\n\nForked from anisearch by Jintaku and Wyn.",
-  "short": "Search Anilist and MangaDex for anime, manga, and characters.",
+  "description": "Search anime, manga (manhwa/manhua/light novels), and characters. See series info, status, episodes/chapters, and tags.\n\nSearches Anilist, MangaDex, and Batoto.\n\nForked from anisearch by Jintaku and Wyn.",
+  "short": "Search for anime, manga, and characters. See series info, status, episodes/chapters, and tags.",
   "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by my site at https://coffeebank.github.io/coffee-cogs/coffeeani/",
-  "tags" : ["anime", "manga", "anilist", "list", "漫画", "만화", "漫画", "mangadex"],
+  "tags" : ["anime", "manga", "anilist", "list", "漫画", "만화", "漫画", "mangadex", "batoto"],
   "permissions": ["add_reactions", "embed_links"],
   "end_user_data_statement": "This cog does not persistently store data or metadata about users."
 }
