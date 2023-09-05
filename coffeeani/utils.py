@@ -2,6 +2,7 @@
 # Jintaku, Wyn: AGPL-3.0 License
 
 import re
+import urllib.parse
 
 LANGUAGE_FLAGS_MAP = {
   "en": "gb",
@@ -51,6 +52,11 @@ def format_string(string):
     if string:
         return str(string)
     return None
+
+def format_translate(text: str):
+    encoded_text = urllib.parse.quote(text, safe="")
+    translate = f"https://www.deepl.com/translator#a/en/{encoded_text}"
+    return translate
 
 def get_array_first_key(arr):
     if arr:

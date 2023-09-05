@@ -148,10 +148,17 @@ def mangadex_get_description(anime_manga):
     description = attributes.get("description", None)
     if not description:
         return None
-    first_key = get_array_first_key(attributes.get("description", None))
-    if not first_key:
-        return None
-    return description.get(first_key, None)
+    if description.get("en", None):
+        return description.get("en", None)
+    original_language = attributes.get("originalLanguage", None)
+    description_original_language = description.get(str(original_language), None)
+    if original_language and description_original_language:
+        return description_original_language
+    first_key_language = get_array_first_key(description)
+    description_first_key = description.get(first_key_language, None)
+    if first_key_language and description_first_key:
+        return f"**🔤 {str(first_key_language)} :** \n{description_first_key}"
+    return None
 
 def mangadex_get_image_banner(id: str):
     return "https://og.mangadex.org/og-image/manga/"+id
