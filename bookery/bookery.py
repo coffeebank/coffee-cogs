@@ -23,7 +23,7 @@ class Bookery(commands.Cog):
         pass
 
 
-    @commands.hybrid_command(name="book")
+    @commands.hybrid_command(name="book", aliases=["bookery"])
     @app_commands.describe(text="Search books and find more about a book")
     async def bookery(self, ctx, *, text):
         """Search books and find more about a book.
