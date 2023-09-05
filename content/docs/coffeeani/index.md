@@ -1,6 +1,6 @@
 ---
 title: "coffeeani"
-description: "An open-source anime/manga Discord bot for searching anime, manga (manhwa/manhua), light novels, and anime characters. Search Anilist and MangaDex."
+description: "An open-source anime/manga Discord bot for searching anime, manga (manhwa/manhua), light novels, and anime characters. Search Anilist, MangaDex, and Batoto."
 ---
 
 <span class="px-3 py-1 text-xs text-white bg-green-600 rounded-full select-none">#️⃣ Supports Slash Commands</span>
