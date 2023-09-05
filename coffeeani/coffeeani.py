@@ -12,6 +12,7 @@ import discord
 
 from .utils_anilist import *
 from .utils_mangadex import *
+from .utils_batoto import *
 
 class Coffeeani(commands.Cog):
     """Search anime, manga (manhwa/manhua/light novels), and characters. See series info, status, episodes/chapters, and tags."""
@@ -93,6 +94,43 @@ class Coffeeani(commands.Cog):
                     tags_inline = False
                 embed.add_field(name="Tags", value=", ".join(am["tags"]), inline=tags_inline)
             embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), "Powered by MangaDex", str(idx+1)+"/"+str(idx_total)])))
+            embeds.append({"embed": embed})
+        return embeds
+        
+    async def discord_batoto_embeds(self, ctx, entered_title):
+        embed_data, data = await batoto_search_manga(entered_title)
+
+        if len(embed_data) <= 0:
+            return None
+
+        embeds = []
+        idx_total = len(embed_data)
+        for idx, am in enumerate(embed_data):
+            embed = discord.Embed(title=am["title"])
+            embed.url = am["link"]
+            embed.color = discord.Colour.from_str("#13667A") # Batoto color
+            embed.description = am["embed_description"]
+            embed.set_image(url=am["image"])
+            embed.set_thumbnail(url=am["image_thumbnail"])
+
+            if am["info"]:
+                embed.add_field(name=str(am["info_status"]), value=str(am["info"]), inline=True)
+            if am["studios"]:
+                embed.add_field(name="Studios", value=am["studios"], inline=True)
+            if am["external_links"]:
+                embed.add_field(name="Links", value=am["external_links"], inline=True)
+            if am["names"]:
+                names_inline = False
+                names_str = description_parser(', '.join(am["names"]))
+                if len(names_str) > 170:
+                    names_inline = False
+                embed.add_field(name="Names", value=am["country_of_origin_flag_str"]+names_str, inline=names_inline)
+            if am["tags"]:
+                tags_inline = False
+                if len(am["tags"]) > 11:
+                    tags_inline = False
+                embed.add_field(name="Tags", value=", ".join(am["tags"]), inline=tags_inline)
+            embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), "Results from Batoto", str(idx+1)+"/"+str(idx_total)])))
             embeds.append({"embed": embed})
         return embeds
 
@@ -292,6 +330,26 @@ class Coffeeani(commands.Cog):
 
         try:
             embeds = await self.discord_mangadex_embeds(ctx, entered_title)
+
+            if embeds is not None:
+                await SimpleMenu(pages=embeds, timeout=90).start(ctx)
+            else:
+                await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
+
+        except TypeError:
+            await ctx.send("No mangas, manhwas, or manhuas were found or there was an error in the process")
+
+    @commands.hybrid_command()
+    @app_commands.describe(title="Search Batoto for manga, manhwa, and manhua")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
+    async def batoto(self, ctx, *, title):
+        """Search Batoto
+        
+        Search Batoto for manga, manhwa, and manhua"""
+        entered_title = title
+
+        try:
+            embeds = await self.discord_batoto_embeds(ctx, entered_title)
 
             if embeds is not None:
                 await SimpleMenu(pages=embeds, timeout=90).start(ctx)
