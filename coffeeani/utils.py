@@ -3,14 +3,36 @@
 
 import re
 
+LANGUAGE_FLAGS_MAP = {
+  "en": "gb",
+  "ja": "jp",
+  "ko": "kr",
+  "pt-br": "br",
+  "th": "th",
+  "vi": "vn",
+  "zh": "cn",
+  "zh-cn": "cn",
+  "zh-hans": "cn",
+  "zh-hans-hk": "hk",
+  "zh-hans-tw": "tw",
+  "zh-hant": "tw",
+  "zh-hant-hk": "hk",
+  "zh-hant-tw": "tw",
+  "zh-hk": "hk",
+  "zh-mo": "mo",
+  "zh-sg": "sg",
+  "zh-tw": "tw",
+}
+
 def format_manga_type(series_format, country_of_origin: str=""):
     if series_format in [None, True, False, []]:
         return series_format
     series_format = str(series_format).replace("_", " ")
-    if country_of_origin.lower() in ["kr", "ko"] and series_format.lower() == "manga":
-        return "MANHWA"
-    if country_of_origin.lower().split("-")[0] in ["cn", "zh"] and series_format.lower() == "manga":
-        return "MANHUA"
+    if country_of_origin:
+        if country_of_origin.lower() in ["kr", "ko"] and series_format.lower() == "manga":
+            return "MANHWA"
+        if country_of_origin.lower().split("-")[0] in ["cn", "zh"] and series_format.lower() == "manga":
+            return "MANHUA"
     return series_format
 
 def format_name(first_name, last_name):  # Combines first_name and last_name and/or shows either of the two
@@ -32,6 +54,18 @@ def get_array_first_key(arr):
     if arr:
         return next(iter(arr))
     return None
+
+def get_joined_array_from_json(json_obj, key: str):
+    arr = json_obj.get(key, None)
+    if arr:
+        return ", ".join(arr)
+    return None
+
+def get_country_of_origin_flag_str(language_code: str):
+    if LANGUAGE_FLAGS_MAP.get(str(language_code).lower(), None):
+        return f":flag_{LANGUAGE_FLAGS_MAP.get(str(language_code).lower(), None)}: "
+    else:
+        return f"[{str(language_code).upper()}] "
 
 def clean_html(description):  # Removes html tags
     if not description:

@@ -89,7 +89,7 @@ async def mangadex_search_manga(query):
         info_links = mangadex_get_info_links(anime_manga, link)
         info = "\n".join(filter(None, [info_epschaps, info_links]))
         country_of_origin = attributes.get("originalLanguage", None)
-        country_of_origin_flag_str = mangadex_get_country_of_origin_flag_str(country_of_origin)
+        country_of_origin_flag_str = get_country_of_origin_flag_str(country_of_origin)
         relations = None
         names = mangadex_get_names(anime_manga)
         tags = mangadex_get_tags(anime_manga)
@@ -196,12 +196,6 @@ def mangadex_get_info_links(anime_manga, link=None):
                 url = url_template.replace("@@@@@", str(v))
                 final_links.append(f"[{k_lengthen}]({url})")
     return ", ".join(final_links)
-
-def mangadex_get_country_of_origin_flag_str(language_code: str):
-    if LANGUAGE_FLAGS_MAP.get(str(language_code).lower(), None):
-        return f":flag_{LANGUAGE_FLAGS_MAP.get(str(language_code).lower(), None)}: "
-    else:
-        return f"[{str(language_code).upper()}] "
 
 def mangadex_get_names(anime_manga):
     names = []
