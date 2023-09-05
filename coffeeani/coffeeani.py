@@ -195,7 +195,7 @@ class Coffeeani(commands.Cog):
             print("Error:", e)
             await ctx.send("No anime was found or there was an error in the process")
 
-    @commands.hybrid_command(aliases=["manhwa", "manhua", "lightnovel"])
+    @commands.hybrid_command(aliases=["manhwa", "만화", "manhua", "漫画", "lightnovel"])
     @app_commands.describe(title="Search for manga/manhwa/manhua and light novels")
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def manga(self, ctx, *, title):
@@ -244,7 +244,7 @@ class Coffeeani(commands.Cog):
         if not ctx.invoked_subcommand:
             pass
 
-    @anilist.command(name="manga")
+    @anilist.command(name="manga", aliases=["manhwa", "만화", "manhua", "漫画", "lightnovel"])
     @app_commands.describe(title="Search AniList for manga/manhwa/manhua and light novels")
     async def anilist_manga(self, ctx, *, title):
         """Searches for manga, manhwa, manhua, and light novels using Anilist"""
