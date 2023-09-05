@@ -11,7 +11,7 @@ from .utils import *
 
 URL_ANILIST = "https://graphql.anilist.co"
 
-SEARCH_ANIME_MANGA_QUERY = """
+SEARCH_ANILIST_ANIME_MANGA_QUERY = """
 query ($id: Int, $page: Int, $search: String, $type: MediaType) {
     Page (page: $page, perPage: 10) {
         media (id: $id, search: $search, type: $type) {
@@ -90,7 +90,7 @@ query ($id: Int, $page: Int, $search: String, $type: MediaType) {
 }
 """
 
-SEARCH_CHARACTER_QUERY = """
+SEARCH_ANILIST_CHARACTER_QUERY = """
 query ($id: Int, $page: Int, $search: String) {
   Page(page: $page, perPage: 10) {
     characters(id: $id, search: $search) {
@@ -121,7 +121,7 @@ query ($id: Int, $page: Int, $search: String) {
 }
 """
 
-SEARCH_USER_QUERY = """
+SEARCH_ANILIST_USER_QUERY = """
 query ($id: Int, $page: Int, $search: String) {
     Page (page: $page, perPage: 10) {
         users (id: $id, search: $search) {
@@ -174,6 +174,82 @@ query ($id: Int, $page: Int, $search: String) {
     }
 }
 """
+
+async def anilist_request(query, variables=None):
+    if variables is None:
+        variables = {}
+    request_json = {"query": query, "variables": variables}
+    headers = {"content-type": "application/json"}
+    async with aiohttp.ClientSession() as session:
+        async with session.post(URL_ANILIST, data=json.dumps(request_json), headers=headers) as response:
+            return await response.json()
+
+async def anilist_search_anime_manga(cmd, entered_title, isDiscord=False):
+    variables = {"search": entered_title, "page": 1, "type": cmd}
+    raw_data = await anilist_request(SEARCH_ANILIST_ANIME_MANGA_QUERY, variables)
+    data = raw_data["data"]["Page"]["media"]
+
+    if data is None and len(data) <= 0:
+        return None
+
+    embeds = []
+    embeds_adult = []
+    idx_total = len(data)
+
+    for idx, anime_manga in enumerate(data):
+        series_id = anime_manga.get("id", 0)
+        link = f"https://anilist.co/{cmd.lower()}/{series_id}"
+        title = anime_manga["title"]["english"] or anime_manga["title"]["romaji"] or "No Title"
+        description = anime_manga.get("description", None)
+        time_left = anilist_get_next_airing_episode(anime_manga)
+        image = anilist_get_image_banner(anime_manga)
+        image_thumbnail = None
+        embed_description = description_parser(description)
+        studios = anilist_get_studios(anime_manga)
+        external_links = anilist_get_external_links(anime_manga)
+        info_format = anilist_get_format(anime_manga.get("format", cmd), anilist_get_country_of_origin(anime_manga))
+        info_status = "Status: "+str(anime_manga.get("status", None)).lower().replace("_", " ").capitalize()
+        info_epschaps = anilist_get_info_episodes_chapters(anime_manga, cmd)
+        info_start_end = anilist_get_info_start_end(anime_manga)
+        info_start_year = anilist_get_info_start_year(anime_manga)
+        info_links = anilist_get_info_links(anime_manga, link, cmd)
+        info = "\n".join(filter(None, [info_epschaps, info_links]))
+        country_of_origin = anilist_get_country_of_origin(anime_manga)
+        country_of_origin_flag_str = ":flag_"+str(country_of_origin).lower()+": "
+        relations = anilist_get_relations(anime_manga, cmd)
+        names = anilist_get_names(anime_manga)
+        tags = anilist_get_tags(anime_manga, hideSpoilers=(not isDiscord), discordSpoilers=isDiscord)
+
+        payload = {
+          'series_id': series_id,
+          'link': link,
+          'title': title,
+          'description': description, 
+          'time_left': time_left,
+          'image': image,
+          'image_thumbnail': image_thumbnail,
+          'embed_description': embed_description,
+          'studios': studios,
+          'external_links': external_links,
+          'info_format': info_format,
+          'info_status': info_status,
+          'info_epschaps': info_epschaps,
+          'info_start_end': info_start_end,
+          'info_start_year': info_start_year,
+          'info_links': info_links,
+          'info': info,
+          'country_of_origin': country_of_origin,
+          'country_of_origin_flag_str': country_of_origin_flag_str,
+          'relations': relations,
+          'names': names,
+          'tags': tags,
+        }
+
+        if anime_manga.get("isAdult", None) == True:
+            embeds_adult.append(payload)
+        else:
+            embeds.append(payload)
+    return embeds+embeds_adult, data
 
 def anilist_get_link(id, media_type):
     id = str(id)
@@ -314,84 +390,3 @@ def anilist_get_tags(media_result, hideSpoilers=False, discordSpoilers=True):
         elif hideSpoilers is True:
             return am_tags_clean
     return None
-
-async def anilist_search_anime_manga(cmd, entered_title, isDiscord=False):
-    variables = {"search": entered_title, "page": 1, "type": cmd}
-    raw_data = await anilist_request(SEARCH_ANIME_MANGA_QUERY, variables)
-    data = raw_data["data"]["Page"]["media"]
-
-    if data is None and len(data) <= 0:
-        return None
-
-    embeds = []
-    embeds_adult = []
-    idx_total = len(data)
-
-    for idx, anime_manga in enumerate(data):
-        series_id = anime_manga.get("id", 0)
-        link = f"https://anilist.co/{cmd.lower()}/{series_id}"
-        title = anime_manga["title"]["english"] or anime_manga["title"]["romaji"] or "No Title"
-        description = anime_manga.get("description", None)
-        time_left = anilist_get_next_airing_episode(anime_manga)
-        image = anilist_get_image_banner(anime_manga)
-        image_thumbnail = None
-        embed_description = description_parser(description)
-        studios = anilist_get_studios(anime_manga)
-        external_links = anilist_get_external_links(anime_manga)
-        info_format = anilist_get_format(anime_manga.get("format", cmd), anilist_get_country_of_origin(anime_manga))
-        info_status = "Status: "+str(anime_manga.get("status", None)).lower().replace("_", " ").capitalize()
-        info_epschaps = anilist_get_info_episodes_chapters(anime_manga, cmd)
-        info_start_end = anilist_get_info_start_end(anime_manga)
-        info_start_year = anilist_get_info_start_year(anime_manga)
-        info_links = anilist_get_info_links(anime_manga, link, cmd)
-        info = "\n".join(filter(None, [info_epschaps, info_links]))
-        country_of_origin = anilist_get_country_of_origin(anime_manga)
-        country_of_origin_flag_str = ":flag_"+str(country_of_origin).lower()+": "
-        relations = anilist_get_relations(anime_manga, cmd)
-        names = anilist_get_names(anime_manga)
-        tags = anilist_get_tags(anime_manga, hideSpoilers=(not isDiscord), discordSpoilers=isDiscord)
-
-        payload = {
-          'series_id': series_id,
-          'link': link,
-          'title': title,
-          'description': description, 
-          'time_left': time_left,
-          'image': image,
-          'image_thumbnail': image_thumbnail,
-          'embed_description': embed_description,
-          'studios': studios,
-          'external_links': external_links,
-          'info_format': info_format,
-          'info_status': info_status,
-          'info_epschaps': info_epschaps,
-          'info_start_end': info_start_end,
-          'info_start_year': info_start_year,
-          'info_links': info_links,
-          'info': info,
-          'country_of_origin': country_of_origin,
-          'country_of_origin_flag_str': country_of_origin_flag_str,
-          'relations': relations,
-          'names': names,
-          'tags': tags,
-        }
-
-        if anime_manga.get("isAdult", None) == True:
-            embeds_adult.append(payload)
-        else:
-            embeds.append(payload)
-
-    return embeds+embeds_adult, data
-
-async def anilist_request(query, variables=None):
-
-    if variables is None:
-        variables = {}
-
-    request_json = {"query": query, "variables": variables}
-
-    headers = {"content-type": "application/json"}
-
-    async with aiohttp.ClientSession() as session:
-        async with session.post(URL_ANILIST, data=json.dumps(request_json), headers=headers) as response:
-            return await response.json()

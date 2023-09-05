@@ -58,9 +58,9 @@ class Coffeeani(commands.Cog):
                     tags_inline = False
                 embed.add_field(name="Tags", value=", ".join(am["tags"]), inline=tags_inline)
             if cmd == "ANIME":
-                embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), am["time_left"], "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
+                embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), am["time_left"], "Results from Anilist", str(idx+1)+"/"+str(idx_total)])))
             else:
-                embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), "Powered by Anilist", str(idx+1)+"/"+str(idx_total)])))
+                embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), "Results from Anilist", str(idx+1)+"/"+str(idx_total)])))
             embeds.append({"embed": embed})
         return embeds
         
@@ -101,7 +101,7 @@ class Coffeeani(commands.Cog):
                 if len(am["tags"]) > 11:
                     tags_inline = False
                 embed.add_field(name="Tags", value=", ".join(am["tags"]), inline=tags_inline)
-            embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), "Powered by MangaDex", str(idx+1)+"/"+str(idx_total)])))
+            embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [am["info_format"], am["info_start_year"]])), "Results from MangaDex", str(idx+1)+"/"+str(idx_total)])))
             embeds.append({"embed": embed})
         return embeds
         
@@ -150,7 +150,7 @@ class Coffeeani(commands.Cog):
 
         variables = {"search": entered_title, "page": 1}
 
-        data = (await anilist_request(SEARCH_CHARACTER_QUERY, variables))["data"]["Page"]["characters"]
+        data = (await anilist_request(SEARCH_ANILIST_CHARACTER_QUERY, variables))["data"]["Page"]["characters"]
 
         if data is not None and len(data) > 0:
 
@@ -183,7 +183,7 @@ class Coffeeani(commands.Cog):
 
         variables = {"search": entered_title, "page": 1}
 
-        data = (await anilist_request(SEARCH_USER_QUERY, variables))["data"]["Page"]["users"]
+        data = (await anilist_request(SEARCH_ANILIST_USER_QUERY, variables))["data"]["Page"]["users"]
 
         if data is not None and len(data) > 0:
 
