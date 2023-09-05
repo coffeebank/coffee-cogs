@@ -59,6 +59,8 @@ async def mangadex_request(branch, params):
 async def mangadex_search_manga(query):
     try:
         raw_data = await mangadex_request("manga", params=[("title", str(query))])
+        if not raw_data:
+            return None
         if raw_data.get("total", 0) <= 0:
             return None
     except Exception as err:

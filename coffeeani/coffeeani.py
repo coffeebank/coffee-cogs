@@ -25,7 +25,11 @@ class Coffeeani(commands.Cog):
         return
         
     async def discord_anilist_embeds(self, ctx, cmd, entered_title):
-        embed_data, data = await anilist_search_anime_manga(cmd, entered_title, isDiscord=True)
+        try:
+            embed_data, data = await anilist_search_anime_manga(cmd, entered_title, isDiscord=True)
+        except Exception as err:
+            print("[coffeeani]", "[main discord_anilist_embeds]", err)
+            return None
 
         if len(embed_data) <= 0:
             return None
@@ -61,7 +65,11 @@ class Coffeeani(commands.Cog):
         return embeds
         
     async def discord_mangadex_embeds(self, ctx, entered_title):
-        embed_data, data = await mangadex_search_manga(entered_title)
+        try:
+            embed_data, data = await mangadex_search_manga(entered_title)
+        except Exception as err:
+            print("[coffeeani]", "[main discord_mangadex_embeds]", err)
+            return None
 
         if len(embed_data) <= 0:
             return None
@@ -98,7 +106,11 @@ class Coffeeani(commands.Cog):
         return embeds
         
     async def discord_batoto_embeds(self, ctx, entered_title):
-        embed_data, data = await batoto_search_manga(entered_title)
+        try:
+            embed_data, data = await batoto_search_manga(entered_title)
+        except Exception as err:
+            print("[coffeeani]", "[main discord_batoto_embeds]", err)
+            return None
 
         if len(embed_data) <= 0:
             return None
@@ -241,10 +253,11 @@ class Coffeeani(commands.Cog):
     async def manga(self, ctx, *, title):
         """Searches for manga, manhwa, manhua, and light novels
         
-        Searches AniList first, then searches MangaDex if there are no results.
+        Searches AniList, MangaDex, and Batoto.
         
         To search AniList only, use the  **`[p]anilist manga`**  command.
         To search MangaDex only, use the  **`[p]mangadex`**  command.
+        To search MangaDex only, use the  **`[p]batoto`**  command.
         """
         entered_title = title
 
@@ -256,9 +269,12 @@ class Coffeeani(commands.Cog):
             mangadex_embeds = await self.discord_mangadex_embeds(ctx, entered_title)
             if mangadex_embeds is not None:
                 return await SimpleMenu(pages=mangadex_embeds, timeout=90).start(ctx)
-            if not anilist_embeds and not mangadex_embeds:
-                return await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
-        except TypeError:
+            batoto_embeds = await self.discord_batoto_embeds(ctx, entered_title)
+            if batoto_embeds is not None:
+                return await SimpleMenu(pages=batoto_embeds, timeout=90).start(ctx)
+            return await ctx.send("No mangas/manhwas/manhuas or light novels were found")
+        except Exception as err:
+            print("[coffeeani]", "[manga]", err)
             return await ctx.send("No mangas/manhwas/manhuas or light novels were found or there was an error in the process")
 
     @commands.hybrid_command(name="animecharacter", aliases=["animechar"])
