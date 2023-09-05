@@ -5,6 +5,7 @@ import re
 
 LANGUAGE_FLAGS_MAP = {
   "en": "gb",
+  "id": "id",
   "ja": "jp",
   "ko": "kr",
   "pt-br": "br",

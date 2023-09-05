@@ -28,7 +28,6 @@ class Coffeeani(commands.Cog):
         try:
             embed_data, data = await anilist_search_anime_manga(cmd, entered_title, isDiscord=True)
         except Exception as err:
-            print("[coffeeani]", "[main discord_anilist_embeds]", err)
             return None
 
         if len(embed_data) <= 0:
@@ -68,7 +67,6 @@ class Coffeeani(commands.Cog):
         try:
             embed_data, data = await mangadex_search_manga(entered_title)
         except Exception as err:
-            print("[coffeeani]", "[main discord_mangadex_embeds]", err)
             return None
 
         if len(embed_data) <= 0:
@@ -109,7 +107,6 @@ class Coffeeani(commands.Cog):
         try:
             embed_data, data = await batoto_search_manga(entered_title)
         except Exception as err:
-            print("[coffeeani]", "[main discord_batoto_embeds]", err)
             return None
 
         if len(embed_data) <= 0:

@@ -65,6 +65,7 @@ async def batoto_search_manga(query: str):
         print("[coffeeani]", "[utils_batoto]", err)
 
     embeds = []
+    embeds_non_en = []
 
     for idx, anime_manga_obj in enumerate(data):
         anime_manga = anime_manga_obj.get("data", {})
@@ -116,8 +117,12 @@ async def batoto_search_manga(query: str):
           'names': names,
           'tags': tags,
         }
-        embeds.append(payload)
-    return embeds, data
+        tran_lang = anime_manga.get("tranLang", None)
+        if tran_lang and tran_lang.lower().split("-")[0] not in ["en"]:
+            embeds_non_en.append(payload)
+        else:
+            embeds.append(payload)
+    return embeds+embeds_non_en, data
 
 def batoto_get_description(anime_manga):
     emotions_map = {
@@ -142,12 +147,16 @@ def batoto_get_description(anime_manga):
 
     field_badges = None
     badges = []
+    tran_lang = anime_manga.get("tranLang", None)
+    if tran_lang and tran_lang != "en":
+        flag = get_country_of_origin_flag_str(str(tran_lang))
+        badges.append(flag)
     if anime_manga.get("stat_is_hot", None):
         badges.append("🔥")
     if anime_manga.get("stat_is_new", None):
         badges.append("🆕")
     if badges:
-        field_badges = " ".join(badges)
+        field_badges = " ".join(badges)
     
     return "\n\n".join(filter(None, [field_emotions, field_badges]))
 
@@ -161,7 +170,7 @@ def batoto_get_tags(anime_manga):
     tags = []
     genres = anime_manga.get("genres", [])
     for tag_genres in genres:
-        tags.append(str(tag_genres).capitalize())
+        tags.append(str(tag_genres).replace("_", " ").capitalize())
     if tags:
         return tags
     return None
