@@ -77,6 +77,7 @@ async def mangadex_search_manga(query):
         description = mangadex_get_description(anime_manga)
         time_left = None
         image = mangadex_get_image_banner(series_id)
+        image_thumbnail = None
         embed_description = description_parser(description)
         studios = None
         external_links = mangadex_get_external_links(anime_manga)
@@ -100,6 +101,7 @@ async def mangadex_search_manga(query):
           'description': description, 
           'time_left': time_left,
           'image': image,
+          'image_thumbnail': image_thumbnail,
           'embed_description': embed_description,
           'studios': studios,
           'external_links': external_links,

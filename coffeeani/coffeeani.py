@@ -37,6 +37,7 @@ class Coffeeani(commands.Cog):
             embed.color = 3447003
             embed.description = am["embed_description"]
             embed.set_image(url=am["image"])
+            embed.set_thumbnail(url=am["image_thumbnail"])
 
             if am["info"]:
                 embed.add_field(name=str(am["info_status"]), value=str(am["info"]), inline=True)
@@ -72,6 +73,7 @@ class Coffeeani(commands.Cog):
             embed.color = discord.Colour.from_str("#FF6740") # MangaDex color
             embed.description = am["embed_description"]
             embed.set_image(url=am["image"])
+            embed.set_thumbnail(url=am["image_thumbnail"])
 
             if am["info"]:
                 embed.add_field(name=str(am["info_status"]), value=str(am["info"]), inline=True)

@@ -334,6 +334,7 @@ async def anilist_search_anime_manga(cmd, entered_title, isDiscord=False):
         description = anime_manga.get("description", None)
         time_left = anilist_get_next_airing_episode(anime_manga)
         image = anilist_get_image_banner(anime_manga)
+        image_thumbnail = None
         embed_description = description_parser(description)
         studios = anilist_get_studios(anime_manga)
         external_links = anilist_get_external_links(anime_manga)
@@ -357,6 +358,7 @@ async def anilist_search_anime_manga(cmd, entered_title, isDiscord=False):
           'description': description, 
           'time_left': time_left,
           'image': image,
+          'image_thumbnail': image_thumbnail,
           'embed_description': embed_description,
           'studios': studios,
           'external_links': external_links,
