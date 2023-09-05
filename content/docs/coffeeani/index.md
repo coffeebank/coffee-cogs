@@ -33,7 +33,8 @@ The comprehensive Discord bot for searching manga from Anilist, MangaDex, and Ba
 
 ### Anilist
 
-- Search anime, manga (manhwa/manhua), light novels, and characters
+- Search anime, manga (manhwa/manhua), and light novels
+- Search anime characters
 - Search Anilist users
 
 ### MangaDex
