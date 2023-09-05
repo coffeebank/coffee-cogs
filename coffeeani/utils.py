@@ -10,6 +10,7 @@ LANGUAGE_FLAGS_MAP = {
   "ko": "kr",
   "pt-br": "br",
   "th": "th",
+  "tr": "tr",
   "vi": "vn",
   "zh": "cn",
   "zh-cn": "cn",

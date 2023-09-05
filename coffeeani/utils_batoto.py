@@ -66,6 +66,7 @@ async def batoto_search_manga(query: str):
 
     embeds = []
     embeds_non_en = []
+    embeds_adult = []
 
     for idx, anime_manga_obj in enumerate(data):
         anime_manga = anime_manga_obj.get("data", {})
@@ -117,19 +118,23 @@ async def batoto_search_manga(query: str):
           'names': names,
           'tags': tags,
         }
+        genres = anime_manga.get("genres", None)
         tran_lang = anime_manga.get("tranLang", None)
-        if tran_lang and tran_lang.lower().split("-")[0] not in ["en"]:
+        if genres and any([x in set(genres) for x in ["adult", "hentai", "mature"]]):
+            embeds_adult.append(payload)
+        elif tran_lang and tran_lang.lower().split("-")[0] not in ["en"]:
             embeds_non_en.append(payload)
         else:
             embeds.append(payload)
-    return embeds+embeds_non_en, data
+    return embeds+embeds_non_en+embeds_adult, data
 
 def batoto_get_description(anime_manga):
     emotions_map = {
         "upvote": "👍",
-        "funny": "😂",
+        "funny": "😝",
         "love": "💖",
-        "surprised": "😮",
+        "surprised": "😯",
+        "scared": "😯",
         "angry": "😡",
         "sad": "😢",
     }
@@ -147,7 +152,10 @@ def batoto_get_description(anime_manga):
 
     field_badges = None
     badges = []
+    genres = anime_manga.get("genres", None)
     tran_lang = anime_manga.get("tranLang", None)
+    if genres and any([x in set(genres) for x in ["adult", "hentai", "mature"]]):
+        badges.append("🔞")
     if tran_lang and tran_lang != "en":
         flag = get_country_of_origin_flag_str(str(tran_lang))
         badges.append(flag)
