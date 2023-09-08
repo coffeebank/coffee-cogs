@@ -8,7 +8,7 @@ Clone or download this project.
 
 ### Step 2: Add your Discord Bot info
 
-Make an `.env` file, and:
+Copy `.env.example` to `.env`, then:
 - Add your bot's token to `dpy_token`
 - Add your bot's User ID to `dpy_user_id`
 
