@@ -1,0 +1,14 @@
+name: cog-coffeeani
+
+on:
+  push:
+    paths:
+      - 'coffeeani/**'
+
+jobs:
+  build-dpy:
+    uses: coffeebank/coffee-cogs/.github/workflows/build-dpy.yml@docs/dpy
+    with:
+      COG_NAME: coffeeani
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
