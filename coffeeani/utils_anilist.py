@@ -80,9 +80,7 @@ query ($id: Int, $page: Int, $search: String) {
       id
       description (asHtml: true),
       name {
-        first
-        last
-        native
+        first last native
       }
       image {
         large
@@ -92,10 +90,7 @@ query ($id: Int, $page: Int, $search: String) {
           id
           type
           title {
-            romaji
-            english
-            native
-            userPreferred
+            english romaji native userPreferred
           }
         }
       }
