@@ -13,80 +13,63 @@ URL_ANILIST = "https://graphql.anilist.co"
 
 SEARCH_ANILIST_ANIME_MANGA_QUERY = """
 query ($id: Int, $page: Int, $search: String, $type: MediaType) {
-    Page (page: $page, perPage: 10) {
-        media (id: $id, search: $search, type: $type) {
-            id
-            idMal
-            description(asHtml: false)
-            title {
-                english
-                romaji
-                native
-            }
-            coverImage {
-                medium
-                color
-            }
-            bannerImage
-            averageScore
-            meanScore
-            status
-            source
-            startDate {
-                year
-                month
-                day
-            }
-            endDate {
-                year
-                month
-                day
-            }
-            episodes
-            chapters
-            volumes
-            externalLinks {
-                url
-                site
-            }
-            nextAiringEpisode {
-                timeUntilAiring
-            }
-            countryOfOrigin
-            format
-            synonyms
-            tags {
-                name
-                isMediaSpoiler
-            }
-            genres
-            studios {
-              edges {
-                node {
-                  name
-                  siteUrl
-                }
-                isMain
-              }
-            }
-            relations {
-              nodes {
-                id
-                title {
-                  romaji
-                  english
-                  native
-                  userPreferred
-                }
-                format
-                season
-                seasonYear
-                countryOfOrigin
-              }
-            }
-            isAdult
+  Page (page: $page, perPage: 10) {
+    media (id: $id, search: $search, type: $type) {
+      id idMal
+      description(asHtml: false)
+      title {
+        english romaji native
+      }
+      format
+      synonyms
+      coverImage {
+        medium color
+      }
+      bannerImage
+      averageScore meanScore
+      status
+      source
+      startDate {
+        year month day
+      }
+      endDate {
+        year month day
+      }
+      episodes
+      chapters volumes
+      externalLinks {
+        url site
+      }
+      nextAiringEpisode {
+        timeUntilAiring
+      }
+      countryOfOrigin
+      genres
+      tags {
+        name isMediaSpoiler
+      }
+      studios {
+        edges {
+          node {
+            name siteUrl
+          }
+          isMain
         }
+      }
+      relations {
+        nodes {
+          id
+          title {
+            english romaji native userPreferred
+          }
+          format
+          season seasonYear
+          countryOfOrigin
+        }
+      }
+      isAdult
     }
+  }
 }
 """
 
