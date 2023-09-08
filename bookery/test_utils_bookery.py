@@ -18,10 +18,10 @@ async def test_fetch_url():
     assert response == expected_response
 
 @pytest.mark.asyncio
-async def test_fetch_google_books_1():
+async def test_fetch_google_books_none():
     response = await fetch_google_books("ifruranjvtlytkmkbxug")
     assert response in [None, False]
 @pytest.mark.asyncio
-async def test_fetch_google_books_2():
+async def test_fetch_google_books_exists():
     response = await fetch_google_books("recommend")
     assert response.get("totalItems", 0) > 7600
