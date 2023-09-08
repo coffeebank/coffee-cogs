@@ -1,0 +1,102 @@
+name: build-dpy
+
+on:
+  workflow_call:
+    inputs:
+      COG_NAME:
+        required: true
+        type: string
+    secrets:
+      GH_PAT:
+        required: true
+
+jobs:
+  build-dpy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout cog-src 🛎
+        uses: actions/checkout@v3
+        with:
+          repository: coffeebank/coffee-cogs
+          path: cog-src
+
+      - name: Checkout cog-src-docs 🛎
+        uses: actions/checkout@v3
+        with:
+          repository: coffeebank/coffee-cogs
+          ref: docs/src
+          path: cog-src-docs
+
+      - name: Checkout cog-src-dpy 🛎
+        uses: actions/checkout@v3
+        with:
+          repository: coffeebank/coffee-cogs
+          ref: docs/dpy
+          path: cog-src-dpy
+
+      - name: Checkout dpy-src 🛎
+        uses: actions/checkout@v3
+        with:
+          repository: coffeebank/coffee-dpy
+          path: dpy-repo
+
+      - name: Checkout cog-dpy 🛎
+        id: cog-dpy
+        uses: actions/checkout@v3
+        with:
+          repository: coffeebank/${{ inputs.COG_NAME }}-dpy
+          token: ${{ secrets.GH_PAT }}
+          path: cog-dpy
+
+      - name: Init 🏎️
+        id: init
+        uses: andstor/file-existence-action@v2
+        with:
+          files: "cog-dpy/README.md"
+
+      - name: Setup 📦
+        id: setup
+        if: failure() && steps.cog-dpy.outcome != 'success' || steps.init.outputs.files_exists == 'false'
+        run: |
+          mkdir -p cog-dpy
+          cd cog-dpy
+          git init
+          git config user.name "[upstream]"
+          git config user.email "bot@coffeebank.test"
+          git branch -M master
+          git remote add origin https://github.com/coffeebank/${{ inputs.COG_NAME }}-dpy.git || echo "Git branch origin exists"
+          git remote add upstream https://github.com/coffeebank/coffee-dpy.git || echo "Git branch upstream exists"
+          git fetch upstream
+          git reset --hard upstream/master
+          git push -u origin master || git push -f -u origin master
+          sed -i -e 's/COGNAMEHERE/${{ inputs.COG_NAME }}/g' '.env.example'
+          cd ..
+          cat cog-src-dpy/cog-install.md >> cog-src-docs/content/docs/${{ inputs.COG_NAME }}/index.md
+          mv cog-src-docs/content/docs/${{ inputs.COG_NAME }}/index.md cog-src-docs/content/docs/${{ inputs.COG_NAME }}/README.md
+          mv cog-src-docs/content/docs/${{ inputs.COG_NAME }}/* cog-dpy/
+          cd cog-dpy
+          git add .
+          git commit -m "Initial commit" || echo "No changes to commit"
+
+      - name: Import 🚚
+        id: import
+        if: failure() && steps.setup.outcome == 'success' || success()
+        run: |
+          rm -rf cog-dpy/cogs
+          mkdir -p cog-dpy/cogs
+          mv cog-src/${{ inputs.COG_NAME }} cog-dpy/cogs/${{ inputs.COG_NAME }}
+          cd cog-dpy
+          git config user.name "[upstream]"
+          git config user.email "bot@coffeebank.test"
+          git checkout master || git branch master
+          git add .
+          git commit -m "Update ${{ inputs.COG_NAME }}" || echo "No changes to commit"
+
+      - name: Push 📣
+        if: failure() && steps.import.outcome == 'success' || success()
+        run: |
+          cd cog-dpy
+          git config user.name "[upstream]"
+          git config user.email "bot@coffeebank.test"
+          git push

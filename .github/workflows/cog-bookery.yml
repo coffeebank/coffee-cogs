@@ -1,0 +1,16 @@
+name: cog-bookery
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'bookery/**'
+
+jobs:
+  build-dpy:
+    uses: coffeebank/coffee-cogs/.github/workflows/build-dpy.yml@docs/dpy
+    with:
+      COG_NAME: bookery
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
