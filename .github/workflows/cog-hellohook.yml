@@ -1,0 +1,14 @@
+name: cog-hellohook
+
+on:
+  push:
+    paths:
+      - 'hellohook/**'
+
+jobs:
+  build-dpy:
+    uses: coffeebank/coffee-cogs/.github/workflows/build-dpy.yml@docs/dpy
+    with:
+      COG_NAME: hellohook
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
