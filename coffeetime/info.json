@@ -1,6 +1,7 @@
 {
   "author": ["coffeebank", "aikaterna", "fishyfing"],
   "description": "Check timezones, user times, or times in specific places. Forked from aikaterna's improvements, cog originally by Fishyfing.",
+  "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by my site at https://coffeebank.github.io/coffee-cogs/coffeetime/",
   "name" : "coffeetime",
   "short": "Check times for users and places.",
   "tags": ["time", "timezone"],

@@ -1,9 +1,9 @@
 {
   "author" : ["coffeebank"],
-  "install_msg" : "Thanks for installing :') Come make pull requests over at my GitHub! <https://github.com/coffeebank/coffee-cogs>\n\nFirst, load the cog using `[p]load spotifyembed`\n\nThen, enable auto-Spotify-embed-ing links using `[p]setspotifyembed enable`\n\nTo make links manually, use `[p]spotifyembed SPOTIFYLINKHERE`",
+  "install_msg" : "Thanks for installing :)\n\nFirst, load the cog using `[p]load spotifyembed`\n\nThen, enable auto-Spotify-embed-ing links using `[p]setspotifyembed enable`\n\nTo make links manually, use `[p]spotifyembed SPOTIFYLINKHERE`\n\nSee documentation at https://coffeebank.github.io/coffee-cogs/spotifyembed/",
   "name" : "spotifyembed",
   "short" : "Automatically send replies to Spotify links with the embed preview, for mobile users",
-  "requirements" : [],
+  "requirements" : ["requests"],
   "description" : "Automatically send a reply to Spotify links with a link to the embed preview. Convenient for mobile users who can finally listen to music samples from Discord, without needing an account.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
