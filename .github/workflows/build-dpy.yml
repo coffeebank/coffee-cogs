@@ -83,7 +83,7 @@ jobs:
         id: import
         if: failure() && steps.setup.outcome == 'success' || success()
         run: |
-          rm -rf cog-dpy/cogs
+          rm -rf cog-dpy/cogs/${{ inputs.COG_NAME }}
           mkdir -p cog-dpy/cogs
           mv cog-src/${{ inputs.COG_NAME }} cog-dpy/cogs/${{ inputs.COG_NAME }}
           cd cog-dpy
