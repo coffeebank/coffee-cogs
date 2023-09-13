@@ -254,7 +254,7 @@ class Coffeeani(commands.Cog):
         
         To search AniList only, use the  **`[p]anilist manga`**  command.
         To search MangaDex only, use the  **`[p]mangadex`**  command.
-        To search MangaDex only, use the  **`[p]batoto`**  command.
+        To search Batoto only, use the  **`[p]batoto`**  command.
         """
         entered_title = title
 
