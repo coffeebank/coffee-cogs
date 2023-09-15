@@ -70,7 +70,7 @@ def get_joined_array_from_json(json_obj, key: str):
     return None
 
 def get_country_of_origin_flag_str(language_code: str):
-    if LANGUAGE_FLAGS_MAP.get(str(language_code).lower(), None):
+    if LANGUAGE_FLAGS_MAP.get(str(language_code).lower().replace("_", "-"), None):
         return f":flag_{LANGUAGE_FLAGS_MAP.get(str(language_code).lower(), None)}: "
     else:
         return f"[{str(language_code).upper()}] "
