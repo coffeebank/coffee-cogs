@@ -175,58 +175,33 @@ async def anilist_search_anime_manga(cmd, entered_title, isDiscord=False):
     idx_total = len(data)
 
     for idx, anime_manga in enumerate(data):
-        series_id = anime_manga.get("id", 0)
-        link = f"https://anilist.co/{cmd.lower()}/{series_id}"
-        title = anime_manga["title"]["english"] or anime_manga["title"]["romaji"] or "No Title"
-        description = anime_manga.get("description", None)
-        time_left = anilist_get_next_airing_episode(anime_manga)
-        image = anilist_get_image_banner(anime_manga)
-        image_thumbnail = None
-        embed_description = description_parser(description)
-        studios = anilist_get_studios(anime_manga)
-        external_links = anilist_get_external_links(anime_manga)
-        info_format = anilist_get_format(anime_manga.get("format", cmd), anilist_get_country_of_origin(anime_manga))
-        info_status = "Status: "+str(anime_manga.get("status", None)).lower().replace("_", " ").capitalize()
-        info_epschaps = anilist_get_info_episodes_chapters(anime_manga, cmd)
-        info_start_end = anilist_get_info_start_end(anime_manga)
-        info_start_year = anilist_get_info_start_year(anime_manga)
-        info_links = anilist_get_info_links(anime_manga, link, cmd)
-        info = "\n".join(filter(None, [info_epschaps, info_links]))
-        country_of_origin = anilist_get_country_of_origin(anime_manga)
-        country_of_origin_flag_str = ":flag_"+str(country_of_origin).lower()+": "
-        relations = anilist_get_relations(anime_manga, cmd)
-        names = anilist_get_names(anime_manga)
-        tags = anilist_get_tags(anime_manga, hideSpoilers=(not isDiscord), discordSpoilers=isDiscord)
-
-        payload = {
-          'series_id': series_id,
-          'link': link,
-          'title': title,
-          'description': description, 
-          'time_left': time_left,
-          'image': image,
-          'image_thumbnail': image_thumbnail,
-          'embed_description': embed_description,
-          'studios': studios,
-          'external_links': external_links,
-          'info_format': info_format,
-          'info_status': info_status,
-          'info_epschaps': info_epschaps,
-          'info_start_end': info_start_end,
-          'info_start_year': info_start_year,
-          'info_links': info_links,
-          'info': info,
-          'country_of_origin': country_of_origin,
-          'country_of_origin_flag_str': country_of_origin_flag_str,
-          'relations': relations,
-          'names': names,
-          'tags': tags,
-        }
+        payload = SearchResult()
+        payload.series_id = anime_manga.get("id", 0)
+        payload.link = f"https://anilist.co/{cmd.lower()}/{payload.series_id}"
+        payload.title = anime_manga["title"]["english"] or anime_manga["title"]["romaji"] or "No Title"
+        payload.description = anime_manga.get("description", None)
+        payload.time_left = anilist_get_next_airing_episode(anime_manga)
+        payload.image = anilist_get_image_banner(anime_manga)
+        payload.embed_description = description_parser(payload.description)
+        payload.studios = anilist_get_studios(anime_manga)
+        payload.external_links = anilist_get_external_links(anime_manga)
+        payload.info_format = anilist_get_format(anime_manga.get("format", cmd), anilist_get_country_of_origin(anime_manga))
+        payload.info_status = "Status: "+str(anime_manga.get("status", None)).lower().replace("_", " ").capitalize()
+        payload.info_epschaps = anilist_get_info_episodes_chapters(anime_manga, cmd)
+        payload.info_start_end = anilist_get_info_start_end(anime_manga)
+        payload.info_start_year = anilist_get_info_start_year(anime_manga)
+        payload.info_links = anilist_get_info_links(anime_manga, payload.link, cmd)
+        payload.info = "\n".join(filter(None, [payload.info_epschaps, payload.info_links]))
+        payload.country_of_origin = anilist_get_country_of_origin(anime_manga)
+        payload.country_of_origin_flag_str = ":flag_"+str(payload.country_of_origin).lower()+": "
+        payload.relations = anilist_get_relations(anime_manga, cmd)
+        payload.names = anilist_get_names(anime_manga)
+        payload.tags = anilist_get_tags(anime_manga, hideSpoilers=(not isDiscord), discordSpoilers=isDiscord)
 
         if anime_manga.get("isAdult", None) == True:
-            embeds_adult.append(payload)
+            embeds_adult.append(payload.__dict__)
         else:
-            embeds.append(payload)
+            embeds.append(payload.__dict__)
     return embeds+embeds_adult, data
 
 def anilist_get_link(id, media_type):

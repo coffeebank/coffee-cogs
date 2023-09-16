@@ -72,60 +72,30 @@ async def mangadex_search_manga(query):
     
     for idx, anime_manga in enumerate(raw_data.get("data", [])):
         attributes = anime_manga.get("attributes", {})
-
-        series_id = anime_manga.get("id", 0)
-        link = mangadex_get_link(series_id)
-        title = mangadex_get_title(anime_manga) or "No Title"
-        description = mangadex_get_description(anime_manga)
-        time_left = None
-        image = mangadex_get_image_banner(series_id)
-        image_thumbnail = None
-        embed_description = description_parser(description)
-        studios = None
-        external_links = mangadex_get_external_links(anime_manga)
-        info_format = format_manga_type("MANGA", attributes.get("originalLanguage", None))
-        info_status = "Status: "+str(attributes.get("status", None)).lower().replace("_", " ").capitalize()
-        info_epschaps = mangadex_get_info_epschaps(anime_manga)
-        info_start_end = None
-        info_start_year = format_string(attributes.get("year", None))
-        info_links = mangadex_get_info_links(anime_manga, link)
-        info = "\n".join(filter(None, [info_epschaps, info_links]))
-        country_of_origin = attributes.get("originalLanguage", None)
-        country_of_origin_flag_str = get_country_of_origin_flag_str(country_of_origin)
-        relations = None
-        names = mangadex_get_names(anime_manga)
-        tags = mangadex_get_tags(anime_manga)
-
-        payload = {
-          'series_id': series_id,
-          'link': link,
-          'title': title,
-          'description': description, 
-          'time_left': time_left,
-          'image': image,
-          'image_thumbnail': image_thumbnail,
-          'embed_description': embed_description,
-          'studios': studios,
-          'external_links': external_links,
-          'info_format': info_format,
-          'info_status': info_status,
-          'info_epschaps': info_epschaps,
-          'info_start_end': info_start_end,
-          'info_start_year': info_start_year,
-          'info_links': info_links,
-          'info': info,
-          'country_of_origin': country_of_origin,
-          'country_of_origin_flag_str': country_of_origin_flag_str,
-          'relations': relations,
-          'names': names,
-          'tags': tags,
-        }
+        payload = SearchResult()
+        payload.series_id = anime_manga.get("id", 0)
+        payload.link = mangadex_get_link(payload.series_id)
+        payload.title = mangadex_get_title(anime_manga) or "No Title"
+        payload.description = mangadex_get_description(anime_manga)
+        payload.image = mangadex_get_image_banner(payload.series_id)
+        payload.embed_description = description_parser(payload.description)
+        payload.external_links = mangadex_get_external_links(anime_manga)
+        payload.info_format = format_manga_type("MANGA", attributes.get("originalLanguage", None))
+        payload.info_status = "Status: "+str(attributes.get("status", None)).lower().replace("_", " ").capitalize()
+        payload.info_epschaps = mangadex_get_info_epschaps(anime_manga)
+        payload.info_start_year = format_string(attributes.get("year", None))
+        payload.info_links = mangadex_get_info_links(anime_manga, payload.link)
+        payload.info = "\n".join(filter(None, [payload.info_epschaps, payload.info_links]))
+        payload.country_of_origin = attributes.get("originalLanguage", None)
+        payload.country_of_origin_flag_str = get_country_of_origin_flag_str(payload.country_of_origin)
+        payload.names = mangadex_get_names(anime_manga)
+        payload.tags = mangadex_get_tags(anime_manga)
 
         content_rating = attributes.get("contentRating", None)
         if content_rating and content_rating not in ["safe", "suggestive"]:
-            embeds_adult.append(payload)
+            embeds_adult.append(payload.__dict__)
         else:
-            embeds.append(payload)
+            embeds.append(payload.__dict__)
     return embeds+embeds_adult, raw_data
 
 def mangadex_get_link(id: str):

@@ -70,62 +70,38 @@ async def batoto_search_manga(query: str):
 
     for idx, anime_manga_obj in enumerate(data):
         anime_manga = anime_manga_obj.get("data", {})
+        payload = SearchResult()
+        payload.series_id = anime_manga.get("id", 0)
+        payload.link = "https://bato.to"+anime_manga.get("urlPath", "/search?word="+urllib.parse.quote(query, safe=""))
+        payload.title = anime_manga.get("name", None) or anime_manga.get("slug", "").replace("-", "") or "No Title"
+        payload.description = batoto_get_description(anime_manga)
+        payload.time_left = None
+        payload.image = None
+        payload.image_thumbnail = anime_manga.get("urlCover600", None) or anime_manga.get("urlCover300", None) or anime_manga.get("urlCoverOri", None)
+        payload.embed_description = description_parser(payload.description)
+        payload.studios = None
+        payload.external_links = None
+        payload.info_format = format_manga_type("MANGA", anime_manga.get("origLang", None))
+        payload.info_status = "Status: "+str(anime_manga.get("originalStatus", anime_manga.get("uploadStatus", None))).lower().replace("_", " ").capitalize()
+        payload.info_epschaps = batoto_get_epschaps(anime_manga)
+        payload.info_start_end = None
+        payload.info_start_year = format_string(anime_manga.get("originalPubFrom", None))
+        payload.info_links = f"[Batoto]({payload.link})"
+        payload.info = "\n".join(filter(None, [payload.info_epschaps, payload.info_links]))
+        payload.country_of_origin = anime_manga.get("origLang", None)
+        payload.country_of_origin_flag_str = get_country_of_origin_flag_str(payload.country_of_origin)
+        payload.relations = None
+        payload.names = anime_manga.get("altNames", None)
+        payload.tags = batoto_get_tags(anime_manga)
 
-        series_id = anime_manga.get("id", 0)
-        link = "https://bato.to"+anime_manga.get("urlPath", "/search?word="+urllib.parse.quote(query, safe=""))
-        title = anime_manga.get("name", None) or anime_manga.get("slug", "").replace("-", "") or "No Title"
-        description = batoto_get_description(anime_manga)
-        time_left = None
-        image = None
-        image_thumbnail = anime_manga.get("urlCover600", None) or anime_manga.get("urlCover300", None) or anime_manga.get("urlCoverOri", None)
-        embed_description = description_parser(description)
-        studios = None
-        external_links = None
-        info_format = format_manga_type("MANGA", anime_manga.get("origLang", None))
-        info_status = "Status: "+str(anime_manga.get("originalStatus", anime_manga.get("uploadStatus", None))).lower().replace("_", " ").capitalize()
-        info_epschaps = batoto_get_epschaps(anime_manga)
-        info_start_end = None
-        info_start_year = format_string(anime_manga.get("originalPubFrom", None))
-        info_links = f"[Batoto]({link})"
-        info = "\n".join(filter(None, [info_epschaps, info_links]))
-        country_of_origin = anime_manga.get("origLang", None)
-        country_of_origin_flag_str = get_country_of_origin_flag_str(country_of_origin)
-        relations = None
-        names = anime_manga.get("altNames", None)
-        tags = batoto_get_tags(anime_manga)
-
-        payload = {
-          'series_id': series_id,
-          'link': link,
-          'title': title,
-          'description': description, 
-          'time_left': time_left,
-          'image': image,
-          'image_thumbnail': image_thumbnail,
-          'embed_description': embed_description,
-          'studios': studios,
-          'external_links': external_links,
-          'info_format': info_format,
-          'info_status': info_status,
-          'info_epschaps': info_epschaps,
-          'info_start_end': info_start_end,
-          'info_start_year': info_start_year,
-          'info_links': info_links,
-          'info': info,
-          'country_of_origin': country_of_origin,
-          'country_of_origin_flag_str': country_of_origin_flag_str,
-          'relations': relations,
-          'names': names,
-          'tags': tags,
-        }
         genres = anime_manga.get("genres", None)
         tran_lang = anime_manga.get("tranLang", None)
         if genres and any([x in set(genres) for x in ["adult", "hentai", "mature"]]):
-            embeds_adult.append(payload)
+            embeds_adult.append(payload.__dict__)
         elif tran_lang and tran_lang.lower().split("-")[0] not in ["en"]:
-            embeds_non_en.append(payload)
+            embeds_non_en.append(payload.__dict__)
         else:
-            embeds.append(payload)
+            embeds.append(payload.__dict__)
     return embeds+embeds_non_en+embeds_adult, data
 
 def batoto_get_description(anime_manga):
