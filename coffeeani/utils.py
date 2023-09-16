@@ -34,7 +34,9 @@ def format_manga_type(series_format, country_of_origin: str=""):
     if country_of_origin:
         if country_of_origin.lower() in ["kr", "ko"] and series_format.lower() == "manga":
             return "MANHWA"
-        if country_of_origin.lower().split("-")[0] in ["cn", "zh"] and series_format.lower() == "manga":
+        if country_of_origin.lower().split("-")[0] in ["zh", "cn"] and series_format.lower() in ["anime", "ona"]:
+            return "DONGHUA"
+        if country_of_origin.lower().split("-")[0] in ["zh", "cn"] and series_format.lower() == "manga":
             return "MANHUA"
     return series_format
 
