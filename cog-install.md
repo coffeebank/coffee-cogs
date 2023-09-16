@@ -12,8 +12,6 @@ Copy `.env.example` to `.env`, then:
 - Add your bot's token to `dpy_token`
 - Add your bot's User ID to `dpy_user_id`
 
-The bot prefix is @ping or Slash command.
-
 ### Step 3: Run the Bot
 
 Setup a [venv](https://docs.python.org/3/library/venv.html) using Python >=3.9 and install requirements
@@ -29,6 +27,8 @@ In the future, you can run your bot anytime using
 source ~/dpyenv/bin/activate
 python3 -m main
 ```
+
+The bot prefix is @ping or Slash command.
 
 
 ## Support
