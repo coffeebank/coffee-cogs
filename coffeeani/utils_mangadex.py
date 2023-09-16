@@ -29,27 +29,6 @@ EXTERNAL_LINKS_REPLACE_MAP = {
   "nu": "https://www.novelupdates.com/series/@@@@@",
 }
 
-LANGUAGE_FLAGS_MAP = {
-  "en": "gb",
-  "ja": "jp",
-  "ko": "kr",
-  "pt-br": "br",
-  "th": "th",
-  "vi": "vn",
-  "zh": "cn",
-  "zh-cn": "cn",
-  "zh-hans": "cn",
-  "zh-hans-hk": "hk",
-  "zh-hans-tw": "tw",
-  "zh-hant": "tw",
-  "zh-hant-hk": "hk",
-  "zh-hant-tw": "tw",
-  "zh-hk": "hk",
-  "zh-mo": "mo",
-  "zh-sg": "sg",
-  "zh-tw": "tw",
-}
-
 async def mangadex_request(branch, params):
     url = URL_MANGADEX+"/"+branch
     async with aiohttp.ClientSession() as session:
