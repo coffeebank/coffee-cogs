@@ -28,7 +28,7 @@ async def discord_kakao_embeds(self, entered_title):
         if translated_title:
             em['names'] = [str(translated_title).title()]
         translated_description = await translate_deepl(self, em.get('description'), "KO", "EN")
-        translated_embed_description = description_parser(translated_description)
+        translated_embed_description = description_parser(translated_description, limit_lines=False, flatten_lines=True)
         if translated_embed_description:
             em['embed_description'] = translated_embed_description
         embed = embed_result(em, COLOR_KAKAO)
