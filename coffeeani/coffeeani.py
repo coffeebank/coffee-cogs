@@ -6,6 +6,10 @@ from .models import *
 from .sources import *
 from .utils import *
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 class Coffeeani(commands.Cog):
     """Search for anime, manga, manhwa/manhua, light novels, and characters. See series info, status, episodes/chapters, and tags."""
 
