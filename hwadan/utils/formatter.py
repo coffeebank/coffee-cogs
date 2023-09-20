@@ -34,10 +34,27 @@ def format_string(string):
         return str(string)
     return None
 
-def format_translate(text: str):
-    encoded_text = urllib.parse.quote(text, safe="")
-    translate = f"https://www.deepl.com/translator#a/en/{encoded_text}"
+def format_translate(text: str, source_lang: str="a", target_lang: str="en"):
+    encoded_text = format_url_encode(text)
+    translate = f"https://www.deepl.com/translator#{source_lang}/{target_lang}/{encoded_text}"
     return translate
+
+def format_url_encode(text):
+    east_asian_chars = (
+        '\u4E00-\u9FFF'  # Common Hanzi/Kanji characters
+        '|\u3400-\u4DBF'  # Extension A for rare Hanzi/Kanji characters
+        '|\uF900-\uFAFF'  # Compatibility Ideographs
+        '|\u3040-\u309F'  # Hiragana
+        '|\u30A0-\u30FF'  # Katakana
+        '|\uFF65-\uFF9F'  # Half-width Katakana
+        '|\u1100-\u11FF'  # Hangul Jamo
+        '|\u3130-\u318F'  # Hangul Compatibility Jamo
+        '|\uA960-\uA97F'  # Hangul Jamo Extended-A
+        '|\uAC00-\uD7AF'  # Hangul Syllables
+        '|\uD7B0-\uD7FF'  # Hangul Jamo Extended-B
+    )
+    # Use regex sub to replace all non-East Asian characters with their quoted versions
+    return re.sub(f'[^{east_asian_chars}]', lambda m: urllib.parse.quote(m.group(0)), text)
 
 def get_array_first_key(arr):
     if arr:

@@ -14,6 +14,7 @@ from .formatter import (
     format_name,
     format_string,
     format_translate,
+    format_url_encode,
     get_array_first_key,
     get_joined_array_from_json,
     get_country_of_origin_flag_str,

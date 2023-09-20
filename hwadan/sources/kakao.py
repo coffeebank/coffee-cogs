@@ -1,4 +1,5 @@
 import aiohttp
+from korean_romanizer.romanizer import Romanizer
 
 import asyncio
 import base64
@@ -48,9 +49,9 @@ async def kakao_search_manga(query):
         payload = SearchResult()
         payload.series_id = anime_manga.get("id", None)
         payload.link = "https://webtoon.kakao.com/content/"+urllib.parse.quote(anime_manga.get("seoId", ""), safe="")+"/"+str(payload.series_id)
-        payload.title = anime_manga.get("title", None) or "No Title"
+        payload.title = anime_manga.get("title", "None")
         payload.description = anime_manga.get("catchphraseThreeLines", None) or anime_manga.get("catchphraseTwoLines", None) or None
-        payload.embed_description = description_parser(payload.description, limit_lines=False, flatten_lines=True)
+        payload.embed_description = kakao_get_description(payload.description)
         payload.image = None
         payload.image_thumbnail = kakao_get_image(anime_manga.get("backgroundImage"))
         payload.info_format = "MANHWA"
@@ -60,17 +61,18 @@ async def kakao_search_manga(query):
         payload.names = [anime_manga.get("title", None)]
         payload.tags = kakao_get_tags(anime_manga)
         payload.background_color = anime_manga.get("backgroundColor", None)
+        payload.romanized_title = Romanizer(str(payload.title)).romanize().title()
 
         manhwa = await kakao_request_manhwa(payload.series_id)
         if manhwa:
             new_description = manhwa.get("synopsis", None)
             payload.description = new_description
-            payload.embed_description = description_parser(new_description, limit_lines=False, flatten_lines=True)
+            payload.embed_description = kakao_get_description(new_description)
             payload.image = kakao_get_image(manhwa.get("thumbnailImage"))
             payload.image_thumbnail = None
             payload.info_status = "Status: " + str(manhwa.get("status", None)).lower().replace("_", " ").capitalize()
             payload.info_statistics = kakao_get_statistics(manhwa.get("statistics"))
-            payload.info_links = f"[Kakao Webtoons]({payload.link})"
+            payload.info_links = f"[Kakao Webtoon]({payload.link})"
             payload.info = "\n".join(filter(None, [payload.info_statistics, payload.info_links]))
 
         embeds.append(payload.__dict__)
@@ -91,6 +93,15 @@ async def kakao_request_image(image_url):
             data = await resp.read()
             return io.BytesIO(data)
 
+def kakao_get_description(text):
+    condensed_text = description_parser(text, limit_lines=False, limit_char=155, flatten_lines=True)
+    translate_link = format_translate(text, "ko", "en")
+    if len(translate_link) > 1800:
+        translate_link = format_translate(description_parser(text, limit_lines=False, limit_char=1000, flatten_lines=True), "ko", "en")
+    if len(translate_link) > 1800:
+        translate_link = "https://deepl.com/translator"
+    return condensed_text + f"\n[See Translation >]({translate_link})"
+
 def kakao_get_image(image_url):
     if image_url:
         return str(image_url)+".webp"
@@ -100,7 +111,10 @@ def kakao_get_authors(result):
     authors = result.get("authors", [])
     msg = []
     for au in authors:
-        msg.append(f"{str(au.get('type')).lower().replace('_', ' ').capitalize()}: {str(au.get('name'))}")
+        name = au.get('name')
+        if name and not name.isascii():
+            name = name + f' *({Romanizer(str(name)).romanize().title()})*'
+        msg.append(f"{str(au.get('type')).lower().replace('_', ' ').capitalize()}: {str(name)}")
     return "\n".join(msg)
 
 def kakao_get_statistics(statistics):

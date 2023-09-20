@@ -1,5 +1,4 @@
 import discord
-from korean_romanizer.romanizer import Romanizer
 
 import io
 from typing import List
@@ -20,7 +19,7 @@ async def discord_kakao_embeds(self, entered_title):
     embeds = []
     idx_total = len(embed_data)
     for idx, em in enumerate(embed_data):
-        romanized_title = Romanizer(str(em.get('title', ''))).romanize().title()
+        romanized_title = em.get('romanized_title')
         translated_title = await translate_deepl(self, em.get('title'), "KO", "EN")
         if romanized_title:
             em['title'] = em['title'] + f' ({str(romanized_title)})'
