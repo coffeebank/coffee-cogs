@@ -6,7 +6,7 @@ import discord
 import datetime
 
 from .anilist import NAME_ANILIST, COLOR_ANILIST, SEARCH_ANILIST_CHARACTER_QUERY, SEARCH_ANILIST_USER_QUERY, anilist_request, anilist_search_anime_manga
-from ..utils import embed_result, description_parser, format_name, list_maximum
+from ..utils import discord_embed_result, description_parser, format_name, list_maximum
 
 import logging
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ async def discord_anilist_embeds(ctx, cmd, entered_title):
     embeds = []
     idx_total = len(embed_data)
     for idx, em in enumerate(embed_data):
-        embed = embed_result(em, COLOR_ANILIST, NAME_ANILIST, idx, idx_total)
+        embed = discord_embed_result(em, COLOR_ANILIST, NAME_ANILIST, idx, idx_total)
         if em.get('studios'):
             embed.insert_field_at(1, name='Studios', value=em.get('studios'), inline=True)
         if em.get("next_episode_time") and em.get("next_episode_int") and cmd == "ANIME":

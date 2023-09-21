@@ -6,7 +6,7 @@ from .deepl import deepl_fetch_api
 import logging
 logger = logging.getLogger(__name__)
 
-def embed_result(result, color: str=None, service: str=None, idx: int=None, idx_total: int=None):
+def discord_embed_result(result, color: str=None, service: str=None, idx: int=None, idx_total: int=None):
     try:
         em = result
         embed = discord.Embed(title=em.get('title', str(None)))
@@ -44,7 +44,7 @@ def embed_result(result, color: str=None, service: str=None, idx: int=None, idx_
         logger.error(err, exc_info=True)
         return None
 
-def embed_source(source_being_loaded=None, color=None):
+def discord_embed_source(source_being_loaded=None, color=None):
     if not source_being_loaded:
         no_results = discord.Embed(description=f"No results found....")
         return no_results
@@ -53,7 +53,7 @@ def embed_source(source_being_loaded=None, color=None):
         embed.color = discord.Colour.from_str(color)
     return embed
 
-async def translate_deepl(self, text, source_lang="KO", target_lang="EN"):
+async def discord_translate_deepl(self, text, source_lang="KO", target_lang="EN"):
     deepl_key_obj = await self.bot.get_shared_api_tokens("deepl")
     deepl_key = deepl_key_obj.get("api_key", None)
     if not deepl_key:

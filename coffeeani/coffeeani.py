@@ -24,11 +24,11 @@ class Coffeeani(commands.Cog):
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def anime(self, ctx, *, title):
         """Searches for anime using Anilist"""
-        msg = await ctx.send(embeds=[embed_source(NAME_ANILIST, COLOR_ANILIST)])
+        msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
         embeds = await discord_anilist_embeds(ctx, "ANIME", title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
-        return await msg.edit(embeds=[embed_source(None)])
+        return await msg.edit(embeds=[discord_embed_source(None)])
 
     @commands.hybrid_command(aliases=["manhwa", "만화", "manhua", "漫画", "lightnovel"])
     @app_commands.describe(title="Search for manga/manhwa/manhua and light novels")
@@ -43,22 +43,22 @@ class Coffeeani(commands.Cog):
         To search Batoto only, use the  **`[p]batoto`**  command.
         To search Kakao Webtoon only, use the  **`[p]kakao`**  command.
         """
-        msg = await ctx.send(embeds=[embed_source(NAME_ANILIST, COLOR_ANILIST)])
+        msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
         embeds = await discord_anilist_embeds(ctx, "MANGA", title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
 
-        await msg.edit(embeds=[embed_source(NAME_MANGADEX, COLOR_MANGADEX)])
+        await msg.edit(embeds=[discord_embed_source(NAME_MANGADEX, COLOR_MANGADEX)])
         embeds = await discord_mangadex_embeds(title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
 
-        await msg.edit(embeds=[embed_source(NAME_BATOTO, COLOR_BATOTO)])
+        await msg.edit(embeds=[discord_embed_source(NAME_BATOTO, COLOR_BATOTO)])
         embeds = await discord_batoto_embeds(title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
 
-        return await msg.edit(embeds=[embed_source(None)])
+        return await msg.edit(embeds=[discord_embed_source(None)])
 
     @commands.hybrid_command(name="animecharacter", aliases=["animechar"])
     @app_commands.describe(name="Search for an anime/manga character")
@@ -87,11 +87,11 @@ class Coffeeani(commands.Cog):
     @app_commands.describe(title="Search AniList for manga/manhwa/manhua and light novels")
     async def anilist_manga(self, ctx, *, title):
         """Searches for manga, manhwa, manhua, and light novels using Anilist"""
-        msg = await ctx.send(embeds=[embed_source(NAME_ANILIST, COLOR_ANILIST)])
+        msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
         embeds = await discord_anilist_embeds(ctx, "MANGA", title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
-        return await msg.edit(embeds=[embed_source(None)])
+        return await msg.edit(embeds=[discord_embed_source(None)])
 
     @anilist.command(name="user")
     @app_commands.describe(username="Search Anilist for a user")
@@ -117,11 +117,11 @@ class Coffeeani(commands.Cog):
         """Search MangaDex
         
         Search MangaDex for manga, manhwa, and manhua"""
-        msg = await ctx.send(embeds=[embed_source(NAME_MANGADEX, COLOR_MANGADEX)])
+        msg = await ctx.send(embeds=[discord_embed_source(NAME_MANGADEX, COLOR_MANGADEX)])
         embeds = await discord_mangadex_embeds(title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
-        return await msg.edit(embeds=[embed_source(None)])
+        return await msg.edit(embeds=[discord_embed_source(None)])
 
     @commands.hybrid_command()
     @app_commands.describe(title="Search Batoto for manga, manhwa, and manhua")
@@ -130,11 +130,11 @@ class Coffeeani(commands.Cog):
         """Search Batoto
         
         Search Batoto for manga, manhwa, and manhua"""
-        msg = await ctx.send(embeds=[embed_source(NAME_BATOTO, COLOR_BATOTO)])
+        msg = await ctx.send(embeds=[discord_embed_source(NAME_BATOTO, COLOR_BATOTO)])
         embeds = await discord_batoto_embeds(title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
-        return await msg.edit(embeds=[embed_source(None)])
+        return await msg.edit(embeds=[discord_embed_source(None)])
 
     @commands.hybrid_command()
     @app_commands.describe(title="Search Kakao for manhwa")
@@ -146,7 +146,7 @@ class Coffeeani(commands.Cog):
 
         > ✅ 공주
         """
-        msg = await ctx.send(embeds=[embed_source(NAME_KAKAO_WEBTOON, COLOR_KAKAO)])
+        msg = await ctx.send(embeds=[discord_embed_source(NAME_KAKAO_WEBTOON, COLOR_KAKAO)])
         if title.startswith('"') and title.endswith('"') and len(title) > 2:
             title = title[1:-1]
         elif title.isascii():
@@ -156,4 +156,4 @@ class Coffeeani(commands.Cog):
         embeds = await discord_kakao_embeds(self, title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
-        return await msg.edit(embeds=[embed_source(None)])
+        return await msg.edit(embeds=[discord_embed_source(None)])

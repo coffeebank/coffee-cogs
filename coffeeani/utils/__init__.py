@@ -4,9 +4,9 @@ from .constants import (
 )
 
 from .discord import (
-    embed_result,
-    embed_source,
-    translate_deepl
+    discord_embed_result,
+    discord_embed_source,
+    discord_translate_deepl
 )
 
 from .formatter import (
