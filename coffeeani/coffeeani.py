@@ -23,25 +23,32 @@ class Coffeeani(commands.Cog):
     @app_commands.describe(title="Search for anime")
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def anime(self, ctx, *, title):
-        """Searches for anime using Anilist"""
+        """Search for anime, animations, and donghua
+
+        Searches Anilist.
+        
+        To search by source, use:
+        - `[p]anilist anime`
+        """
         msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
         embeds = await discord_anilist_embeds(ctx, "ANIME", title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
         return await msg.edit(embeds=[discord_embed_source(None)])
 
-    @commands.hybrid_command(aliases=["manhwa", "만화", "manhua", "漫画", "lightnovel"])
+    @commands.hybrid_command(aliases=["manhwa", "manhua", "lightnovel"])
     @app_commands.describe(title="Search for manga/manhwa/manhua and light novels")
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def manga(self, ctx, *, title):
-        """Searches for manga, manhwa, manhua, and light novels
+        """Search for manga, manhwa, manhua, and light novels
         
-        Searches AniList, MangaDex, and Batoto.
-        
-        To search AniList only, use the  **`[p]anilist manga`**  command.
-        To search MangaDex only, use the  **`[p]mangadex`**  command.
-        To search Batoto only, use the  **`[p]batoto`**  command.
-        To search Kakao Webtoon only, use the  **`[p]kakao`**  command.
+        Searches Anilist, MangaDex, and Batoto.
+
+        To search by source, use:
+        - `[p]anilist manga`
+        - `[p]batoto`
+        - `[p]kakao`
+        - `[p]mangadex`
         """
         msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
         embeds = await discord_anilist_embeds(ctx, "MANGA", title)
@@ -63,7 +70,10 @@ class Coffeeani(commands.Cog):
     @commands.hybrid_command(name="animecharacter", aliases=["animechar"])
     @app_commands.describe(name="Search for an anime/manga character")
     async def character(self, ctx, *, name):
-        """Searches for characters using Anilist"""
+        """Search for an anime/manga character
+        
+        Searches Anilist.
+        """
         entered_title = name
 
         try:
@@ -83,10 +93,20 @@ class Coffeeani(commands.Cog):
         if not ctx.invoked_subcommand:
             pass
 
-    @anilist.command(name="manga", aliases=["manhwa", "만화", "manhua", "漫画", "lightnovel"])
-    @app_commands.describe(title="Search AniList for manga/manhwa/manhua and light novels")
+    @anilist.command(name="anime", aliases=["donghua"])
+    @app_commands.describe(title="Search Anilist for anime")
     async def anilist_manga(self, ctx, *, title):
-        """Searches for manga, manhwa, manhua, and light novels using Anilist"""
+        """Search Anilist for anime"""
+        msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
+        embeds = await discord_anilist_embeds(ctx, "ANIME", title)
+        if embeds:
+            return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
+        return await msg.edit(embeds=[discord_embed_source(None)])
+
+    @anilist.command(name="manga", aliases=["manhwa", "manhua", "lightnovel"])
+    @app_commands.describe(title="Search Anilist for manga/manhwa/manhua and light novels")
+    async def anilist_manga(self, ctx, *, title):
+        """Search Anilist for manga, manhwa, manhua, and light novels"""
         msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
         embeds = await discord_anilist_embeds(ctx, "MANGA", title)
         if embeds:
@@ -96,7 +116,7 @@ class Coffeeani(commands.Cog):
     @anilist.command(name="user")
     @app_commands.describe(username="Search Anilist for a user")
     async def anilist_user(self, ctx, *, username: str):
-        """Searches users using Anilist"""
+        """Search Anilist for a user"""
         entered_title = username
 
         try:
