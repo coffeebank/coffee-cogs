@@ -9,9 +9,11 @@ from ..utils import *
 import logging
 logger = logging.getLogger(__name__)
 
-URL_BATOTO = "https://bato.to/apo/"
+NAME_BATOTO = "Batoto"
 
 COLOR_BATOTO = "#13667A"
+
+URL_BATOTO = "https://bato.to/apo/"
 
 SEARCH_BATOTO_QUERY = """
 query get_content_searchComic($select: SearchComic_Select) {

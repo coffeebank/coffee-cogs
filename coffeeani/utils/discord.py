@@ -6,7 +6,7 @@ from .deepl import deepl_fetch_api
 import logging
 logger = logging.getLogger(__name__)
 
-def embed_result(result, color=None):
+def embed_result(result, color: str=None, service: str=None, idx: int=None, idx_total: int=None):
     try:
         em = result
         embed = discord.Embed(title=em.get('title', str(None)))
@@ -33,6 +33,12 @@ def embed_result(result, color=None):
             if len(em.get('tags')) > 11:
                 tags_inline = False
             embed.add_field(name='Tags', value=', '.join(em.get('tags', '')), inline=tags_inline)
+        if service:
+            service = f"Results from {str(service)}"
+        idx_str = None
+        if idx is not None and idx_total is not None:
+            idx_str = "/".join([str(idx+1), str(idx_total)])
+        embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [em["info_format"], em["info_start_year"]])), service, idx_str])))
         return embed
     except Exception as err:
         logger.error(err, exc_info=True)

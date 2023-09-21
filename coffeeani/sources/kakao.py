@@ -19,10 +19,12 @@ try:
 except:
     DEP_PIL = False
 
-URL_KAKAO_WEBTOON_SEARCH = "https://gateway-kw.kakao.com/search/v2/content?limit=6&offset=0&word=###KAKAO_VAR###"
-URL_KAKAO_WEBTOON_ID = "https://gateway-kw.kakao.com/decorator/v2/decorator/contents/###KAKAO_VAR###"
+NAME_KAKAO_WEBTOON = "Kakao Webtoon (카카오웹툰)"
 
 COLOR_KAKAO = "#121212"
+
+URL_KAKAO_WEBTOON_SEARCH = "https://gateway-kw.kakao.com/search/v2/content?limit=6&offset=0&word=###KAKAO_VAR###"
+URL_KAKAO_WEBTOON_ID = "https://gateway-kw.kakao.com/decorator/v2/decorator/contents/###KAKAO_VAR###"
 
 async def kakao_request(base_url, query=""):
     url = str(base_url).replace("###KAKAO_VAR###", str(query))

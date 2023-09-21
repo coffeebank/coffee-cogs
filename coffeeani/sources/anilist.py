@@ -14,9 +14,11 @@ from ..utils import *
 import logging
 logger = logging.getLogger(__name__)
 
-URL_ANILIST = "https://graphql.anilist.co"
+NAME_ANILIST = "Anilist"
 
 COLOR_ANILIST = "#3498DB"
+
+URL_ANILIST = "https://graphql.anilist.co"
 
 SEARCH_ANILIST_ANIME_MANGA_QUERY = """
 query ($id: Int, $page: Int, $search: String, $type: MediaType) {

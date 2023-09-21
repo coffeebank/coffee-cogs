@@ -8,9 +8,11 @@ from ..utils import *
 import logging
 logger = logging.getLogger(__name__)
 
-URL_MANGADEX = "https://api.mangadex.org"
+NAME_MANGADEX = "MangaDex"
 
 COLOR_MANGADEX = "#FF6740"
+
+URL_MANGADEX = "https://api.mangadex.org"
 
 EXTERNAL_LINKS_MAP = {
   "al": "Anilist",
