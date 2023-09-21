@@ -24,12 +24,13 @@ class Coffeeani(commands.Cog):
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def anime(self, ctx, *, title):
         """Search for anime, animations, and donghua
-
-        Searches Anilist.
-        
-        To search by source, use:
-        - `[p]anilist anime`
         """
+        # TODO: Add MyAnimeList Support
+        # Searches Anilist.
+        
+        # To search by source, use:
+        # - `[p]anilist anime`
+        # """
         msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
         embeds = await discord_anilist_embeds(ctx, "ANIME", title)
         if embeds:
