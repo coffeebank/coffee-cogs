@@ -65,7 +65,7 @@ async def mangadex_search_manga(query):
         payload.title = mangadex_get_title(anime_manga) or "No Title"
         payload.description = mangadex_get_description(anime_manga)
         payload.image = mangadex_get_image_banner(payload.series_id)
-        payload.embed_description = description_parser(payload.description)
+        payload.embed_description = mangadex_get_description_embed(payload.description)
         payload.external_links = mangadex_get_external_links(anime_manga)
         payload.info_format = format_manga_type("MANGA", attributes.get("originalLanguage", None))
         payload.info_status = "Status: "+str(attributes.get("status", None)).lower().replace("_", " ").capitalize()
@@ -102,20 +102,33 @@ def mangadex_get_title(anime_manga):
 
 def mangadex_get_description(anime_manga):
     attributes = anime_manga.get("attributes", {})
-    description = attributes.get("description", None)
+    description = attributes.get("description")
     if not description:
         return None
-    if description.get("en", None):
-        return description.get("en", None)
-    original_language = attributes.get("originalLanguage", None)
-    description_original_language = description.get(str(original_language), None)
+    # First, we check for [en] description
+    if description.get("en"):
+        return description.get("en")
+    # Then, if there isn't, we fall back to [originalLanguage] + translate link
+    original_language = attributes.get("originalLanguage")
+    description_original_language = description.get(str(original_language))
     if original_language and description_original_language:
-        return description_original_language
+        description_original_language_short = description_parser(description_original_language, limit_lines=False, limit_char=155, flatten_lines=True)
+        description_original_language_medium = description_parser(description_original_language, limit_lines=False, limit_char=600, flatten_lines=True)
+        return f"{description_original_language_short}\n[See translation >]({format_translate(description_original_language_medium, original_language, 'en')})"
+    # Finally, if there isn't, we use the first key and add the language in front
     first_key_language = get_array_first_key(description)
     description_first_key = description.get(first_key_language, None)
     if first_key_language and description_first_key:
-        return f"**🔤 {str(first_key_language)} :** \n{description_first_key}"
+        description_first_key_short = description_parser(description_original_language, limit_lines=False, limit_char=155, flatten_lines=True)
+        description_first_key_medium = description_parser(description_original_language, limit_lines=False, limit_char=600, flatten_lines=True)
+        # Translate might not support the language, so we use 'auto'
+        return f"**🔤 {str(first_key_language)} :** \n{description_first_key_short}\n[See translation >]({format_translate(description_first_key_medium, 'a', 'en')})"
     return None
+
+def mangadex_get_description_embed(description):
+    if "See translation" in description:
+        return description
+    return description_parser(description)
 
 def mangadex_get_image_banner(id: str):
     return "https://og.mangadex.org/og-image/manga/"+id
