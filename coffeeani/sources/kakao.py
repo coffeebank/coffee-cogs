@@ -1,5 +1,8 @@
 import aiohttp
-from korean_romanizer.romanizer import Romanizer
+try:
+    from korean_romanizer.romanizer import Romanizer
+except ImportError:
+    Romanizer = None
 
 import asyncio
 import base64
@@ -63,7 +66,10 @@ async def kakao_search_manga(query):
         payload.names = [anime_manga.get("title", None)]
         payload.tags = kakao_get_tags(anime_manga)
         payload.background_color = anime_manga.get("backgroundColor", None)
-        payload.romanized_title = Romanizer(str(payload.title)).romanize().title()
+        if Romanizer:
+            payload.romanized_title = Romanizer(str(payload.title)).romanize().title()
+        else:
+            payload.romanized_title = None
 
         manhwa = await kakao_request_manhwa(payload.series_id)
         if manhwa:
@@ -114,7 +120,7 @@ def kakao_get_authors(result):
     msg = []
     for au in authors:
         name = au.get('name')
-        if name and not name.isascii():
+        if Romanizer and name and not name.isascii():
             name = name + f' *({Romanizer(str(name)).romanize().title()})*'
         msg.append(f"{str(au.get('type')).lower().replace('_', ' ').capitalize()}: {str(name)}")
     return "\n".join(msg)
