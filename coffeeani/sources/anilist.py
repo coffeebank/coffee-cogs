@@ -358,15 +358,20 @@ def anilist_get_studios(media_result):
     return None
 
 def anilist_get_tags(media_result, hideSpoilers=False, discordSpoilers=True):
-    if len(media_result.get("tags", [])) > 0:
+    genres = media_result.get("genres", [])
+    tags = media_result.get("tags", [])
+    return_tags = []
+    if len(genres) > 0:
+        return_tags = [f"**{str(g)}**" for g in genres]
+    if len(tags) > 0:
         am_tags_clean = [str(t.get("name", None)) for t in media_result.get("tags", []) if t.get("isMediaSpoiler", None) is not True]
         am_tags_spoilers = [str(t.get("name", None)) for t in media_result.get("tags", []) if t.get("isMediaSpoiler", None) is True]
         am_tags_spoilers_discord = ["||"+str(t.get("name", None))+"||" for t in media_result.get("tags", []) if t.get("isMediaSpoiler", None) is True]
 
         if hideSpoilers is False and discordSpoilers is True:
-            return am_tags_clean + am_tags_spoilers_discord
+            return_tags = return_tags + am_tags_clean + am_tags_spoilers_discord
         elif hideSpoilers is False and discordSpoilers is False:
-            return am_tags_clean + am_tags_spoilers
+            return_tags = return_tags + am_tags_clean + am_tags_spoilers
         elif hideSpoilers is True:
-            return am_tags_clean
-    return None
+            return_tags = return_tags + am_tags_clean
+    return return_tags
