@@ -20,8 +20,6 @@ def embed_result(result, color=None):
             embed.color = discord.Colour.from_str(em.get('background_color'))
         if em.get('info'):
             embed.add_field(name=str(em.get('info_status')), value=str(em.get('info')), inline=True)
-        if em.get('studios'):
-            embed.add_field(name='Studios', value=em.get('studios'), inline=True)
         if em.get('external_links'):
             embed.add_field(name='Links', value=em.get('external_links'), inline=True)
         if em.get('names'):

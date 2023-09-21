@@ -48,7 +48,7 @@ query ($id: Int, $page: Int, $search: String, $type: MediaType) {
         url site
       }
       nextAiringEpisode {
-        timeUntilAiring
+        airingAt timeUntilAiring episode
       }
       countryOfOrigin
       genres
@@ -196,7 +196,8 @@ async def anilist_search_anime_manga(cmd, entered_title, isDiscord=False):
         payload.link = f"https://anilist.co/{cmd.lower()}/{payload.series_id}"
         payload.title = anime_manga["title"]["english"] or anime_manga["title"]["romaji"] or "No Title"
         payload.description = anime_manga.get("description", None)
-        payload.time_left = anilist_get_next_airing_episode(anime_manga)
+        payload.next_episode_time = anilist_get_next_episode_time(anime_manga)
+        payload.next_episode_int = anilist_get_next_episode_int(anime_manga)
         payload.image = anilist_get_image_banner(anime_manga)
         payload.embed_description = description_parser(payload.description)
         payload.studios = anilist_get_studios(anime_manga)
@@ -300,6 +301,16 @@ def anilist_get_next_airing_episode(media_result):
         return "Next episode in "+str(datetime.timedelta(seconds=seconds))
     else:
         return None
+
+def anilist_get_next_episode_time(media_result):
+    if media_result.get("nextAiringEpisode"):
+        return media_result["nextAiringEpisode"].get("airingAt", None)
+    return None
+
+def anilist_get_next_episode_int(media_result):
+    if media_result.get("nextAiringEpisode"):
+        return media_result["nextAiringEpisode"].get("episode", None)
+    return None
 
 def anilist_get_relations(media_result, cmd):
     relations = []

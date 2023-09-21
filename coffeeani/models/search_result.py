@@ -9,11 +9,9 @@ class SearchResult:
         self.link = None
         self.title = None
         self.description = None
-        self.time_left = None
         self.image = None
         self.image_thumbnail = None
         self.embed_description = None
-        self.studios = None
         self.external_links = None
         self.info_format = None
         self.info_status = None

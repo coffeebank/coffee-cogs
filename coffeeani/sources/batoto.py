@@ -82,7 +82,6 @@ async def batoto_search_manga(query: str):
         payload.link = "https://bato.to"+anime_manga.get("urlPath", "/search?word="+urllib.parse.quote(query, safe=""))
         payload.title = anime_manga.get("name", None) or anime_manga.get("slug", "").replace("-", "") or "No Title"
         payload.description = batoto_get_description(anime_manga)
-        payload.time_left = None
         payload.image = None
         payload.image_thumbnail = anime_manga.get("urlCover600", None) or anime_manga.get("urlCover300", None) or anime_manga.get("urlCoverOri", None)
         payload.embed_description = description_parser(payload.description)

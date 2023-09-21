@@ -22,10 +22,11 @@ async def discord_anilist_embeds(ctx, cmd, entered_title):
     idx_total = len(embed_data)
     for idx, em in enumerate(embed_data):
         embed = embed_result(em, COLOR_ANILIST)
-        if cmd == "ANIME":
-            embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [em["info_format"], em["info_start_year"]])), em["time_left"], "Results from Anilist", str(idx+1)+"/"+str(idx_total)])))
-        else:
-            embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [em["info_format"], em["info_start_year"]])), "Results from Anilist", str(idx+1)+"/"+str(idx_total)])))
+        if em.get('studios'):
+            embed.insert_field_at(1, name='Studios', value=em.get('studios'), inline=True)
+        if em.get("next_episode_time") and em.get("next_episode_int") and cmd == "ANIME":
+            embed.insert_field_at(1, name="⏱️ Next Episode", value=f"Ep. {str(str(em.get('next_episode_int')))} <t:{str(em.get('next_episode_time'))}:R>\n<t:{str(em.get('next_episode_time'))}:D>")
+        embed.set_footer(text=" ・ ".join(filter(None, [" ".join(filter(None, [em["info_format"], em["info_start_year"]])), "Results from Anilist", str(idx+1)+"/"+str(idx_total)])))
         embeds.append({"embed": embed})
     return embeds
 
