@@ -7,17 +7,16 @@ description: "An open-source anime/manga Discord bot for searching anime, manga 
 
 # coffeeani
 
-<component-coghero cog="coffeeani" desc="Search anime, manga (manhwa/manhua/light novels), and characters. See series info, status, episodes/chapters, and tags." use_desc_only="true"></component-coghero>
+<p class="text-xl font-bold">An open-source Discord bot for searching anime 🎌, manga 📰, manhwa 🌺, light novels 📚, and anime characters 🧑‍🤝‍🧑.</p>
 
-<p class="text-lg font-bold">An open-source anime/manga Discord bot for searching anime, manga (manhwa/manhua), light novels, and anime characters.</p>
+<component-coghero cog="coffeeani" desc="Search anime, manga (manhwa/manhua/light novels), and characters. See series info, status, episodes/chapters, and tags." use_desc_only="true" dpy="true"></component-coghero>
 
-The comprehensive Discord bot for searching manga/manhwa/manhua from Anilist, MangaDex, and Batoto.
+<p class="text-lg">The comprehensive manga/manhwa Discord bot for searching Anilist, MangaDex, Batoto, and Kakao Webtoons.</p>
 
 <div className="grid grid-cols-2 gap-2 aspect-[1216/648]">
 <p className="aspect-[608/648]"><img src="./coffeeani-example-anilist.jpg" alt="Coffeeani example Anilist" /></p>
 <p className="aspect-[608/648]"><img src="./coffeeani-example-mangadex.jpg" alt="Coffeeani example MangaDex" /></p>
 </div>
-
 
 ## Features
 
@@ -33,20 +32,61 @@ The comprehensive Discord bot for searching manga/manhwa/manhua from Anilist, Ma
 
 ### Anilist
 
-- Search anime
-- Search manga (manhwa/manhua and webtoons)
+- Search anime (+ donghua)
+- Search manga (+ manhwa/manhua/webtoons)
 - Search light novels
 - Search anime/manga characters
 - Search Anilist users
 
 ### MangaDex
 
-- Search manga (manhwa/manhua and webtoons)
+- Search manga (+ manhwa/manhua/webtoons)
 
 ### Batoto
 
-- Search manga (manhwa/manhua and webtoons)
+- Search manga (+ manhwa/manhua/webtoons)
 
+### Kakao Webtoon
+
+- Search manhwa/webtoons
+- Korean romanizations
+- Korean translations (DeepL integration)
+
+<br />
+
+## Commands
+
+- `/anime`
+- `/animecharacter`
+- `/manga`, aliases=`["manhwa", "manhua", "lightnovel"]`
+
+### Services
+
+- `/anilist`
+  - `user`, `manga`
+- `/batoto`
+- `/kakao`
+- `/mangadex`
+
+<br />
+
+## Frequently Asked Questions
+
+### How do I install Coffeeani?
+
+Coffeeani is available as an independently hosted Discord bot at [https://github.com/coffeebank/coffeeani-dpy](https://github.com/coffeebank/coffeeani-dpy).
+
+### What is the prefix?
+
+Coffeeani-dpy works with Slash Commands, as well as @pinging the bot.
+
+For Red bots, use the Red bot prefix.
+
+### What languages does Coffeeani support?
+
+Coffeeani currently only supports English. Foreign language descriptions are translated to English with DeepL integration.
+
+<br />
 
 ## About
 
