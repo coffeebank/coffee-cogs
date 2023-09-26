@@ -2,9 +2,7 @@ from redbot.core import Config, app_commands, commands, checks
 import asyncio
 import discord
 
-from .models import *
-from .sources import *
-from .utils import *
+from .coffeeani_utils import *
 
 import logging
 logger = logging.getLogger(__name__)
