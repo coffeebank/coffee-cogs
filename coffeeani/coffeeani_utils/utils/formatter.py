@@ -35,11 +35,15 @@ def format_string(string):
     return None
 
 def format_translate(text: str, source_lang: str="a", target_lang: str="en"):
+    if text is None:
+        return None
     encoded_text = format_url_encode(text)
     translate = f"https://www.deepl.com/translator#{source_lang}/{target_lang}/{encoded_text}"
     return translate
 
-def format_url_encode(text):
+def format_url_encode(text: str):
+    if text is None:
+        return None
     east_asian_chars = (
         '\u4E00-\u9FFF'  # Common Hanzi/Kanji characters
         '|\u3400-\u4DBF'  # Extension A for rare Hanzi/Kanji characters
