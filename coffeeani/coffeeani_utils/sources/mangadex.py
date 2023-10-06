@@ -126,6 +126,8 @@ def mangadex_get_description(anime_manga):
     return None
 
 def mangadex_get_description_embed(description):
+    if description is None:
+        return None
     if "See translation" in description:
         return description
     return description_parser(description)
