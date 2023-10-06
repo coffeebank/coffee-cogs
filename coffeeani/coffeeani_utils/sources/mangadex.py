@@ -119,8 +119,8 @@ def mangadex_get_description(anime_manga):
     first_key_language = get_array_first_key(description)
     description_first_key = description.get(first_key_language, None)
     if first_key_language and description_first_key:
-        description_first_key_short = description_parser(description_original_language, limit_lines=False, limit_char=155, flatten_lines=True)
-        description_first_key_medium = description_parser(description_original_language, limit_lines=False, limit_char=600, flatten_lines=True)
+        description_first_key_short = description_parser(description_first_key, limit_lines=False, limit_char=155, flatten_lines=True)
+        description_first_key_medium = description_parser(description_first_key, limit_lines=False, limit_char=600, flatten_lines=True)
         # Translate might not support the language, so we use 'auto'
         return f"**🔤 {str(first_key_language)} :** \n{description_first_key_short}\n[See translation >]({format_translate(description_first_key_medium, 'a', 'en')})"
     return None
