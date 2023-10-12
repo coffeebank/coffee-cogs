@@ -161,17 +161,18 @@ class Coffeeani(commands.Cog):
     async def kakao(self, ctx, *, title):
         """Search Kakao
         
-        Search Kakao Webtoons for manhwa. Searches are in Korean by default.
+        Search Kakao Webtoons for manhwa. Korean version only.
 
         > ✅ 공주
         """
         msg = await ctx.send(embeds=[discord_embed_source(NAME_KAKAO_WEBTOON, COLOR_KAKAO)])
-        if title.startswith('"') and title.endswith('"') and len(title) > 2:
-            title = title[1:-1]
-        elif title.isascii():
-            translated = await translate_deepl(self, title, "EN", "KO")
-            if translated:
-                title = translated
+        # TODO: Add DeepL translation for EN -> KO
+        # if title.startswith('"') and title.endswith('"') and len(title) > 2:
+        #     title = title[1:-1]
+        # elif title.isascii():
+        #     translated = await translate_deepl(self, title, "EN", "KO")
+        #     if translated:
+        #         title = translated
         embeds = await discord_kakao_embeds(self, title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
