@@ -10,7 +10,7 @@ import io
 import json
 import urllib.parse
 
-from ..models import *
+from ..models import SearchResult
 from ..utils import *
 
 import logging

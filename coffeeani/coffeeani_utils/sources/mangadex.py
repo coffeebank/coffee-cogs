@@ -2,7 +2,7 @@ import asyncio
 import aiohttp
 import json
 
-from ..models import *
+from ..models import SearchResult
 from ..utils import *
 
 import logging

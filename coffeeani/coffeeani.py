@@ -3,6 +3,7 @@ import asyncio
 import discord
 
 from .coffeeani_utils import *
+from .models import ExtendedSimpleMenu
 
 import logging
 logger = logging.getLogger(__name__)

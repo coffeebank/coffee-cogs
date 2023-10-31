@@ -8,7 +8,7 @@ import re
 
 import aiohttp
 
-from ..models import *
+from ..models import SearchResult
 from ..utils import *
 
 import logging
@@ -164,7 +164,7 @@ query ($id: Int, $page: Int, $search: String) {
 
 async def anilist_request(query, variables=None):
     if variables is None:
-        variables = {}
+        variables = {"search": str(query), "page": 1, "type": "ANIME"}
     request_json = {"query": query, "variables": variables}
     headers = {"content-type": "application/json"}
     async with aiohttp.ClientSession() as session:
