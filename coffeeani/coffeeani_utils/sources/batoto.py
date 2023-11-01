@@ -73,6 +73,10 @@ async def batoto_search_manga(query: str):
         logger.error(err, exc_info=True)
         return None
 
+    if len(data) <= 0:
+        logger.debug("No results")
+        return None
+
     embeds = []
     embeds_non_en = []
     embeds_adult = []

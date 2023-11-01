@@ -47,9 +47,12 @@ async def kakao_search_manga(query):
         return None
 
     embeds = []
-
     j_data = raw_data.get("data", {})
     j_content = j_data.get("content", [])
+    if len(j_content) <= 0:
+        logger.debug("No results")
+        return None
+
     for idx, anime_manga in enumerate(j_content):
         payload = SearchResult()
         payload.series_id = anime_manga.get("id", None)

@@ -54,10 +54,15 @@ async def mangadex_search_manga(query):
         logger.error(err, exc_info=True)
         return None
 
+    data = raw_data.get("data", [])
+    if len(data) <= 0:
+        logger.debug("No results")
+        return None
+
     embeds = []
     embeds_adult = []
     
-    for idx, anime_manga in enumerate(raw_data.get("data", [])):
+    for idx, anime_manga in enumerate(data):
         attributes = anime_manga.get("attributes", {})
         payload = SearchResult()
         payload.series_id = anime_manga.get("id", 0)
