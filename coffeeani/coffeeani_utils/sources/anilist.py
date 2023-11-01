@@ -295,7 +295,10 @@ def anilist_get_names(media_result):
     am_name_native = []
     am_name_native.append(media_result['title'].get('native', None))
     am_name_native.append(media_result['title'].get('romaji', None))
-    return am_name_native
+    am_name_native_final = list(filter(None, am_name_native))
+    if len(am_name_native_final) <= 0:
+        return None
+    return am_name_native_final
 
 def anilist_get_next_airing_episode(media_result):
     if media_result.get("nextAiringEpisode"):
