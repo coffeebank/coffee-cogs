@@ -235,7 +235,7 @@ def anilist_get_external_links(media_result):
     external_links = ""
     for i in range(0, len(media_result["externalLinks"])):
         ext_link = media_result["externalLinks"][i]
-        external_links += f"[{ext_link['site']}]({ext_link['url']}), "
+        external_links += f"[{ext_link['site']}]({format_url_encode(ext_link['url'], format_all=True, safe=':/')}), "
         if i + 1 == len(media_result["externalLinks"]):
             external_links = external_links[:-2]
     if len(external_links) > 0:

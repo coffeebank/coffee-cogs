@@ -41,9 +41,18 @@ def format_translate(text: str, source_lang: str="a", target_lang: str="en"):
     translate = f"https://www.deepl.com/translator#{source_lang}/{target_lang}/{encoded_text}"
     return translate
 
-def format_url_encode(text: str):
+def format_url_encode(text: str, format_all: bool = False, safe: str = "/"):
+    """
+    By default, doesn't encode East Asian characters, since they're already condensed.
+
+    To encode everything, use `format_all=True`
+    To encode a url, use `safe=":/"`
+    
+    """
     if text is None:
         return None
+    if format_all is True:
+        return urllib.parse.quote(text, safe=safe)
     east_asian_chars = (
         '\u4E00-\u9FFF'  # Common Hanzi/Kanji characters
         '|\u3400-\u4DBF'  # Extension A for rare Hanzi/Kanji characters
@@ -58,7 +67,7 @@ def format_url_encode(text: str):
         '|\uD7B0-\uD7FF'  # Hangul Jamo Extended-B
     )
     # Use regex sub to replace all non-East Asian characters with their quoted versions
-    return re.sub(f'[^{east_asian_chars}]', lambda m: urllib.parse.quote(m.group(0)), text)
+    return re.sub(f'[^{east_asian_chars}]', lambda m: urllib.parse.quote(m.group(0), safe=safe), text)
 
 def get_array_first_key(arr):
     if arr:
