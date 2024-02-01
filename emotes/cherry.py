@@ -103,6 +103,23 @@ class Cherry():
         sendMsg = re.sub(fr"({en})", emoteStr, sendMsg)
     return sendMsg
 
+  def esheetProcessorLinks(self, sendMsg, emoteNames, emoteStore):
+    emoteLinks = []
+    for en in emoteNames:
+      es = Cherry.esheetFinder(self, en, emoteStore)
+      if es is not False:
+        # [2] is emote url
+        emoteLink = es[2]
+        if "size=" in emoteLink:
+          emoteSize = re.findall(r"(?<=size=)([0-9]+)", emoteLink)[0]
+          emoteLink = emoteLink.replace(str(emoteSize), "64")
+        elif "?" in emoteLink:
+          emoteLink += "&size=64"
+        else:
+          emoteLink += "?size=64"
+        emoteLinks.append(emoteLink)
+    return emoteLinks
+
 
   # Utilities for 'recents'
   # Searches through channel's recent messages to find a match

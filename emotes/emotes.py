@@ -218,6 +218,7 @@ class Emotes(commands.Cog):
 
         # Message object
         sendMsg = message.clean_content
+        sendMsgArray = []
         emoteNames = None
 
         # cherryServer
@@ -260,14 +261,20 @@ class Emotes(commands.Cog):
             emoteNames = await Cherry.emoteParser(self, self.RegexEmoteText, sendMsg)
             if emoteNames is not False:
                 emoteStore = await self.config.emoteStore()
+                # # if emoteNames in emoteStore:
+                # # regex parse emoteId from url
+                # # if png: if gif:
+                # # replace emoteNames with <(a):emotename:emoteId>
+                # sendMsg = Cherry.esheetProcessor(self, sendMsg, emoteNames, emoteStore)
+
+                # Oct 2023 Update: Support for emotes is deprecated due to Discord limitations
                 # if emoteNames in emoteStore:
-                # regex parse emoteId from url
-                # if png: if gif:
-                # replace emoteNames with <(a):emotename:emoteId>
-                sendMsg = Cherry.esheetProcessor(self, sendMsg, emoteNames, emoteStore)
+                # send image url as size of emote (48px)
+                emoteLinksArray = Cherry.esheetProcessorLinks(self, sendMsg, emoteNames, emoteStore)
+                sendMsgArray += emoteLinksArray
 
         # If nothing changed between sendMsg assignment and now, it means no emotes, return
-        if sendMsg == message.clean_content:
+        if sendMsg == message.clean_content and sendMsgArray == []:
             return
         
         # Build webhook to send
@@ -277,6 +284,8 @@ class Emotes(commands.Cog):
         webhookSender = await Cherry.webhookSender(self, message, webhookUrl, sendMsg)
         if webhookSender is not True:
             return await message.channel.send("An unknown error occured when trying to send to webhook.")
+        for sm in sendMsgArray:
+            await Cherry.webhookSender(self, message, webhookUrl, sm)
 
         # Now that the sending was successful, we can delete the message
         # Silently fail if message delete fails, since we've already succeeded webhook
