@@ -269,7 +269,7 @@ class Emotes(commands.Cog):
 
                 # Oct 2023 Update: Support for emotes is deprecated due to Discord limitations
                 # if emoteNames in emoteStore:
-                # send image url as size of emote (48px)
+                # send image url as size of emote (64px, since 48px doesn't work on /emoji/ urls)
                 emoteLinksArray = Cherry.esheetProcessorLinks(self, sendMsg, emoteNames, emoteStore)
                 sendMsgArray += emoteLinksArray
 
