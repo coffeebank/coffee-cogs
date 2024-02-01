@@ -4,6 +4,9 @@ import asyncio
 import aiohttp
 import time
 
+import logging
+logger = logging.getLogger(__name__)
+
 class EmoteSheet():
   """EmoteSheet is the engine behind integrating with the Google Sheets API to create a searchable emote database inside the bot."""
 
