@@ -1,5 +1,5 @@
 # from redbot.core import Config
-from redbot.core import Config, commands, checks
+from redbot.core import Config, app_commands, commands, checks
 from typing import Union
 import asyncio
 import aiohttp
@@ -66,7 +66,7 @@ class Emotes(commands.Cog):
     ## Set Emote Settings:
     ## Falsy values override all server-level settings
 
-    @commands.group(aliases=["se", "setemote", "setemotesheet"])
+    @commands.group(name="setemotes", aliases=["se", "setemote", "setemotesheet"])
     async def setemotes(self, ctx: commands.Context):
         """Change the configurations for Emotes Cog
         
@@ -298,13 +298,15 @@ class Emotes(commands.Cog):
     ## EmoteSheet:
     ## EmoteSheet is the engine behind integrating with the Google Sheets API to create a searchable emote database inside the bot.
 
-    @commands.command(aliases=["esearch", "ee"])
+    @commands.hybrid_command(aliases=["esearch", "ee"])
+    @app_commands.describe(search="Search for image-ized emote url")
     async def emotesearch(self, ctx, search, page: int=1):
         """Search for image-ized emote url"""
         emoteStore = await self.config.emoteStore()
         await EmoteSheet.search(self, ctx, emoteStore, search, page)
 
-    @commands.command(aliases=["esend", "eee"])
+    @commands.hybrid_command(aliases=["esend", "eee"])
+    @app_commands.describe(search="Send an emote from Emote Sheet, with first search result")
     async def emotesend(self, ctx, search):
         """Send an emote from Emote Sheet, with first search result"""
         emoteStore = await self.config.emoteStore()
@@ -337,11 +339,17 @@ class Emotes(commands.Cog):
             pass
 
 
-    @commands.command(aliases=["ei"])
-    async def emoteinfo(self, ctx, emote: Union[discord.Emoji, discord.PartialEmoji]=None):
+    @commands.hybrid_command(aliases=["ei"])
+    @app_commands.describe(emote="Send info about an emote")
+    async def emoteinfo(self, ctx, emote=None):
         """Send info about an emote
 
         If you don't have access to the emote (ie. no Nitro, or can't send the emote because it's from another server), you can reply to the message with the emote you want and the `[p]emoteinfo` command will pick up the emote."""
+
+        # discord/app_commands/transformers.py:819 in get_supported_annotation
+        # TypeError: unsupported types given inside typing.Union[discord.emoji.Emoji, discord.partial_emoji.PartialEmoji]
+        if isinstance(emote, Union[discord.Emoji, discord.PartialEmoji, None]) is not True:
+            return
 
         if emote:
             ttl = str(emote.id)
@@ -371,7 +379,8 @@ class Emotes(commands.Cog):
             else:
                 return await ctx.message.add_reaction("💨")
 
-    @commands.command()
+    @commands.hybrid_command()
+    @app_commands.describe(hist="List all emotes in a replied-to message, in a code block")
     async def emotelist(self, ctx, hist=False):
         """List all emotes in message
 
@@ -408,8 +417,9 @@ class Emotes(commands.Cog):
           else:
               await ctx.message.add_reaction("💨")
 
-    @commands.command()
-    async def showemote(self, ctx, emoteUrl: str):
+    @commands.hybrid_command()
+    @app_commands.describe(emoteurl="Show an emote you have an URL for")
+    async def showemote(self, ctx, emoteurl):
         """Show an emote you have an URL for"""
         emoteName = "showemote"
         if isinstance(emoteUrl, str):
