@@ -350,8 +350,8 @@ class Emotes(commands.Cog):
             e.set_thumbnail(url=emote.url)
             return await ctx.send(embed=e)
         else:
-            if ctx.message.reference and ctx.message.type == discord.MessageType.default:
-                # Build emote bank out of previous chat history
+            if ctx.message.reference and (ctx.message.type == discord.MessageType.default or ctx.message.type == discord.MessageType.reply):
+                # Build emote bank out of referenced message (reply)
                 recentsBankBuilder = Cherry.recentsBankBuilder(self, [ctx.message.reference.resolved], self.RegexFullEmoteSearch)
                 # Only run if there's more emotes inside recentsBankBuilder
                 if recentsBankBuilder is not False:
