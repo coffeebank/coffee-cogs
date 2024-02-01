@@ -361,7 +361,7 @@ class Emotes(commands.Cog):
 
         # discord/app_commands/transformers.py:819 in get_supported_annotation
         # TypeError: unsupported types given inside typing.Union[discord.emoji.Emoji, discord.partial_emoji.PartialEmoji]
-        if isinstance(emote, (discord.Emoji, discord.PartialEmoji, None)) is not True:
+        if isinstance(emote, (discord.Emoji, discord.PartialEmoji)) is not True:
             return
 
         if emote:
