@@ -118,8 +118,10 @@ class Cherry():
 
   async def recentsHistRetriever(self, message, cherryRecentsCount):
     try:
-      return await message.channel.history(limit=cherryRecentsCount).flatten()
-    except:
+      recentHistory = [message async for message in message.channel.history(limit=cherryRecentsCount)]
+      return recentHistory
+    except Exception as err:
+      logger.debug(err)
       return False
 
   def recentsProcessor(self, sendMsg, recentsBankBuilder, emoteNames):
