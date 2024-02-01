@@ -1,4 +1,3 @@
-# from redbot.core import Config
 from redbot.core import Config, app_commands, commands, checks
 from typing import Union
 import asyncio
