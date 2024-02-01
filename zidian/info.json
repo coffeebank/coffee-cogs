@@ -7,5 +7,6 @@
   "description" : "Chinese dictionary bot. Can search Chinese characters, Pinyin, and English. Fetches results locally from saved dictionaries. Uses CC-CEDICT.\n\nInspired by Pleco and Jisho.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["dictionary", "chinese", "zhongwen", "中文", "汉语", "字典", "词典"]
+  "tags" : ["dictionary", "chinese", "zhongwen", "中文", "汉语", "字典", "词典"],
+  "min_bot_version": "3.5.0"
 }

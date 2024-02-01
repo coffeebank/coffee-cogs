@@ -7,5 +7,6 @@
   "description" : "Custom emote solution for non-nitro users. Use animated emotes in your server, even without Nitro. Make your own emote storage spreadsheet and generate emote-like image links for use in DMs and elsewhere.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["emoji", "emote", "animated", "nitro", "info", "google sheets", "api"]
+  "tags" : ["emoji", "emote", "animated", "nitro", "info", "google sheets", "api"],
+  "min_bot_version": "3.5.0"
 }

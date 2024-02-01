@@ -7,5 +7,6 @@
   "description" : "Make a bulletin board pinned message! Users can add/remove their own content to/from a shared, \"bulletin board\" style pinned message.",
   "permissions" : [],
   "end_user_data_statement" : "This cog stores the data you submit into a pinned message, in order to keep pinned messages updated.",
-  "tags" : ["pins", "pinned", "messages", "board"]
+  "tags" : ["pins", "pinned", "messages", "board"],
+  "min_bot_version": "3.5.0"
 }

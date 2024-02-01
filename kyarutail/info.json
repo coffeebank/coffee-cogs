@@ -7,5 +7,6 @@
   "description" : "Convert your messages into a message written with emotes of Kyaru's tail. Kyaru (aka. Karyl) is a character from Princess Connect! Re:Dive.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["priconne", "emote", "emoji"]
+  "tags" : ["priconne", "emote", "emoji"],
+  "min_bot_version": "3.5.0"
 }

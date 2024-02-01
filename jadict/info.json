@@ -7,5 +7,6 @@
   "description" : "Japanese dictionary bot. Searches Jisho using Jisho API. Includes alternate links to Wiktionary, DeepL, and Google Translate.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["dictionary", "jp", "ja", "japanese", "jisho", "辞書", "じしょ"]
+  "tags" : ["dictionary", "jp", "ja", "japanese", "jisho", "辞書", "じしょ"],
+  "min_bot_version": "3.5.0"
 }

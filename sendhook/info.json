@@ -7,5 +7,6 @@
   "description" : "The comprehensive webhooks cog, with sending, listing, and creating of webhooks. Comes with support for webhook aliases and sending messages as your username/avatar. Perfect for users stuck on mobile Discord.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["webhook"]
+  "tags" : ["webhook"],
+  "min_bot_version": "3.5.0"
 }

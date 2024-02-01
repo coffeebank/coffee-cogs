@@ -7,5 +7,6 @@
   "description" : "Serve some yummy drinks to your fellow server members!",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["bar", "drinks", "soda", "cocktail", "cafe", "coffee"]
+  "tags" : ["bar", "drinks", "soda", "cocktail", "cafe", "coffee"],
+  "min_bot_version": "3.5.0"
 }

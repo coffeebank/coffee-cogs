@@ -7,5 +7,6 @@
   "description" : "Send and receive a json request from Discord. Includes domain whitelisting by server.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["json"]
+  "tags" : ["json"],
+  "min_bot_version": "3.5.0"
 }

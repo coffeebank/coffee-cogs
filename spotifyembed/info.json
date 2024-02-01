@@ -7,5 +7,6 @@
   "description" : "Automatically send a reply to Spotify links with a link to the embed preview. Convenient for mobile users who can finally listen to music samples from Discord, without needing an account.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["spotify", "music", "preview", "embed"]
+  "tags" : ["spotify", "music", "preview", "embed"],
+  "min_bot_version": "3.5.0"
 }

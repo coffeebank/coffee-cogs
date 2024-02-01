@@ -8,5 +8,6 @@
   "permissions" : [],
   "min_python_version": [3,9,0],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["dictionary", "kr", "sk", "sajeon", "사전", "辭典", "hangul", "한글", "hanja", "한국어기초사전", "manhwa"]
+  "tags" : ["dictionary", "kr", "sk", "sajeon", "사전", "辭典", "hangul", "한글", "hanja", "한국어기초사전", "manhwa"],
+  "min_bot_version": "3.5.0"
 }

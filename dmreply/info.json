@@ -7,5 +7,6 @@
   "description" : "Replacing the built-in DM feature to be more customizable. Allows users specified as mods to send a customized DM embed to users via a User ID. Made with the goal of helping support teams responding to queries via DM, when used in conjunction with a cog that forwards received DMs to a server channel. Uses global settings, so only use this feature on bots hosted for a single server.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["dm", "reply", "direct", "message", "autoreply", "autorespond"]
+  "tags" : ["dm", "reply", "direct", "message", "autoreply", "autorespond"],
+  "min_bot_version": "3.5.0"
 }

@@ -7,5 +7,6 @@
   "description" : "Search books and find more about a book. Results from Google Books API.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["google play", "booktok"]
+  "tags" : ["google play", "booktok"],
+  "min_bot_version": "3.5.0"
 }

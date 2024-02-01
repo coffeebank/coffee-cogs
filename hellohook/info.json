@@ -7,5 +7,6 @@
   "description" : "Create your own welcome bot with a custom profile picture! Set the welcome message to be regular text and/or an embed. Comes with usernames, user avatars, pings/mentions, server member counts, and leave messages.\n\nSend invite-based welcome messsages, and assign custom roles when new members join with the invite!",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
-  "tags" : ["welcome", "invites", "goodbye", "webhook", "roleinvite", "roleinvites"]
+  "tags" : ["welcome", "invites", "goodbye", "webhook", "roleinvite", "roleinvites"],
+  "min_bot_version": "3.5.0"
 }
