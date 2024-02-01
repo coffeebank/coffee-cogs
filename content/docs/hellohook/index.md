@@ -15,7 +15,7 @@ cogname: "hellohook"
 
 ## Drafting your Webhook Message
 
-### [Get started on Discohook >](https://discohook.org/?data=eyJtZXNzYWdlcyI6W3siZGF0YSI6eyJjb250ZW50IjpudWxsLCJlbWJlZHMiOlt7InRpdGxlIjoiVGl0bGUgU2FtcGxlIiwiZGVzY3JpcHRpb24iOiJEZXNjcmlwdGlvbiBTYW1wbGUiLCJjb2xvciI6MTAwNjYzNjMsImF1dGhvciI6eyJuYW1lIjoiQXV0aG9yIFNhbXBsZSJ9LCJmb290ZXIiOnsidGV4dCI6IkZvb3RlciBTYW1wbGUifSwiaW1hZ2UiOnsidXJsIjoiaHR0cHM6Ly9jZG4uZGlzY29yZGFwcC5jb20vYXR0YWNobWVudHMvODc1OTA3MTU3ODUyMjk5Mjc0Lzg3NTkwNzQ3NzIzNTk4MjM1Ni91bnNwbGFzaC5jb20tcGhvdG9zLVg0NUd5SXBqcFpjLmpwZyJ9fV19fV19)  
+### [Get started on Discohook >](https://discohook.org/?data=eyJtZXNzYWdlcyI6W3siZGF0YSI6eyJjb250ZW50IjpudWxsLCJlbWJlZHMiOlt7InRpdGxlIjoiVGl0bGUgU2FtcGxlIiwiZGVzY3JpcHRpb24iOiJEZXNjcmlwdGlvbiBTYW1wbGUiLCJjb2xvciI6MjIzNjk2MiwiYXV0aG9yIjp7Im5hbWUiOiJBdXRob3IgU2FtcGxlIn0sImZvb3RlciI6eyJ0ZXh0IjoiRm9vdGVyIFNhbXBsZSJ9LCJpbWFnZSI6eyJ1cmwiOiJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdHRhY2htZW50cy84NzU5MDcxNTc4NTIyOTkyNzQvODc1OTA3NDc3MjM1OTgyMzU2L3Vuc3BsYXNoLmNvbS1waG90b3MtWDQ1R3lJcGpwWmMuanBnIn19XSwiYXR0YWNobWVudHMiOltdfX1dfQ)  
 
 When you are done on Discohook:
 - Scroll to the bottom
@@ -24,6 +24,11 @@ When you are done on Discohook:
 - Paste it into the bot command
 
 *Disclaimer: Discohook is a website that makes creating webhooks easy. Not affiliated with this cog. [Image from Unsplash.](https://unsplash.com/photos/X45GyIpjpZc)*
+
+<br />
+
+**Adding a color is required if you're using embeds.**  
+You can use #222222 as a default. If you don't, Discohook returns null in the JSON, which breaks compatibility. This is a workaround.
 
 <br />
 
