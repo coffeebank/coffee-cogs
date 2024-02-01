@@ -217,6 +217,9 @@ class Emotes(commands.Cog):
             return
         if message.guild is None:
             return
+        # ignore if no intents
+        if not message.content or message.content == "":
+            return
         cherryAll = await self.config.cherryAll()
         if cherryAll is not True:
             return
