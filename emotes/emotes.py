@@ -66,45 +66,51 @@ class Emotes(commands.Cog):
     ## Set Emote Settings:
     ## Falsy values override all server-level settings
 
-    @commands.group(name="setemotes", aliases=["se", "setemote", "setemotesheet"])
+    @commands.hybrid_group(name="setemotes", aliases=["se", "setemote", "setemotesheet"])
     async def setemotes(self, ctx: commands.Context):
         """Change the configurations for Emotes Cog
         
         Setting global values to `False` will override guild settings and disable it across the whole bot."""
         if not ctx.invoked_subcommand:
-            # Global settings
-            eo = discord.Embed(color=(await ctx.embed_colour()), title="Bot Owner", description="*[ Global settings ]*")
-            eo.add_field(name="All", value=(await self.config.cherryAll()), inline=False)
-            eo.add_field(name="Emote Sheet", value=(await self.config.cherryEmoteSheet()))
-            eo.add_field(name="Recents", value=(await self.config.cherryRecents()))
-            eo.add_field(name="Recents max", value=(await self.config.cherryRecentsMax()))
-            eo.add_field(name="Server Emotes", value=(await self.config.cherryServer()))
-            await ctx.send(embed=eo)
-            # Server settings
-            eg = discord.Embed(color=(await ctx.embed_colour()), title="Server", description="*[ Guild settings ]*")
-            eg.add_field(name="All", value=(await self.config.guild(ctx.guild).cherryGuildAll()), inline=False)
-            eg.add_field(name="Recents max", value=(await self.config.guild(ctx.guild).cherryGuildRecentsMax()))
-            await ctx.send(embed=eg)
+            pass
+
+    @setemotes.command(name="settings", aliases=["info"])
+    @checks.is_owner()
+    async def seteosettings(self, ctx):
+        """Display current config"""
+        # Global settings
+        eo = discord.Embed(color=(await ctx.embed_colour()), title="Bot Owner", description="*[ Global settings ]*")
+        eo.add_field(name="All", value=(await self.config.cherryAll()), inline=False)
+        eo.add_field(name="Emote Sheet", value=(await self.config.cherryEmoteSheet()))
+        eo.add_field(name="Recents", value=(await self.config.cherryRecents()))
+        eo.add_field(name="Recents max", value=(await self.config.cherryRecentsMax()))
+        eo.add_field(name="Server Emotes", value=(await self.config.cherryServer()))
+        await ctx.send(embed=eo)
+        # Server settings
+        eg = discord.Embed(color=(await ctx.embed_colour()), title="Server", description="*[ Guild settings ]*")
+        eg.add_field(name="All", value=(await self.config.guild(ctx.guild).cherryGuildAll()), inline=False)
+        eg.add_field(name="Recents max", value=(await self.config.guild(ctx.guild).cherryGuildRecentsMax()))
+        await ctx.send(embed=eg)
 
     @setemotes.command(name="all")
     @checks.is_owner()
-    async def seteoall(self, ctx, TrueOrFalse: bool):
+    async def seteoall(self, ctx, true_or_false: bool):
         """The power switch for all of Cherry Emotes"""
-        await self.config.cherryAll.set(TrueOrFalse)
+        await self.config.cherryAll.set(true_or_false)
         await ctx.message.add_reaction("✅")
 
     @setemotes.command(name="guildall")
     @checks.guildowner_or_permissions(administrator=True)
-    async def seteall(self, ctx, TrueOrFalse: bool):
+    async def seteall(self, ctx, true_or_false: bool):
         """The power switch for Cherry Emotes in this server"""
-        await self.config.guild(ctx.guild).cherryGuildAll.set(TrueOrFalse)
+        await self.config.guild(ctx.guild).cherryGuildAll.set(true_or_false)
         await ctx.message.add_reaction("✅")
 
     @setemotes.command(name="recents")
     @checks.is_owner()
-    async def seteorecents(self, ctx, TrueOrFalse: bool):
+    async def seteorecents(self, ctx, true_or_false: bool):
         """Enable the use of searching recent messages for emotes"""
-        await self.config.cherryRecents.set(TrueOrFalse)
+        await self.config.cherryRecents.set(true_or_false)
         await ctx.message.add_reaction("✅")
 
     @setemotes.command(name="recentsmax")
@@ -132,9 +138,9 @@ class Emotes(commands.Cog):
         
     @setemotes.command(name="server", aliases=["animated"])
     @checks.is_owner()
-    async def seteoserver(self, ctx, TrueOrFalse: bool):
+    async def seteoserver(self, ctx, true_or_false: bool):
         """Enable the use of server animated emotes"""
-        await self.config.cherryServer.set(TrueOrFalse)
+        await self.config.cherryServer.set(true_or_false)
         await ctx.message.add_reaction("✅")
 
     @setemotes.group(name="sheet")
@@ -148,16 +154,21 @@ class Emotes(commands.Cog):
         
         To set Google Sheets API key, use the command **`[p]set api gsheets api_key,YOURKEYHERE`**"""
         if not ctx.invoked_subcommand:
-            # Global settings
-            eo = discord.Embed(color=(await ctx.embed_colour()), title="Bot Owner", description="*[ Global settings ]*")
-            eo.add_field(name="Emote Sheet ID", value=(await self.config.emoteGoogleSheetId()), inline=False)
-            eo.add_field(name="Emote Sheet Enabled", value=(await self.config.cherryEmoteSheet()), inline=False)
-            await ctx.send(embed=eo)
+            pass
+    
+    @seteosheet.command(name="settings", aliases=["info"])
+    async def setesinfo(self, ctx):
+        """Display current config"""
+        # Global settings
+        eo = discord.Embed(color=(await ctx.embed_colour()), title="Bot Owner", description="*[ Global settings ]*")
+        eo.add_field(name="Emote Sheet ID", value=(await self.config.emoteGoogleSheetId()), inline=False)
+        eo.add_field(name="Emote Sheet Enabled", value=(await self.config.cherryEmoteSheet()), inline=False)
+        await ctx.send(embed=eo)
     
     @seteosheet.command(name="id")
-    async def setessheet(self, ctx, sheetId: str):
+    async def setessheet(self, ctx, sheet_id: str):
         """Set Emote Google Sheet's ID, where the emote data was entered into"""
-        await self.config.emoteGoogleSheetId.set(sheetId)
+        await self.config.emoteGoogleSheetId.set(sheet_id)
         await self.config.cherryEmoteSheet.set(True)
         await ctx.message.add_reaction("✅")
         
@@ -419,7 +430,7 @@ class Emotes(commands.Cog):
 
     @commands.hybrid_command()
     @app_commands.describe(emoteurl="Show an emote you have an URL for")
-    async def showemote(self, ctx, emoteurl):
+    async def showemote(self, ctx, emoteurl: str):
         """Show an emote you have an URL for"""
         emoteName = "showemote"
         if isinstance(emoteUrl, str):
