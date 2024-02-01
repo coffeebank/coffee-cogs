@@ -150,7 +150,7 @@ class Emotes(commands.Cog):
 
         Allows users to pull from a Google Sheet of saved emotes.
 
-        For more information, see https://github.com/coffeebank/coffee-cogs/wiki/Emotes
+        For more information, see https://coffeebank.github.io/coffee-cogs/emotes
         
         To set Google Sheets API key, use the command **`[p]set api gsheets api_key,YOURKEYHERE`**"""
         if not ctx.invoked_subcommand:
