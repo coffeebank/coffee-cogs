@@ -5,6 +5,9 @@ import discord
 from discord import Webhook, SyncWebhook
 import re
 
+import logging
+logger = logging.getLogger(__name__)
+
 class Cherry():
   """Cherry Emotes is the engine behind interacting with emotes in chat for non-nitro users using webhooks."""
 

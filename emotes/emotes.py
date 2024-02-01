@@ -11,6 +11,9 @@ import random
 import re
 from collections import OrderedDict
 
+import logging
+logger = logging.getLogger(__name__)
+
 from .cherry import Cherry
 from .esheet import EmoteSheet
 
