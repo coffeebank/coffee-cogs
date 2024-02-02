@@ -14,7 +14,9 @@ class Spotifyembed(commands.Cog):
         self.config = Config.get_conf(self, identifier=806715409318936616)
         default_guild = {
             "spotifyembedEnabled": False,
-            "spotifyembedNote": ">>> Play sample: \n"
+            "spotifyembedNote": ">>> Play sample: \n",
+            "spotifyembedCustomUrl": "",
+            "spotifyembedDeleteOriginal": False,
         }
         self.config.register_guild(**default_guild)
 
@@ -30,6 +32,7 @@ class Spotifyembed(commands.Cog):
             e = discord.Embed(color=(await ctx.embed_colour()), title="Guild Settings", description="")
             e.add_field(name="spotifyembedEnabled", value=(await self.config.guild(ctx.guild).spotifyembedEnabled()), inline=False)
             e.add_field(name="spotifyembedNote", value=(await self.config.guild(ctx.guild).spotifyembedNote()), inline=False)
+            e.add_field(name="spotifyembedCustomUrl", value=(await self.config.guild(ctx.guild).spotifyembedCustomUrl()), inline=False)
             await ctx.send(embed=e)
 
     @setspotifyembed.command(name="enable")
@@ -42,6 +45,14 @@ class Spotifyembed(commands.Cog):
     async def setspembeddisable(self, ctx):
         """Disable auto-responding to Spotify links"""
         await self.config.guild(ctx.guild).spotifyembedEnabled.set(False)
+        await ctx.message.add_reaction("✅")
+
+    @setspotifyembed.command(name="deleteoriginal")
+    async def setspembeddeleteoriginal(self, ctx, true_or_false: bool):
+        """Delete the original message after it's processed
+        
+        Only for messages processed via auto-responding feature"""
+        await self.config.guild(ctx.guild).spotifyembedDeleteOriginal.set(true_or_false)
         await ctx.message.add_reaction("✅")
 
     @setspotifyembed.command(name="note")
@@ -58,6 +69,24 @@ class Spotifyembed(commands.Cog):
           await self.config.guild(ctx.guild).spotifyembedNote.set(text)
         await ctx.message.add_reaction("✅")
 
+    @setspotifyembed.command(name="customurl")
+    async def setspembedcustomurl(self, ctx, *, text):
+        """Set a custom URL. The parsed original Spotify link will be added on at the end.
+
+        Example:
+        > Custom URL: **`https://playsoju.netlify.app/?s=`**
+        > Final URL: **`https://playsoju.netlify.app/?s=https://open.spotify.com/...`**
+        
+        Type "0" to reset to default.
+        Type "1" to disable this feature. (show no text)"""
+        if text == "0":
+          await self.config.guild(ctx.guild).spotifyembedCustomUrl.clear()
+        elif text == "1":
+          await self.config.guild(ctx.guild).spotifyembedCustomUrl.set("")
+        else:
+          await self.config.guild(ctx.guild).spotifyembedCustomUrl.set(str(text))
+        await ctx.message.add_reaction("✅")
+
     @commands.command(aliases=["spembed", "spe"])
     async def spotifyembed(self, ctx, spotifyLink, asMyself: bool=False):
         """Return a Spotify embed link
@@ -65,8 +94,12 @@ class Spotifyembed(commands.Cog):
         Can set asMyself to true/false, for sending as webhook
         
         *Admins: To edit auto-reply and other settings, use  `[p]setspotifyembed`*"""
-        spembedSplit = spotifyLink.split('.com/')
-        sendMsg = spembedSplit[0] + ".com/embed/" + spembedSplit[1]
+        spotifyembedCustomUrl = await self.config.guild(ctx.guild).spotifyembedCustomUrl()
+        if not spotifyembedCustomUrl:
+            spembedSplit = spotifyLink.split('.com/')
+            sendMsg = spembedSplit[0] + ".com/embed/" + spembedSplit[1]
+        else:
+            sendMsg = str(spotifyembedCustomUrl) + spotifyLink
 
         if asMyself == False:
             return await ctx.send(sendMsg)
@@ -119,9 +152,14 @@ class Spotifyembed(commands.Cog):
 
         sendMsg = await self.config.guild(message.guild).spotifyembedNote()
 
-        for match in spembedMatches:
-            spembedSplit = match.split('.com/')
-            sendMsg += spembedSplit[0] + ".com/embed/" + spembedSplit[1] + "\n"
+        spotifyembedCustomUrl = await self.config.guild(message.guild).spotifyembedCustomUrl()
+        if not spotifyembedCustomUrl:
+            for match in spembedMatches:
+                spembedSplit = match.split('.com/')
+                sendMsg += spembedSplit[0] + ".com/embed/" + spembedSplit[1] + "\n"
+        else:
+            for match in spembedMatches:
+                sendMsg += str(spotifyembedCustomUrl) + match + "\n"
 
         # Find a webhook that the bot made
         try:
@@ -144,3 +182,11 @@ class Spotifyembed(commands.Cog):
             )
         except discord.errors.Forbidden:
             return await message.channel.send(sendMsg)
+
+        # Try to delete the original message (fail ignore), if feature is enabled
+        spotifyembedDeleteOriginal = await self.config.guild(message.guild).spotifyembedDeleteOriginal()
+        if spotifyembedDeleteOriginal:
+            try:
+                await message.delete()
+            except:
+                pass
