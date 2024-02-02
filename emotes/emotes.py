@@ -425,10 +425,12 @@ class Emotes(commands.Cog):
                   else:
                       desc = "https://cdn.discordapp.com/emojis/"+str(eeId[0])+".png?v=1"
                   finalList += str(eeText[0]).lower()+","+str(desc)+"\n"
-              await ctx.send("```\n"+str(finalList)+"```")
-              await ctx.message.add_reaction("✅")
+              finalListChunks = Cherry.textSplitter(finalList)
+              for chunk in finalListChunks:
+                  await ctx.send("```\n"+str(chunk)+"```")
+              return await ctx.message.add_reaction("✅")
           else:
-              await ctx.message.add_reaction("💨")
+              return await ctx.message.add_reaction("💨")
 
     @commands.hybrid_command()
     @app_commands.describe(emoteurl="Show an emote you have an URL for")

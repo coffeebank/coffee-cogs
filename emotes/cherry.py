@@ -44,6 +44,19 @@ class Cherry():
     else:
       return False
 
+  def textSplitter(text, max_length=1990, split_at='\n'):
+    chunks = []
+    while text:
+      if len(text) <= max_length:
+        chunks.append(text)
+        break
+      split_index = text.rfind(split_at, 0, max_length)
+      if split_index == -1:
+        split_index = max_length
+      chunks.append(text[:split_index + 1])
+      text = text[split_index + 1:]
+    return chunks
+
   async def webhookFinder(self, ctx, bot):
     # Find a webhook that the bot made
     try:
