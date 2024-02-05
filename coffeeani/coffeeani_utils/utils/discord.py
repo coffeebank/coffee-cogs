@@ -1,6 +1,6 @@
 import discord
 
-from .formatter import description_parser
+from .formatter import description_parser, truncate_string_at
 from .deepl import deepl_fetch_api
 
 import logging
@@ -21,7 +21,7 @@ def discord_embed_result(result, color: str=None, service: str=None, idx: int=No
         if em.get('info'):
             embed.add_field(name=str(em.get('info_status')), value=str(em.get('info')), inline=True)
         if em.get('external_links'):
-            embed.add_field(name='Links', value=em.get('external_links'), inline=True)
+            embed.add_field(name='Links', value=truncate_string_at(em.get('external_links'), 1000, ','), inline=True)
         if em.get('names'):
             names_inline = True
             names_str = description_parser(', '.join(em.get('names', '')))
@@ -32,7 +32,7 @@ def discord_embed_result(result, color: str=None, service: str=None, idx: int=No
             tags_inline = True
             if len(em.get('tags')) > 11:
                 tags_inline = False
-            embed.add_field(name='Tags', value=', '.join(em.get('tags', '')), inline=tags_inline)
+            embed.add_field(name='Tags', value=truncate_string_at(', '.join(em.get('tags', '')), 1000, ','), inline=tags_inline)
         if service:
             service = f"Results from {str(service)}"
         idx_str = None

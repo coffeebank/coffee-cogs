@@ -86,6 +86,29 @@ def get_country_of_origin_flag_str(language_code: str):
     else:
         return f"[{str(language_code).upper()}] "
 
+def truncate_string_at(text, max_length=1000, split_at=',', array=False):
+    # return truncated only
+    if not array:
+        if len(text) <= max_length:
+            return text
+        truncated = text[:max_length]
+        last_char_index = truncated.rfind(split_at)
+        if last_char_index == -1:
+            return truncated
+        return truncated[:last_char_index] + ' …'
+    # return an array of everything
+    chunks = []
+    while text:
+        if len(text) <= max_length:
+            chunks.append(text)
+            break
+        split_index = text.rfind(split_at, 0, max_length)
+        if split_index == -1:
+            split_index = max_length
+        chunks.append(text[:split_index + 1])
+        text = text[split_index + 1:]
+    return chunks
+
 def clean_html(description):  # Removes html tags
     if not description:
         return ""
