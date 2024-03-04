@@ -145,7 +145,7 @@ class Spotifyembed(commands.Cog):
         if len(spembedCommands) > 0:
             return
         # Ignore if we find no spotify links in the trigger message
-        spembedFinder = r"https\:\/\/open\.spotify\.com\/\w{4,12}\/\w{14,26}(?=\?|$|\s)"
+        spembedFinder = r"(https\:\/\/open\.spotify\.(com|com\/intl-\w{2})\/\w{4,12}\/\w{14,26}(?=\?|$|\s))"
         spembedMatches = re.findall(spembedFinder, message.clean_content)
         if len(spembedMatches) <= 0:
             return
@@ -155,11 +155,11 @@ class Spotifyembed(commands.Cog):
         spotifyembedCustomUrl = await self.config.guild(message.guild).spotifyembedCustomUrl()
         if not spotifyembedCustomUrl:
             for match in spembedMatches:
-                spembedSplit = match.split('.com/')
+                spembedSplit = match[0].split('.com/')
                 sendMsg += spembedSplit[0] + ".com/embed/" + spembedSplit[1] + "\n"
         else:
             for match in spembedMatches:
-                sendMsg += str(spotifyembedCustomUrl) + match + "\n"
+                sendMsg += str(spotifyembedCustomUrl) + match[0] + "\n"
 
         # Find a webhook that the bot made
         try:
