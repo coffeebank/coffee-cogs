@@ -95,7 +95,7 @@ class Coffeeani(commands.Cog):
 
     @anilist.command(name="anime", aliases=["donghua"])
     @app_commands.describe(title="Search Anilist for anime")
-    async def anilist_manga(self, ctx, *, title):
+    async def anilist_anime(self, ctx, *, title):
         """Search Anilist for anime"""
         msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
         embeds = await discord_anilist_embeds(ctx, "ANIME", title)
