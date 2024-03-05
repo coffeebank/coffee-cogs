@@ -155,8 +155,9 @@ class Spotifyembed(commands.Cog):
         spotifyembedCustomUrl = await self.config.guild(message.guild).spotifyembedCustomUrl()
         if not spotifyembedCustomUrl:
             for match in spembedMatches:
-                spembedSplit = match[0].split('.com/')
-                sendMsg += spembedSplit[0] + ".com/embed/" + spembedSplit[1] + "\n"
+                # tuple: ( original url, match for .com or .com/intl- )
+                spembedSplit = match[0].split(match[1])
+                sendMsg += spembedSplit[0] + "com/embed" + spembedSplit[1] + "\n"
         else:
             for match in spembedMatches:
                 sendMsg += str(spotifyembedCustomUrl) + match[0] + "\n"
