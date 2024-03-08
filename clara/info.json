@@ -1,0 +1,12 @@
+{
+  "author" : ["coffeebank"],
+  "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by my site at https://coffeebank.github.io/coffee-cogs/clara/",
+  "name" : "Clara",
+  "short" : "See info about the servers your bot is in.",
+  "requirements" : [],
+  "description" : "See basic guild info. Show information about the Discord servers your bot is in, including approximate total users and guild count.",
+  "permissions" : [],
+  "end_user_data_statement" : "This cog does not store any End User Data.",
+  "tags" : ["server", "info", "member", "members"],
+  "min_bot_version": "3.5.0"
+}
