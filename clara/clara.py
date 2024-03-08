@@ -2,7 +2,7 @@ from redbot.core import Config, app_commands, commands, checks
 import discord
 
 class Clara(commands.Cog):
-    """See basic guild info. Show information about the Discord servers your bot is in, including approximate total users and guild count.
+    """See info about the servers your bot is in.
     
     For bot owners only.
     """
