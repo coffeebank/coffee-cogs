@@ -12,12 +12,6 @@ from .batoto_discord import (
     discord_batoto_embeds
 )
 
-from .kakao_discord import (
-    NAME_KAKAO_WEBTOON,
-    COLOR_KAKAO,
-    discord_kakao_embeds
-)
-
 from .mangadex_discord import (
     NAME_MANGADEX,
     COLOR_MANGADEX,

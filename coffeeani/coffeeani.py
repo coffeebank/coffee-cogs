@@ -47,7 +47,6 @@ class Coffeeani(commands.Cog):
         To search by source, use:
         - `[p]anilist manga`
         - `[p]batoto`
-        - `[p]kakao`
         - `[p]mangadex`
         """
         msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
@@ -152,29 +151,6 @@ class Coffeeani(commands.Cog):
         Search Batoto for manga, manhwa, and manhua"""
         msg = await ctx.send(embeds=[discord_embed_source(NAME_BATOTO, COLOR_BATOTO)])
         embeds = await discord_batoto_embeds(title)
-        if embeds:
-            return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
-        return await msg.edit(embeds=[discord_embed_source(None)])
-
-    @commands.hybrid_command()
-    @app_commands.describe(title="Search Kakao for manhwa")
-    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
-    async def kakao(self, ctx, *, title):
-        """Search Kakao
-        
-        Search Kakao Webtoons for manhwa. Korean version only.
-
-        > ✅ 공주
-        """
-        msg = await ctx.send(embeds=[discord_embed_source(NAME_KAKAO_WEBTOON, COLOR_KAKAO)])
-        # TODO: Add DeepL translation for EN -> KO
-        # if title.startswith('"') and title.endswith('"') and len(title) > 2:
-        #     title = title[1:-1]
-        # elif title.isascii():
-        #     translated = await translate_deepl(self, title, "EN", "KO")
-        #     if translated:
-        #         title = translated
-        embeds = await discord_kakao_embeds(self, title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
         return await msg.edit(embeds=[discord_embed_source(None)])
