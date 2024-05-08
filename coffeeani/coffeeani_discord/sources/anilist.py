@@ -5,8 +5,9 @@ import discord
 
 import datetime
 
-from .anilist import NAME_ANILIST, COLOR_ANILIST, SEARCH_ANILIST_CHARACTER_QUERY, SEARCH_ANILIST_USER_QUERY, anilist_request, anilist_search_anime_manga
-from ..utils import discord_embed_result, description_parser, format_name, list_maximum
+from ...coffeeani_utils.sources.anilist import NAME_ANILIST, COLOR_ANILIST, SEARCH_ANILIST_CHARACTER_QUERY, SEARCH_ANILIST_USER_QUERY, anilist_request, anilist_search_anime_manga
+from ...coffeeani_utils.utils import description_parser, format_name, list_maximum
+from ..utils import discord_embed_result
 
 import logging
 logger = logging.getLogger(__name__)

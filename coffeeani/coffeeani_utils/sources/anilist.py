@@ -212,7 +212,7 @@ async def anilist_search_anime_manga(cmd, entered_title, isDiscord=False):
         payload.info_links = anilist_get_info_links(anime_manga, payload.link, cmd)
         payload.info = "\n".join(filter(None, [payload.info_epschaps, payload.info_links]))
         payload.country_of_origin = anilist_get_country_of_origin(anime_manga)
-        payload.country_of_origin_flag_str = ":flag_"+str(payload.country_of_origin).lower()+": "
+        payload.country_of_origin_flag_str = get_country_of_origin_flag_str(str(payload.country_of_origin).lower(), force=True)
         payload.relations = anilist_get_relations(anime_manga, cmd)
         payload.names = anilist_get_names(anime_manga)
         payload.tags = anilist_get_tags(anime_manga, hideSpoilers=(not isDiscord), discordSpoilers=isDiscord)

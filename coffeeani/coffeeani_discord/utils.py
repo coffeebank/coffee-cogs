@@ -1,7 +1,6 @@
 import discord
 
-from .formatter import description_parser, truncate_string_at
-from .deepl import deepl_fetch_api
+from ..coffeeani_utils.utils import description_parser, truncate_string_at, deepl_fetch_api
 
 import logging
 logger = logging.getLogger(__name__)

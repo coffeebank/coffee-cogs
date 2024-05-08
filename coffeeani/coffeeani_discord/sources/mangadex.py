@@ -1,6 +1,6 @@
 import discord
 
-from .mangadex import NAME_MANGADEX, COLOR_MANGADEX, mangadex_search_manga
+from ...coffeeani_utils.sources.mangadex import NAME_MANGADEX, COLOR_MANGADEX, mangadex_search_manga
 from ..utils import discord_embed_result
 
 import logging

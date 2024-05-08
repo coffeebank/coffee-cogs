@@ -3,6 +3,7 @@
 
 import re
 import urllib.parse
+from unicodedata import lookup
 
 from .constants import LANGUAGE_FLAGS_MAP
 
@@ -80,9 +81,18 @@ def get_joined_array_from_json(json_obj, key: str):
         return ", ".join(arr)
     return None
 
-def get_country_of_origin_flag_str(language_code: str):
-    if LANGUAGE_FLAGS_MAP.get(str(language_code).lower().replace('_', '-'), None):
-        return f":flag_{LANGUAGE_FLAGS_MAP.get(str(language_code).lower().replace('_', '-'), None)}: "
+def get_country_of_origin_flag_str(language_code: str, force=False):
+    if force is True:
+        sendable = ""
+        for char in str(language_code):
+            sendable += lookup(f'REGIONAL INDICATOR SYMBOL LETTER {char.lower()}')
+        return f"{sendable} "
+    elif LANGUAGE_FLAGS_MAP.get(str(language_code).lower().replace('_', '-'), None):
+        language_code = LANGUAGE_FLAGS_MAP.get(str(language_code).lower().replace('_', '-'))
+        sendable = ""
+        for char in language_code:
+            sendable += lookup(f'REGIONAL INDICATOR SYMBOL LETTER {char.lower()}')
+        return f"{sendable} "
     else:
         return f"[{str(language_code).upper()}] "
 

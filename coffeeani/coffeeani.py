@@ -3,6 +3,7 @@ import asyncio
 import discord
 
 from .coffeeani_utils import *
+from .coffeeani_discord import *
 from .models import ExtendedSimpleMenu
 
 import logging

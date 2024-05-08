@@ -1,6 +1,6 @@
 import discord
 
-from .batoto import NAME_BATOTO, COLOR_BATOTO, batoto_search_manga
+from ...coffeeani_utils.sources.batoto import NAME_BATOTO, COLOR_BATOTO, batoto_search_manga
 from ..utils import discord_embed_result
 
 import logging
