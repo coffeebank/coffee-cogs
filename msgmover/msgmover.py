@@ -252,7 +252,7 @@ class Msgmover(commands.Cog):
             relayList = ""
             for relayId in msgrelayStoreV2:
                 relayList += f"**<#{relayId}>**\n{str(msgrelayStoreV2[relayId])}\n\n"
-            eg = discord.Embed(color=(await ctx.embed_colour()), title="Message Relays in this Server", description=relayList)
+            eg = discord.Embed(color=(await ctx.embed_colour()), title="Message Relays in this Server", description=str(relayList)[:4090])
             await ctx.send(embed=eg)
             # Relay settings
             es = discord.Embed(color=(await ctx.embed_colour()), title="Message Relay Settings in this Server")
