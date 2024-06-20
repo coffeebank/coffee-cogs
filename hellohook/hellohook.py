@@ -58,12 +58,17 @@ class Hellohook(commands.Cog):
             greetMessageStr = greetMessageStr.replace("https://&&USERMENTION&&", str(userObj.mention))
         if "https://&&USERNAME&&" in greetMessageStr:
             greetMessageStr = greetMessageStr.replace("https://&&USERNAME&&", str(userObj.name))
-        if "https://&&USERNAME1234&&" in greetMessageStr:
-            greetMessageStr = greetMessageStr.replace("https://&&USERNAME1234&&", str(userObj.name)+"#"+str(userObj.discriminator))
+        if "https://&&GLOBALNAME&&" in greetMessageStr:
+            greetMessageStr = greetMessageStr.replace("https://&&GLOBALNAME&&", str(userObj.global_name))
+        if "https://&&NICKNAME&&" in greetMessageStr:
+            greetMessageStr = greetMessageStr.replace("https://&&NICKNAME&&", str(userObj.display_name))
         if "https://&&SERVERCOUNT&&" in greetMessageStr:
             greetMessageStr = greetMessageStr.replace("https://&&SERVERCOUNT&&", str(userObj.guild.member_count))
         if "https://&&SERVERCOUNTORD&&" in greetMessageStr:
             greetMessageStr = greetMessageStr.replace("https://&&SERVERCOUNTORD&&", str(self.ordinalize_num(userObj.guild.member_count)))
+        # Legacy Discriminator System based Username, does not fetch the user's old discriminator:
+        # if "https://&&USERNAME1234&&" in greetMessageStr:
+        #     greetMessageStr = greetMessageStr.replace("https://&&USERNAME1234&&", str(userObj.name)+"#"+str(userObj.discriminator))
         greetMessageJson = json.loads(str(greetMessageStr))
         # Patch fix: send() got an unexpected keyword argument 'attachments'
         if greetMessageJson.get("attachments", False) is not False:
