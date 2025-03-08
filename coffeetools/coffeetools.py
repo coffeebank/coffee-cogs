@@ -2,6 +2,9 @@ from redbot.core import Config, commands, checks
 import discord
 import random
 
+import logging
+logger = logging.getLogger(__name__)
+
 class Coffeetools(commands.Cog):
     """Replacement for 'General' cog, since it needs to be disabled to override certain commands."""
 
@@ -28,5 +31,6 @@ class Coffeetools(commands.Cog):
         # Catch error
         try:
             return await ctx.send(embed=e)
-        except:
+        except Exception as err:
+            logger.error(err);
             return await ctx.send("Sorry, an error occurred. Are you using only alphanumeric characters?")
