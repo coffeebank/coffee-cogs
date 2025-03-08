@@ -19,6 +19,7 @@ class Clara(commands.Cog):
 
 
     @commands.hybrid_command(name="botguilds", aliases=["botservers"])
+    @commands.has_permissions(add_reactions=True)
     @commands.is_owner()
     async def botguilds(self, ctx):
         """See info about the servers your bot is in.
