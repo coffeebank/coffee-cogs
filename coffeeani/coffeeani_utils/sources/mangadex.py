@@ -41,6 +41,9 @@ async def mangadex_request(branch, params):
     url = URL_MANGADEX+"/"+branch
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:
+            if response.status != 200:
+                logger.error(f"Failed to fetch {URL_ANILIST}. Status code: {response.status}")
+                return None
             return await response.json()
 
 async def mangadex_search_manga(query):

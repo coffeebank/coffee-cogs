@@ -25,6 +25,9 @@ async def deepl_fetch_api(text: str, api_key: str, source_lang: str="EN", target
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post(deeplUrl, headers=headers, data=payload) as resp:
+                if resp.status != 200:
+                    logger.error(f"Failed to fetch {URL_ANILIST}. Status code: {response.status}")
+                    return None
                 deeplJson = await resp.json()
                 return deeplJson
     except Exception:
