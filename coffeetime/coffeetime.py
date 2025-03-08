@@ -62,7 +62,7 @@ class Coffeetime(commands.Cog):
 
     # Bot Commands
 
-    @commands.command()
+    @commands.hybrid_command(name="time")
     @commands.has_permissions(embed_links=True)
     async def time(self, ctx, user: discord.Member = None):
         """Shows the current time for the specified user."""
@@ -101,15 +101,15 @@ class Coffeetime(commands.Cog):
                     timemsg2 = f" **{time_amt}{position_text}**"
                 else:
                   if not usertime:
-                      timemsg4 = f"You haven't set your timezone yet 👀 Do `{ctx.prefix}timeset` to share your timezone!"
+                      timemsg4 = f"You haven't set your timezone yet 👀 Do `{ctx.prefix}settime` to share your timezone!"
 
             await ctx.send(timemsg1+timemsg2+timemsg3)
             if timemsg4:
               await ctx.send(timemsg4)
         else:
-            await ctx.send(f"{user.display_name} hasn't set a timezone yet. Set one by typing `{ctx.prefix}timeset` !")
+            await ctx.send(f"{user.display_name} hasn't set a timezone yet. Set one by typing `{ctx.prefix}settime` !")
 
-    @commands.command()
+    @commands.hybrid_command(name="settime", aliases=["timeset"])
     @commands.has_permissions(embed_links=True)
     async def timeset(self, ctx, *, city_name_here):
         """
@@ -125,7 +125,7 @@ class Coffeetime(commands.Cog):
             await self.config.user(ctx.author).usertime.set(tz_resp[0][0])
             await ctx.send(f"Successfully set your timezone to **{tz_resp[0][0]}**!")
 
-    @commands.command()
+    @commands.hybrid_command(name="timein")
     @commands.has_permissions(embed_links=True)
     async def timein(self, ctx, *, city_name: str):
         """Gets the time in a timezone.
@@ -142,7 +142,7 @@ class Coffeetime(commands.Cog):
             await ctx.send(">>> "+time.strftime(fmt)+f", {tz_resp[0][0]}*")
 
     @commands.guild_only()
-    @commands.group()
+    @commands.hybrid_group(name="timetools")
     @commands.has_permissions(embed_links=True)
     async def timetools(self, ctx):
         """
@@ -174,10 +174,10 @@ class Coffeetime(commands.Cog):
                     "Use the two-character code under the `Alpha-2 code` column."
                 )
 
-    @timetools.command()
+    @timetools.command(name="set")
     @commands.is_owner()
     @commands.has_permissions(embed_links=True)
-    async def set(self, ctx, user: discord.User, *, timezone_name=None):
+    async def timetools_set(self, ctx, user: discord.User, *, timezone_name=None):
         """
         Allows the bot owner to edit users' timezones.
         Use a user id for the user if they are not present in your server.
