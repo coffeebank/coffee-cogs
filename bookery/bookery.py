@@ -24,6 +24,7 @@ class Bookery(commands.Cog):
 
 
     @commands.hybrid_command(name="book", aliases=["bookery"])
+    @commands.has_permissions(embed_links=True)
     @app_commands.describe(text="Search books and find more about a book")
     async def bookery(self, ctx, *, text):
         """Search books and find more about a book.
