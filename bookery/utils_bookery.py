@@ -16,5 +16,5 @@ async def fetch_google_books(text):
             return resp
         else:
             return False
-    except:
+    except Exception:
         return None
