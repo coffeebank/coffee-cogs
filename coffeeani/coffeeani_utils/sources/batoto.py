@@ -62,6 +62,9 @@ async def batoto_request(query, variables=None):
     headers = {"content-type": "application/json"}
     async with aiohttp.ClientSession() as session:
         async with session.post(URL_BATOTO, data=json.dumps(request_json), headers=headers) as response:
+            if response.status != 200:
+                logger.error(f"Failed to fetch {URL_ANILIST}. Status code: {response.status}")
+                return None
             return await response.json()
 
 async def batoto_search_manga(query: str):

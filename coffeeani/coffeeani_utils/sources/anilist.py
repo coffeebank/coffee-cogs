@@ -169,6 +169,9 @@ async def anilist_request(query, variables=None):
     headers = {"content-type": "application/json"}
     async with aiohttp.ClientSession() as session:
         async with session.post(URL_ANILIST, data=json.dumps(request_json), headers=headers) as response:
+            if response.status != 200:
+                logger.error(f"Failed to fetch {URL_ANILIST}. Status code: {response.status}")
+                return None
             return await response.json()
 
 async def anilist_search_anime_manga(cmd, entered_title, isDiscord=False):
