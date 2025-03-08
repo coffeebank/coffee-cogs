@@ -15,6 +15,7 @@ class Coffeetools(commands.Cog):
         pass
 
     @commands.command()
+    @commands.has_permissions(embed_links=True)
     async def choose(self, ctx, *, choosetext):
         """Have the bot choose for you
         
