@@ -63,6 +63,7 @@ class Coffeetime(commands.Cog):
     # Bot Commands
 
     @commands.command()
+    @commands.has_permissions(embed_links=True)
     async def time(self, ctx, user: discord.Member = None):
         """Shows the current time for the specified user."""
         if not user:
@@ -109,6 +110,7 @@ class Coffeetime(commands.Cog):
             await ctx.send(f"{user.display_name} hasn't set a timezone yet. Set one by typing `{ctx.prefix}timeset` !")
 
     @commands.command()
+    @commands.has_permissions(embed_links=True)
     async def timeset(self, ctx, *, city_name_here):
         """
         Sets your timezone.
@@ -124,6 +126,7 @@ class Coffeetime(commands.Cog):
             await ctx.send(f"Successfully set your timezone to **{tz_resp[0][0]}**!")
 
     @commands.command()
+    @commands.has_permissions(embed_links=True)
     async def timein(self, ctx, *, city_name: str):
         """Gets the time in a timezone.
 
@@ -140,6 +143,7 @@ class Coffeetime(commands.Cog):
 
     @commands.guild_only()
     @commands.group()
+    @commands.has_permissions(embed_links=True)
     async def timetools(self, ctx):
         """
         Checks the time.
@@ -149,6 +153,7 @@ class Coffeetime(commands.Cog):
         pass
 
     @timetools.command()
+    @commands.has_permissions(embed_links=True)
     async def iso(self, ctx, *, iso_code=None):
         """Looks up ISO3166 country codes and gives you a supported timezone."""
         if iso_code is None:
@@ -171,6 +176,7 @@ class Coffeetime(commands.Cog):
 
     @timetools.command()
     @commands.is_owner()
+    @commands.has_permissions(embed_links=True)
     async def set(self, ctx, user: discord.User, *, timezone_name=None):
         """
         Allows the bot owner to edit users' timezones.
@@ -192,6 +198,7 @@ class Coffeetime(commands.Cog):
                 await ctx.send(f"Successfully set {user.name}'s timezone to **{tz_resp[0][0]}**.")
 
     @timetools.command()
+    @commands.has_permissions(embed_links=True)
     async def user(self, ctx, user: discord.Member = None):
         """Shows the current time for the specified user."""
         if not user:
@@ -209,6 +216,7 @@ class Coffeetime(commands.Cog):
                 await ctx.send("That user hasn't set their timezone.")
 
     @timetools.command()
+    @commands.has_permissions(embed_links=True)
     async def compare(self, ctx, user: discord.Member = None):
         """Compare your saved timezone with another user's timezone."""
         if not user:
