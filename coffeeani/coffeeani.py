@@ -69,6 +69,7 @@ class Coffeeani(commands.Cog):
 
     @commands.hybrid_command(name="animecharacter", aliases=["animechar"])
     @app_commands.describe(name="Search for an anime/manga character")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def character(self, ctx, *, name):
         """Search for an anime/manga character
         
@@ -88,6 +89,7 @@ class Coffeeani(commands.Cog):
             await ctx.send("No characters were found or there was an error in the process")
 
     @commands.hybrid_group(name="anilist")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def anilist(self, ctx: commands.Context):
         """Search Anilist"""
         if not ctx.invoked_subcommand:
@@ -95,6 +97,7 @@ class Coffeeani(commands.Cog):
 
     @anilist.command(name="anime", aliases=["donghua"])
     @app_commands.describe(title="Search Anilist for anime")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def anilist_anime(self, ctx, *, title):
         """Search Anilist for anime"""
         msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
@@ -105,6 +108,7 @@ class Coffeeani(commands.Cog):
 
     @anilist.command(name="manga", aliases=["manhwa", "manhua", "lightnovel"])
     @app_commands.describe(title="Search Anilist for manga/manhwa/manhua and light novels")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def anilist_manga(self, ctx, *, title):
         """Search Anilist for manga, manhwa, manhua, and light novels"""
         msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
@@ -115,6 +119,7 @@ class Coffeeani(commands.Cog):
 
     @anilist.command(name="user")
     @app_commands.describe(username="Search Anilist for a user")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def anilist_user(self, ctx, *, username: str):
         """Search Anilist for a user"""
         entered_title = username
