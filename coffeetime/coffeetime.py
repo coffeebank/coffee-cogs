@@ -62,7 +62,6 @@ class Coffeetime(commands.Cog):
             return None
         else:
             # More than one result, no embed_links permission
-            print(tz)
             await ctx.send("Found "+str(len(tz))+" results... could you retry with a more specific timezone?\n\nUse one below (if it's listed), or find yours using:\nhttps://coffeebank.github.io/timezone-picker\n\n"+"\n".join([str(t[0]) for t in tz]))
             return None
 
