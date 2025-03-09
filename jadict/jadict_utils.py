@@ -107,6 +107,9 @@ async def fetchJisho(text):
 async def makeJsonRequest(url):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
+            if resp.status != 200:
+                logger.error(f"Failed to fetch {url}. Status code: {resp.status}")
+                return None
             reqdata = await resp.json()
             return reqdata
 
