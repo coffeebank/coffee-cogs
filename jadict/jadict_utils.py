@@ -101,7 +101,7 @@ async def fetchJisho(text):
             return jishoJson
         else:
             return False
-    except:
+    except Exception:
         return None
 
 async def makeJsonRequest(url):
