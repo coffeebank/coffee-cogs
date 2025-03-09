@@ -119,6 +119,7 @@ class Coffeetools(commands.Cog):
 
     # @commands.command(usage="<first> <second> [others...]")
     @general.command(name="choose")
+    @commands.has_permissions(embed_links=True)
     async def general_choose(self, ctx, choices):
         """Choose between multiple options.
 
@@ -134,6 +135,7 @@ class Coffeetools(commands.Cog):
             await ctx.send(choice(choices))
 
     @general.command()
+    @commands.has_permissions(embed_links=True)
     async def roll(self, ctx, number: int = 100):
         """Roll a random number.
 
@@ -159,6 +161,7 @@ class Coffeetools(commands.Cog):
             )
 
     @general.command()
+    @commands.has_permissions(embed_links=True)
     async def flip(self, ctx, user: discord.Member = None):
         """Flip a coin... or a user.
 
@@ -182,6 +185,7 @@ class Coffeetools(commands.Cog):
             await ctx.send(_("*flips a coin and... ") + choice([_("HEADS!*"), _("TAILS!*")]))
 
     @general.command()
+    @commands.has_permissions(embed_links=True)
     async def rps(self, ctx, your_choice: str):
         """Play Rock Paper Scissors."""
         your_choice = RPSParser(your_choice)
@@ -228,6 +232,7 @@ class Coffeetools(commands.Cog):
             )
 
     @general.command(name="8", aliases=["8ball"])
+    @commands.has_permissions(embed_links=True)
     async def _8ball(self, ctx, *, question: str):
         """Ask 8 ball a question.
 
@@ -239,6 +244,7 @@ class Coffeetools(commands.Cog):
             await ctx.send(_("That doesn't look like a question."))
 
     @general.command(aliases=["sw"])
+    @commands.has_permissions(embed_links=True)
     async def stopwatch(self, ctx):
         """Start or stop the stopwatch."""
         author = ctx.author
@@ -254,6 +260,7 @@ class Coffeetools(commands.Cog):
             self.stopwatches.pop(author.id, None)
 
     @general.command()
+    @commands.has_permissions(embed_links=True)
     async def lmgtfy(self, ctx, *, search_terms: str):
         """Create a lmgtfy link."""
         search_terms = escape(urllib.parse.quote_plus(search_terms), mass_mentions=True)
@@ -264,6 +271,7 @@ class Coffeetools(commands.Cog):
     # @commands.command(hidden=True)
     @general.command()
     @commands.guild_only()
+    @commands.has_permissions(embed_links=True)
     async def hug(self, ctx, user: discord.Member, intensity: int = 1):
         """Because everyone likes hugs!
 
@@ -506,6 +514,7 @@ class Coffeetools(commands.Cog):
         await ctx.send(embed=data)
 
     @general.command()
+    @commands.has_permissions(embed_links=True)
     async def urban(self, ctx, *, word):
         """Search the Urban Dictionary.
 
