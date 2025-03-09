@@ -208,7 +208,7 @@ def to_romaji(text: str):
                     final_str += "."
             else:
                 final_str += str(kana_dict[str(text_arr[idx])])
-        except:
+        except Exception:
             # Skip over invalid character
             continue
         pointer += 1
