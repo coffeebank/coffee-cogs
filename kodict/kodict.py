@@ -26,7 +26,7 @@ class Kodict(commands.Cog):
 
     @commands.hybrid_command(name="kodict", aliases=["krdict"])
     @app_commands.describe(text="Search Korean dictionary. Search using Korean (Hangul/Hanja) and English.")
-    @commands.has_permissions(embed_links=True)
+    @commands.bot_has_permissions(embed_links=True)
     async def kodict(self, ctx, *, text: str):
         """Search Korean dictionary
         
@@ -43,7 +43,7 @@ class Kodict(commands.Cog):
 
     @commands.hybrid_command(name="kosearch", aliases=["krsearch"])
     @app_commands.describe(text="Search Korean vocabulary and translation websites")
-    @commands.has_permissions(embed_links=True)
+    @commands.bot_has_permissions(embed_links=True)
     async def kosearch(self, ctx, *, text):
         """Search Korean vocabulary and translation websites"""
         fallback_embed = await embed_fallback(text)
