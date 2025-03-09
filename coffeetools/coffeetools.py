@@ -188,6 +188,7 @@ class Coffeetools(commands.Cog):
     @commands.has_permissions(embed_links=True)
     async def rps(self, ctx, your_choice: str):
         """Play Rock Paper Scissors."""
+        # 2025-03-08 `your_choice: RPSParser` returns TypeError, moving from arguments down to here
         your_choice = RPSParser(your_choice)
         author = ctx.author
         player_choice = your_choice.choice
