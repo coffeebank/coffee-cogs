@@ -37,7 +37,7 @@ class Clara(commands.Cog):
         for guild in guilds_sorted:
             send_body += f"\n{guild.approximate_member_count} ({guild.approximate_presence_count}) - {guild.id} - {guild.name}"
             total_member_count += guild.approximate_member_count
-        await ctx.message.clear_reaction("⏳")
+        await ctx.message.add_reaction("✅")
         await ctx.send(f"Guilds: `{total_guild_count}`\nMembers: `{total_member_count}` total (active now)\n")
         send_body = send_body[:1990] + "\n```"
         return await ctx.send(send_body)
