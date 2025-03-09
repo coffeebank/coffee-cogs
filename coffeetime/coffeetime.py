@@ -35,14 +35,16 @@ class Coffeetime(commands.Cog):
 
     async def format_results(self, ctx, tz):
         if not tz:
+            # No results
             await ctx.send(
                 "Sorry, didn't find a timezone for your city :(\nTry a city from this list:\nhttps://coffeebank.github.io/timezone-picker"
             )
             return None
         elif len(tz) == 1:
-            # command specific response, so don't do anything here
+            # One result, return it
             return tz
-        else:
+        elif ctx.channel.permissions_for(ctx.guild.me).embed_links:
+            # More than one result, return selection menu
             msg = ""
             for timezone in tz:
                 msg += f"{timezone[0]}\n"
@@ -58,12 +60,16 @@ class Coffeetime(commands.Cog):
             else:
                 await menu(ctx, embed_list, DEFAULT_CONTROLS)
             return None
+        else:
+            # More than one result, no embed_links permission
+            print(tz)
+            await ctx.send("Found "+str(len(tz))+" results... could you retry with a more specific timezone?\n\nUse one below (if it's listed), or find yours using:\nhttps://coffeebank.github.io/timezone-picker\n\n"+"\n".join([str(t[0]) for t in tz]))
+            return None
 
 
     # Bot Commands
 
     @commands.hybrid_command(name="time")
-    @commands.has_permissions(embed_links=True)
     async def time(self, ctx, user: discord.Member = None):
         """Shows the current time for the specified user."""
         if not user:
@@ -110,7 +116,6 @@ class Coffeetime(commands.Cog):
             await ctx.send(f"{user.display_name} hasn't set a timezone yet. Set one by typing `{ctx.prefix}settime` !")
 
     @commands.hybrid_command(name="settime", aliases=["timeset"])
-    @commands.has_permissions(embed_links=True)
     async def timeset(self, ctx, *, city_name_here):
         """
         Sets your timezone.
@@ -126,7 +131,6 @@ class Coffeetime(commands.Cog):
             await ctx.send(f"Successfully set your timezone to **{tz_resp[0][0]}**!")
 
     @commands.hybrid_command(name="timein")
-    @commands.has_permissions(embed_links=True)
     async def timein(self, ctx, *, city_name: str):
         """Gets the time in a timezone.
 
@@ -143,7 +147,6 @@ class Coffeetime(commands.Cog):
 
     @commands.guild_only()
     @commands.hybrid_group(name="timetools")
-    @commands.has_permissions(embed_links=True)
     async def timetools(self, ctx):
         """
         Checks the time.
@@ -153,7 +156,6 @@ class Coffeetime(commands.Cog):
         pass
 
     @timetools.command()
-    @commands.has_permissions(embed_links=True)
     async def iso(self, ctx, *, iso_code=None):
         """Looks up ISO3166 country codes and gives you a supported timezone."""
         if iso_code is None:
@@ -176,7 +178,6 @@ class Coffeetime(commands.Cog):
 
     @timetools.command(name="set")
     @commands.is_owner()
-    @commands.has_permissions(embed_links=True)
     async def timetools_set(self, ctx, user: discord.User, *, timezone_name=None):
         """
         Allows the bot owner to edit users' timezones.
@@ -198,7 +199,6 @@ class Coffeetime(commands.Cog):
                 await ctx.send(f"Successfully set {user.name}'s timezone to **{tz_resp[0][0]}**.")
 
     @timetools.command()
-    @commands.has_permissions(embed_links=True)
     async def user(self, ctx, user: discord.Member = None):
         """Shows the current time for the specified user."""
         if not user:
@@ -216,7 +216,6 @@ class Coffeetime(commands.Cog):
                 await ctx.send("That user hasn't set their timezone.")
 
     @timetools.command()
-    @commands.has_permissions(embed_links=True)
     async def compare(self, ctx, user: discord.Member = None):
         """Compare your saved timezone with another user's timezone."""
         if not user:
