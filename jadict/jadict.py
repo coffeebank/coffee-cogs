@@ -62,6 +62,7 @@ class Jadict(commands.Cog):
 
     @commands.hybrid_command(name="jadict", aliases=["jpdict", "jisho", "jishosearch"])
     @app_commands.describe(text="Search Japanese dictionary. By default, searches using Japanese and Romaji. When searching in English, please use  \"quotes\"")
+    @commands.bot_has_permissions(embed_links=True)
     async def jadict(self, ctx, *, text):
         """Search Japanese dictionary
 
@@ -86,6 +87,7 @@ class Jadict(commands.Cog):
 
     @commands.hybrid_command(name="jasearch", aliases=["jpsearch"])
     @app_commands.describe(text="Search Japanese vocabulary and translation websites")
+    @commands.bot_has_permissions(embed_links=True)
     async def jasearch(self, ctx, *, text):
         """Search Japanese vocabulary and translation websites"""
         fallback_embed = await self.fallbackEmbed(ctx, text)
