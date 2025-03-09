@@ -22,6 +22,9 @@ from redbot.core.utils.chat_formatting import (
     humanize_timedelta,
 )
 
+import logging
+logger = logging.getLogger(__name__)
+
 _ = T_ = Translator("General", __file__)
 
 

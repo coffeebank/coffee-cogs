@@ -5,7 +5,6 @@
   "short" : "Slightly customized version of `General` cog",
   "requirements" : [],
   "description" : "Slightly customized version of `General` cog. Changes `choose` to use | divider. All built-in commands are moved to [p]general.",
-  "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
   "tags" : ["tools", "choose", "choice"],
   "min_bot_version": "3.5.0"
