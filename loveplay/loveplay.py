@@ -1,17 +1,18 @@
-from redbot.core import Config, commands, checks
-from urllib.request import urlopen
-import mimetypes
-import discord
+from redbot.core import commands
+import aiohttp
 import asyncio
+import discord
 import random
-import requests
 import json
+
+import logging
+logger = logging.getLogger(__name__)
 
 class Loveplay(commands.Cog):
     """Send love to other members of the server with hugs, kisses, etc."""
 
     def __init__(self):
-        self.config = Config.get_conf(self, identifier=806715409318936616)
+        self.config = None
 
     # This cog does not store any End User Data
     async def red_get_data_for_user(self, *, user_id: int):
@@ -29,7 +30,8 @@ class Loveplay(commands.Cog):
         return url
 
         # Check for file integrity, fallback to online API
-        # Removing bc load times take too long
+        # 2021-04-14 - Removing bc load times take too long
+        # 2025-03-09 - TODO Migrate to async before restoring (removed requests, urllib.request.urlopen)
 
         # status_code = self.checkAlive(url)
 
@@ -39,28 +41,46 @@ class Loveplay(commands.Cog):
         # else:
         #     return status_code
 
-    def checkAlive(self, url):
-        meta = urlopen(url).info()
-        if "image" in meta["content-type"]:
-            return url
-        else:
-            return url
+        # def checkAlive(self, url):
+        #     meta = urlopen(url).info()
+        #     if "image" in meta["content-type"]:
+        #         return url
+        #     else:
+        #         return url
+
+    async def fetch_url(self, url):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as resp:
+                if resp.status != 200:
+                    logger.error(f"Failed to fetch {url}. Status code: {resp.status}")
+                    return None
+                try:
+                    reqdata = await resp.json()
+                    return reqdata
+                except aiohttp.ClientError as e:
+                    logger.error(f"An error occurred while parsing JSON: {e}")
+                    return None
 
     async def buildEmbed(self, ctx, descriptor, imgUrl, text=None):
         if text == None:
             desc = ""
         else:
             desc = "**{0}** gives **{1}** a {2}".format(ctx.author.mention, text, descriptor)
-        botcolor = await ctx.embed_colour()
-        e = discord.Embed(color=botcolor, description=desc)
-        e.set_image(url=imgUrl)
-        e.set_footer(text="Made with Purrbot API\u2002💌")
-        return e
+        
+        # Add support without embed_links
+        if ctx.channel.permissions_for(ctx.guild.me).embed_links:
+            botcolor = await ctx.embed_colour()
+            e = discord.Embed(color=botcolor, description=desc)
+            e.set_image(url=imgUrl)
+            e.set_footer(text="Made with Purrbot API\u2002💌")
+            return await ctx.send(embed=e)
+        else:
+            return await ctx.send(desc+"\n"+imgUrl+" - "+"_Made with Purrbot API\u2002💌_")
 
 
     # Bot Commands
  
-    @commands.command(name="loveplay", aliases=["lp"])
+    @commands.hybrid_command(name="loveplay", aliases=["lp"])
     async def lpmain(self, ctx, action, description, *, user):
         """Send a custom lovely reaction to someone!
 
@@ -72,33 +92,33 @@ class Loveplay(commands.Cog):
         [Loveplay Documentation >](https://coffeebank.github.io/coffee-cogs/loveplay)"""
         src = self.purrbotApi(action, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, description, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
  
-    @commands.command(name="blush")
+    @commands.hybrid_command(name="blush")
     async def lpblush(self, ctx, *, user):
         """Send a blush"""
         desc = "blush"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
 
-    @commands.command(name="cuddle")
+    @commands.hybrid_command(name="cuddle")
     async def lpcuddle(self, ctx, *, user):
         """Send a cuddle"""
         desc = "cuddle"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
 
-    @commands.command(name="dance")
+    @commands.hybrid_command(name="dance")
     async def lpdance(self, ctx, *, user):
         """Send a dance"""
         desc = "dance"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
-    @commands.command(name="feed", aliases=["cookie"])
+    @commands.hybrid_command(name="feed", aliases=["cookie"])
     async def lpfeed(self, ctx, *, user):
         """Send some food/cookie
         
@@ -106,41 +126,41 @@ class Loveplay(commands.Cog):
         desc = "feed"
         src = self.purrbotApi(desc, 1, 18, "gif", "gif")
         e = await self.buildEmbed(ctx, "yummy cookie", src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
-    @commands.command(name="hugs", aliases=["hug"])
+    @commands.hybrid_command(name="hugs", aliases=["hug"])
     async def lphug(self, ctx, *, user):
         """Send a hug"""
         desc = "hug"
         src = self.purrbotApi(desc, 1, 60, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
-    @commands.command(name="kiss")
+    @commands.hybrid_command(name="kiss")
     async def lpkiss(self, ctx, *, user):
         """Send a kiss"""
         desc = "kiss"
         src = self.purrbotApi(desc, 1, 60, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
-    @commands.command(name="lick")
+    @commands.hybrid_command(name="lick")
     async def lplick(self, ctx, *, user):
         """Send a lick"""
         desc = "lick"
         src = self.purrbotApi(desc, 1, 16, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
-    @commands.command(name="neko")
+    @commands.hybrid_command(name="neko")
     async def lpneko(self, ctx, *, user):
         """Send a neko"""
         desc = "neko"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
-    @commands.command(name="nom")
+    @commands.hybrid_command(name="nom")
     async def lpnom(self, ctx, *, user):
         """Send a nom
         
@@ -148,39 +168,39 @@ class Loveplay(commands.Cog):
         desc = "bite"
         src = self.purrbotApi(desc, 1, 24, "gif", "gif")
         e = await self.buildEmbed(ctx, "yummy nom <a:vampynom:815998604945653771>", src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
-    @commands.command(name="pat")
+    @commands.hybrid_command(name="pat")
     async def lppat(self, ctx, *, user):
         """Send a pat"""
         desc = "pat"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
-    @commands.command(name="poke")
+    @commands.hybrid_command(name="poke")
     async def lppoke(self, ctx, *, user):
         """Send a poke"""
         desc = "poke"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
-    @commands.command(name="slap")
+    @commands.hybrid_command(name="slap")
     async def lpslap(self, ctx, *, user):
         """Send a slap"""
         desc = "slap"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
-    @commands.command(name="yuri")
+    @commands.hybrid_command(name="yuri")
     @commands.is_nsfw()
     async def lpyuri(self, ctx, *, user):
         """Send a yuri"""
         desc = "yuri"
-        req = requests.get("https://purrbot.site/api/img/nsfw/yuri/gif").json()
-        src = req["link"]
+        req = await self.fetch_url("https://purrbot.site/api/img/nsfw/yuri/gif")
+        src = req.get("link", "") # Silently fail if no image returned
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
