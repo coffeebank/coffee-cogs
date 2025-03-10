@@ -2,13 +2,13 @@ import asyncio
 import aiohttp
 import typing
 
-from redbot.core import Config, commands, checks
+from redbot.core import Config, commands
 import discord
 from discord import Webhook
 
 from .utils import msgFormatter, webhookSettings, webhookFinder, WEBHOOK_EMPTY_AVATAR, WEBHOOK_EMPTY_NAME
 from .utils_copy import timestampEmbed
-from .utils_relay import relayGetData, relayAddChannel, relayRemoveChannel, relayCheckInput
+from .utils_relay import relayGetData, relayAddChannel, relayRemoveChannel, relayCheckInput, fixMsgrelayStoreV2alpha
 
 import logging
 logger = logging.getLogger(__name__)
@@ -289,11 +289,12 @@ class Msgmover(commands.Cog):
 
         hookData = relayStore[str(message.channel.id)]
         relayTimer = await self.config.guild(message.guild).relayTimer()
+        
         # Migrate data to multi-hook support if needed
         try:
             assert isinstance(hookData, list)
         except AssertionError:
-            hookData = await self.fixMsgrelayStoreV2alpha(message)
+            hookData = await fixMsgrelayStoreV2alpha(self, message)
 
         # Send along webhook for each in array
         try:
@@ -323,44 +324,3 @@ class Msgmover(commands.Cog):
                                 await msgFormatter(self, webhook, endMsg, configJson, editMsgId=wf.get("whResult", None))
         finally:
             await session.close()
-
-
-
-    # Legacy Commands
-
-    async def fixMsgrelayStoreV2alpha(self, ctx):
-        oldData = await self.config.guild(ctx.guild).msgrelayStoreV2()
-        if isinstance(oldData[str(ctx.channel.id)], list) == False:
-            newData = [oldData[str(ctx.channel.id)]]
-            oldData[str(ctx.channel.id)] = newData
-            await self.config.guild(ctx.guild).msgrelayStoreV2.set(oldData)
-            return newData
-        else:
-            return oldData[str(ctx.channel.id)]
-
-    @msgrelay.group(name="v1")
-    @checks.is_owner()
-    async def msgrelayV1(self, ctx: commands.Context):
-        """View legacy data
-
-        Settings will not be modifiable, and it is encouraged to migrate to v2.
-
-        The new v2 shifts data from being under the Bot Owner to separate guilds, and allows guild owners to create their own relays.
-        
-        Because of this change, the old settings are incompatible with the new settings."""
-        if not ctx.invoked_subcommand:
-            msgrelayStore = await self.config.msgrelayStore()
-            relayList = ""
-            for relayId in msgrelayStore:
-                relayList += f"**<#{relayId}>**\n{msgrelayStore[relayId]}\n\n"
-            eg = discord.Embed(color=(await ctx.embed_colour()), title="Legacy Relays (no longer work)", description=relayList)
-            await ctx.send(embed=eg)
-    @msgrelayV1.command(name="reset")
-    async def mmmrV1reset(self, ctx, areYouSure: bool):
-        """⚠️ Deletes all V1 relays
-        
-        Type **`[p]msgrelay reset True`** if you're absolutely sure."""
-        if areYouSure == True:
-            await self.config.msgrelayChannels.set([])
-            await self.config.msgrelayStore.set({})
-            await ctx.message.add_reaction("✅")

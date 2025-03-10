@@ -88,3 +88,17 @@ async def relayCheckInput(self, ctx, toChannel):
     # Error likely occurred, return False
     await ctx.send("Error: Channel is not in this server, or webhook URL is invalid.\n\nIf you're trying to move messages across servers, please create a Webhook in the channel you want to send to: https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png")
     return False
+
+
+
+# Legacy Commands
+
+async def fixMsgrelayStoreV2alpha(self, ctx):
+    oldData = await self.config.guild(ctx.guild).msgrelayStoreV2()
+    if isinstance(oldData[str(ctx.channel.id)], list) == False:
+        newData = [oldData[str(ctx.channel.id)]]
+        oldData[str(ctx.channel.id)] = newData
+        await self.config.guild(ctx.guild).msgrelayStoreV2.set(oldData)
+        return newData
+    else:
+        return oldData[str(ctx.channel.id)]
