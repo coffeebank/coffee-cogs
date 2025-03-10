@@ -143,17 +143,25 @@ class Msgmover(commands.Cog):
         
         *[Join the Support Discord for announcements and more info](https://coffeebank.github.io/discord)*"""
         if not ctx.invoked_subcommand:
-            # Message Relays
-            msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
-            relayList = ""
-            for relayId in msgrelayStoreV2:
-                relayList += f"**<#{relayId}>**\n{str(msgrelayStoreV2[relayId])}\n\n"
-            eg = discord.Embed(color=(await ctx.embed_colour()), title="Message Relays in this Server", description=str(relayList)[:4090])
+            pass
+
+    @msgrelay.command(name="settings")
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(embed_links=True)
+    async def mmmrsettings(self, ctx):
+        """See relay settings (⚠️ Sensitive info)
+        """
+        # Message Relays
+        msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
+        relayList = ""
+        for relayId in msgrelayStoreV2:
+            relayList = f"**<#{relayId}>**\n{str(msgrelayStoreV2[relayId])}\n\n"
+            eg = discord.Embed(color=(await ctx.embed_colour()), description=str(relayList)[:4090])
             await ctx.send(embed=eg)
-            # Relay settings
-            es = discord.Embed(color=(await ctx.embed_colour()), title="Message Relay Settings in this Server")
-            es.add_field(name="Relay Timer", value=await self.config.guild(ctx.guild).relayTimer(), inline=True)
-            await ctx.send(embed=es)
+        # Relay settings
+        es = discord.Embed(color=(await ctx.embed_colour()), title="Message Relay Settings in this Server")
+        es.add_field(name="Relay Timer", value=await self.config.guild(ctx.guild).relayTimer(), inline=True)
+        await ctx.send(embed=es)
 
     @msgrelay.command(name="add")
     @commands.bot_has_permissions(add_reactions=True)
