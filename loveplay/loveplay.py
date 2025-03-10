@@ -51,11 +51,16 @@ class Loveplay(commands.Cog):
             desc = ""
         else:
             desc = "**{0}** gives **{1}** a {2}".format(ctx.author.mention, text, descriptor)
-        botcolor = await ctx.embed_colour()
-        e = discord.Embed(color=botcolor, description=desc)
-        e.set_image(url=imgUrl)
-        e.set_footer(text="Made with Purrbot API\u2002💌")
-        return e
+        
+        # Add support without embed_links
+        if ctx.channel.permissions_for(ctx.guild.me).embed_links:
+            botcolor = await ctx.embed_colour()
+            e = discord.Embed(color=botcolor, description=desc)
+            e.set_image(url=imgUrl)
+            e.set_footer(text="Made with Purrbot API\u2002💌")
+            return await ctx.send(embed=e)
+        else:
+            return await ctx.send(desc+"\n"+imgUrl+" - "+"_Made with Purrbot API\u2002💌_")
 
 
     # Bot Commands
@@ -72,7 +77,7 @@ class Loveplay(commands.Cog):
         [Loveplay Documentation >](https://coffeebank.github.io/coffee-cogs/loveplay)"""
         src = self.purrbotApi(action, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, description, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
  
     @commands.command(name="blush")
     async def lpblush(self, ctx, *, user):
@@ -80,7 +85,7 @@ class Loveplay(commands.Cog):
         desc = "blush"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
 
     @commands.command(name="cuddle")
     async def lpcuddle(self, ctx, *, user):
@@ -88,7 +93,7 @@ class Loveplay(commands.Cog):
         desc = "cuddle"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
 
     @commands.command(name="dance")
     async def lpdance(self, ctx, *, user):
@@ -96,7 +101,7 @@ class Loveplay(commands.Cog):
         desc = "dance"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
     @commands.command(name="feed", aliases=["cookie"])
     async def lpfeed(self, ctx, *, user):
@@ -106,7 +111,7 @@ class Loveplay(commands.Cog):
         desc = "feed"
         src = self.purrbotApi(desc, 1, 18, "gif", "gif")
         e = await self.buildEmbed(ctx, "yummy cookie", src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
     @commands.command(name="hugs", aliases=["hug"])
     async def lphug(self, ctx, *, user):
@@ -114,7 +119,7 @@ class Loveplay(commands.Cog):
         desc = "hug"
         src = self.purrbotApi(desc, 1, 60, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
     @commands.command(name="kiss")
     async def lpkiss(self, ctx, *, user):
@@ -122,7 +127,7 @@ class Loveplay(commands.Cog):
         desc = "kiss"
         src = self.purrbotApi(desc, 1, 60, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
     @commands.command(name="lick")
     async def lplick(self, ctx, *, user):
@@ -130,7 +135,7 @@ class Loveplay(commands.Cog):
         desc = "lick"
         src = self.purrbotApi(desc, 1, 16, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
     @commands.command(name="neko")
     async def lpneko(self, ctx, *, user):
@@ -138,7 +143,7 @@ class Loveplay(commands.Cog):
         desc = "neko"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
     @commands.command(name="nom")
     async def lpnom(self, ctx, *, user):
@@ -148,7 +153,7 @@ class Loveplay(commands.Cog):
         desc = "bite"
         src = self.purrbotApi(desc, 1, 24, "gif", "gif")
         e = await self.buildEmbed(ctx, "yummy nom <a:vampynom:815998604945653771>", src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
     @commands.command(name="pat")
     async def lppat(self, ctx, *, user):
@@ -156,7 +161,7 @@ class Loveplay(commands.Cog):
         desc = "pat"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
     @commands.command(name="poke")
     async def lppoke(self, ctx, *, user):
@@ -164,7 +169,7 @@ class Loveplay(commands.Cog):
         desc = "poke"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
     @commands.command(name="slap")
     async def lpslap(self, ctx, *, user):
@@ -172,7 +177,7 @@ class Loveplay(commands.Cog):
         desc = "slap"
         src = self.purrbotApi(desc, 1, 20, "gif", "gif")
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
     @commands.command(name="yuri")
     @commands.is_nsfw()
@@ -182,5 +187,5 @@ class Loveplay(commands.Cog):
         req = requests.get("https://purrbot.site/api/img/nsfw/yuri/gif").json()
         src = req["link"]
         e = await self.buildEmbed(ctx, desc, src, user)
-        await ctx.send(embed=e)
+        return # Sent in buildEmbed
         
