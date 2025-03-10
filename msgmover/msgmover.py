@@ -235,7 +235,7 @@ class Msgmover(commands.Cog):
         # Add react on complete
         try:
             await ctx.message.add_reaction("✅")
-        except discord.errors.NotFound:
+        except discord.NotFound:
             await ctx.send("Done!")
 
     @commands.group()
@@ -381,7 +381,7 @@ class Msgmover(commands.Cog):
                     await asyncio.sleep(relayTimer)
                     try:
                         endMsg = await message.channel.fetch_message(message.id)
-                    except discord.errors.NotFound:
+                    except discord.NotFound:
                         for wf in hookData:
                             configJson = self.relayGetData(wh)
                             webhook = SyncWebhook.from_url(wf["toWebhook"])
