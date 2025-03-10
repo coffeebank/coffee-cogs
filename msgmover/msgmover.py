@@ -58,7 +58,7 @@ class Msgmover(commands.Cog):
 
     # msgcopy
 
-    @commands.command(aliases=["msgmove", "msgmover"])
+    @commands.command(name="msgcopy", aliases=["msgmove", "msgmover"])
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(add_reactions=True, read_message_history=True)
     async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, str], maxMessages:int, skipMessages:int=0):
@@ -128,10 +128,24 @@ class Msgmover(commands.Cog):
         finally:
             await session.close()
 
+    @commands.command(name="msgcount")
+    @commands.bot_has_permissions(add_reactions=True)
+    async def msgcount(self, ctx):
+        """Find how many messages it has been after a message
+        
+        Reply to a message to use this command."""
+        if ctx.message.reference:
+            await ctx.message.add_reaction("⏳")
+            messages = [message async for message in ctx.channel.history(limit=None, after=ctx.message.reference.resolved)]
+            await ctx.message.add_reaction("✅")
+            return await ctx.send(str(len(messages))+" + 2 (your bot command and this message)")
+        else:
+            return await ctx.send("Please reply to a message to use this command!")
+
 
     # msgrelay
 
-    @commands.group()
+    @commands.group(name="msgrelay")
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(add_reactions=True, embed_links=True)
     async def msgrelay(self, ctx: commands.Context):
@@ -249,19 +263,6 @@ class Msgmover(commands.Cog):
         await self.config.guild(ctx.guild).relayTimer.set(seconds)
         await ctx.message.add_reaction("✅")
 
-    @commands.command()
-    @commands.bot_has_permissions(add_reactions=True)
-    async def msgcount(self, ctx):
-        """Find how many messages it has been after a message
-        
-        Reply to a message to use this command."""
-        if ctx.message.reference:
-            await ctx.message.add_reaction("⏳")
-            messages = [message async for message in ctx.channel.history(limit=None, after=ctx.message.reference.resolved)]
-            await ctx.message.add_reaction("✅")
-            return await ctx.send(str(len(messages))+" + 2 (your bot command and this message)")
-        else:
-            return await ctx.send("Please reply to a message to use this command!")
 
 
     # Listeners
