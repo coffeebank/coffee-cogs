@@ -3,11 +3,8 @@ import aiohttp
 import typing
 
 from redbot.core import Config, commands, checks
-from redbot.core.utils.predicates import ReactionPredicate
-from redbot.core.utils.menus import start_adding_reactions
 import discord
-from discord import Webhook, SyncWebhook
-import requests
+from discord import Webhook
 
 from .utils import msgFormatter, webhookSettings, webhookFinder, WEBHOOK_EMPTY_AVATAR, WEBHOOK_EMPTY_NAME
 from .utils_copy import timestampEmbed
@@ -103,44 +100,48 @@ class Msgmover(commands.Cog):
 
         # Start webhook session
         await ctx.message.add_reaction("⏳")
-        webhook = SyncWebhook.from_url(toWebhook)
-
-        # Retrieve messages, sorted by oldest first
-        # Can't use oldest_first= since that will only return earliest messages in channel, instead of what we want
-        msgList = [message async for message in fromChannel.history(limit=maxMessages)]
-        msgList.reverse()
-        if skipMessages > 0:
-            # https://stackoverflow.com/a/37105499
-            msgList = msgList[:-skipMessages or None]
-
-        # Send them via webhook
-        msgItemLast = msgList[0].created_at
-        for msgItem in msgList:
-            # Send timestamp if it's been more than 10mins time difference
-            # If they equal, it means it's the first item, so send timestamp
-            if msgItemLast == msgItem.created_at or (msgItem.created_at-msgItemLast).total_seconds() > 600:
-                webhook.send(
-                    username=WEBHOOK_EMPTY_NAME,
-                    avatar_url=WEBHOOK_EMPTY_AVATAR,
-                    embed=await timestampEmbed(self, ctx, msgItem.created_at)
-                )
-                await asyncio.sleep(1)
-            configJson = webhookSettings({"attachsAsUrl": False, "userProfiles": True})
-            whMsg = await msgFormatter(self, webhook, msgItem, configJson)
-            if whMsg == False:
-                await ctx.send("Failed to send: "+str(msgItem))
-            else:
-                # Trigger edited tag if it was edited
-                if msgItem.edited_at:
-                    await msgFormatter(self, webhook, msgItem, configJson, editMsgId=whMsg.id)
-            # Save timestamp to msgItemLast
-            msgItemLast = msgItem.created_at
-
-        # Add react on complete
         try:
-            await ctx.message.add_reaction("✅")
-        except discord.NotFound:
-            await ctx.send("Done!")
+            async with aiohttp.ClientSession() as session:
+                webhook = Webhook.from_url(toWebhook, session=session)
+
+                # Retrieve messages, sorted by oldest first
+                # Can't use oldest_first= since that will only return earliest messages in channel, instead of what we want
+                msgList = [message async for message in fromChannel.history(limit=maxMessages)]
+                msgList.reverse()
+                if skipMessages > 0:
+                    # https://stackoverflow.com/a/37105499
+                    msgList = msgList[:-skipMessages or None]
+
+                # Send them via webhook
+                msgItemLast = msgList[0].created_at
+                for msgItem in msgList:
+                    # Send timestamp if it's been more than 10mins time difference
+                    # If they equal, it means it's the first item, so send timestamp
+                    if msgItemLast == msgItem.created_at or (msgItem.created_at-msgItemLast).total_seconds() > 600:
+                        await webhook.send(
+                            username=WEBHOOK_EMPTY_NAME,
+                            avatar_url=WEBHOOK_EMPTY_AVATAR,
+                            embed=await timestampEmbed(self, ctx, msgItem.created_at)
+                        )
+                        await asyncio.sleep(1)
+                    configJson = webhookSettings({"attachsAsUrl": False, "userProfiles": True})
+                    whMsg = await msgFormatter(self, webhook, msgItem, configJson)
+                    if whMsg == False:
+                        await ctx.send("Failed to send: "+str(msgItem))
+                    else:
+                        # Trigger edited tag if it was edited
+                        if msgItem.edited_at:
+                            await msgFormatter(self, webhook, msgItem, configJson, editMsgId=whMsg.id)
+                    # Save timestamp to msgItemLast
+                    msgItemLast = msgItem.created_at
+
+                # Add react on complete
+                try:
+                    await ctx.message.add_reaction("✅")
+                except discord.NotFound:
+                    await ctx.send("Done!")
+        finally:
+            await session.close()
 
 
     # msgrelay
@@ -279,22 +280,30 @@ class Msgmover(commands.Cog):
         # TO STOP A TWO-WAY REDIRECT, USE [p]msgrelay delete #channel
         if message.webhook_id:
             return
+
         # only do anything if message is sent in a guild
-        if message.guild:
-            relayStore = await self.config.guild(message.guild).msgrelayStoreV2()
-            # Retrieve webhook info from channel store
-            if str(message.channel.id) in relayStore:
-                hookData = relayStore[str(message.channel.id)]
-                relayTimer = await self.config.guild(message.guild).relayTimer()
-                # Migrate data to multi-hook support if needed
-                try:
-                    assert isinstance(hookData, list)
-                except AssertionError:
-                    hookData = await self.fixMsgrelayStoreV2alpha(message)
-                # Send along webhook for each in array
+        if not message.guild:
+            return
+
+        # Retrieve webhook info from channel store
+        relayStore = await self.config.guild(message.guild).msgrelayStoreV2()
+        if not str(message.channel.id) in relayStore:
+            return
+
+        hookData = relayStore[str(message.channel.id)]
+        relayTimer = await self.config.guild(message.guild).relayTimer()
+        # Migrate data to multi-hook support if needed
+        try:
+            assert isinstance(hookData, list)
+        except AssertionError:
+            hookData = await self.fixMsgrelayStoreV2alpha(message)
+
+        # Send along webhook for each in array
+        try:
+            async with aiohttp.ClientSession() as session:
                 for wh in hookData:
                     configJson = relayGetData(wh)
-                    webhook = SyncWebhook.from_url(wh["toWebhook"])
+                    webhook = Webhook.from_url(wh["toWebhook"], session=session)
                     whResult = await msgFormatter(self, webhook, message, configJson)
                     wh["whResult"] = whResult.id
                 # Wait, then check for edits/deletes
@@ -307,18 +316,17 @@ class Msgmover(commands.Cog):
                     except discord.NotFound:
                         for wf in hookData:
                             configJson = relayGetData(wh)
-                            webhook = SyncWebhook.from_url(wf["toWebhook"])
+                            webhook = Webhook.from_url(wf["toWebhook"], session=session)
                             await msgFormatter(self, webhook, message, configJson, deleteMsgId=wf.get("whResult", None))
                     else:
                         if endMsg.edited_at:
                             for wf in hookData:
                                 configJson = relayGetData(wh)
-                                webhook = SyncWebhook.from_url(wf["toWebhook"])
+                                webhook = Webhook.from_url(wf["toWebhook"], session=session)
                                 await msgFormatter(self, webhook, endMsg, configJson, editMsgId=wf.get("whResult", None))
-            else:
-                return
-        else:
-            return
+        finally:
+            await session.close()
+
 
 
     # Legacy Commands

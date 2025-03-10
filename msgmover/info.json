@@ -3,7 +3,7 @@
   "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by my site at https://coffeebank.github.io/coffee-cogs/msgmover/",
   "name" : "msgmover",
   "short" : "Move messages across channels and servers",
-  "requirements" : ["aiohttp", "requests"],
+  "requirements" : [],
   "description" : "Make moving messages between channels/servers easy and integrated, using webhooks.\n\nmsgcopy: Copy messages from one channel to another. Move whole conversations, or merge channels easily with re-uploaded attachments, bot messages, and usernames/profiles replicated in full. Includes timestamp spacers.\n\nmsgrelay: Relay messages from one channel to another channel/server. Supports usernames/profile pics, replies, attachments (files/images/video), and embeds (bot command replies). Supports edited/deleted messages. Supports forwarding to multiple webhooks/channels.\n\nUpdated for Red 3.5",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",

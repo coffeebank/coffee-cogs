@@ -22,19 +22,19 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
     # Delete the message if it's delete
     if deleteMsgId is not None:
         try:
-            return webhook.delete_message(deleteMsgId)
+            return await webhook.delete_message(deleteMsgId)
         except:
             return False
 
     # Edit the message if it's edit
     if editMsgId is not None:
         try:
-            return webhook.edit_message(
+            return await webhook.edit_message(
                 message_id=editMsgId,
                 content=message.clean_content
             )
         except discord.HTTPException:
-            return webhook.edit_message(
+            return await webhook.edit_message(
                 message_id=editMsgId,
                 content="**Discord:** Unsupported content\n"+str(message.clean_content)
             )
@@ -83,7 +83,7 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
         else:
             replyEmbed.set_author(name=replyTitle, url=refUrl)
         # Send this before the original message so that the embed appears above the message in chat
-        webhook.send(
+        await webhook.send(
             username=userProfilesName,
             avatar_url=userProfilesAvatar,
             embed=replyEmbed
@@ -114,14 +114,14 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
                 for mm in message.attachments:
                     try:
                         assert mm.size < attachMaxSize
-                        webhook.send(
+                        await webhook.send(
                             username=userProfilesName,
                             avatar_url=userProfilesAvatar,
                             files=[await mm.to_file()],
                             wait=True
                         )
                     except AssertionError:
-                        webhook.send(
+                        await webhook.send(
                             content="**Discord:** File too large\n"+str(mm.url),
                             username=userProfilesName,
                             avatar_url=userProfilesAvatar,
@@ -165,7 +165,7 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
           "files": msgAttach,
           "wait": True
         }
-        whMsg = webhook.send(
+        whMsg = await webhook.send(
             **{k: v for k, v in whMsgArgs.items() if v is not None}
         )
     except discord.HTTPException:
@@ -182,7 +182,7 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
                   "files": msgAttach,
                   "wait": True
                 }
-                whMsg = webhook.send(
+                whMsg = await webhook.send(
                     **{k: v for k, v in whMsgArgs.items() if v is not None}
                 )
         # catch HTTPException: 400 Bad Request (error code: 50006): Cannot send an empty message
@@ -196,7 +196,7 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
                   "files": msgAttach,
                   "wait": True
                 }
-                whMsg = webhook.send(
+                whMsg = await webhook.send(
                     **{k: v for k, v in whMsgArgs.items() if v is not None}
                 )
             # One last try, without username or avatar
@@ -208,7 +208,7 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
                   "files": msgAttach,
                   "wait": True
                 }
-                whMsg = webhook.send(
+                whMsg = await webhook.send(
                     **{k: v for k, v in whMsgArgs.items() if v is not None}
                 )
     except Exception as err:
