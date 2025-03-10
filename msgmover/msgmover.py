@@ -17,10 +17,15 @@ logger = logging.getLogger(__name__)
 class Msgmover(commands.Cog):
     """Move messages around, cross-channels, cross-server!
     
-    Run `[p]msgmover` to see more details!
+    Msgmover comes with two key features, both of which use webhooks to move messages from one place to another with a close-to-native feel:
 
-    msgcopy: Copy a set # of past messages to another channel/server
-    msgrelay: Forward all of a channel's messages to another channel/server
+    **`[p]msgcopy`** - Copies a set # of messages from one channel to another *(single-use)*
+    - *Requires users with **Manage Messages** permissions*
+
+    **`[p]msgrelay`** - Forward new messages to other channels/servers *(continuous)*
+    - *Requires server admins with **Administrator** permissions*
+
+    Need help? [Reach us in our Support Discord >](https://coffeebank.github.io/discord)
     """
 
     def __init__(self, bot):
@@ -50,30 +55,10 @@ class Msgmover(commands.Cog):
         pass
 
 
-    # Bot Commands
-
-    @commands.group()
-    @commands.has_permissions(manage_messages=True)
-    async def msgmover(self, ctx: commands.Context):
-        """Hi! Thanks for installing msgmover!
-
-        Msgmover comes with two key features, both of which use webhooks to move messages from one place to another with a close-to-native feel:
-
-        **`[p]msgcopy`** - Copies a set # of messages from one channel to another *(single-use)*
-        - *Requires users with **Manage Messages** permissions*
-
-        **`[p]msgrelay`** - Forward messages to other channels/servers *(continuous)*
-        - *Requires server admins with **Administrator** permissions*
-
-        Need help? [Reach us in our Support Discord >](https://coffeebank.github.io/discord)
-        """
-        if not ctx.invoked_subcommand:
-            pass
-
 
     # msgcopy
 
-    @commands.command(aliases=["msgmove"])
+    @commands.command(aliases=["msgmove", "msgmover"])
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(add_reactions=True, read_message_history=True)
     async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, str], maxMessages:int, skipMessages:int=0):
@@ -85,7 +70,8 @@ class Msgmover(commands.Cog):
         
         Retrieving more than 10 messages will result in Discord ratelimit throttling, so please be patient.
         
-        *Errors? Please [help us by reporting them in our Support Discord >](https://coffeebank.github.io/discord)*"""
+        - *Errors? Please [help us by reporting them in our Support Discord >](https://coffeebank.github.io/discord)*
+        - *See all commands:* **`[p]help Msgmover`**"""
 
         # Error catching
         toWebhook = await relayCheckInput(self, ctx, toChannel)
@@ -149,9 +135,11 @@ class Msgmover(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(add_reactions=True, embed_links=True)
     async def msgrelay(self, ctx: commands.Context):
-        """Create message relays
+        """Forward new messages to other channels/servers
 
-        Forward new messages to another server via a webhook - as if you created a portal between the two chats.
+        Create message relays - as if a portal connects the two chats.
+
+        Have two-way conversations across 2+ servers at once!
         
         *[Join the Support Discord for announcements and more info](https://coffeebank.github.io/discord)*"""
         if not ctx.invoked_subcommand:
