@@ -1,6 +1,6 @@
 {
   "author" : ["coffeebank"],
-  "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by my site at https://coffeebank.github.io/coffee-cogs/msgmover/",
+  "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by my site at https://coffeebank.github.io/coffee-cogs/msgmover/\n\nMsgmover comes with two key features, both of which use webhooks to move messages from one place to another with a close-to-native feel:\n\n**`[p]msgcopy`** - Copies a set # of messages from one channel to another *(single-use)*\n- *Requires users with **Manage Messages** permissions*\n\n**`[p]msgrelay`** - Forward new messages to other channels/servers *(continuous)*\n- *Requires server admins with **Administrator** permissions*\n\nNeed help? [Reach us in our Support Discord >](https://coffeebank.github.io/discord)\n\nTo see this message again, type **`[p]help Msgmover`**",
   "name" : "msgmover",
   "short" : "Move messages across channels and servers",
   "requirements" : [],
