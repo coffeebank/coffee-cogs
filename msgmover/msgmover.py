@@ -1,6 +1,5 @@
 import asyncio
 import aiohttp
-import json
 import typing
 
 from redbot.core import Config, commands, checks
@@ -75,6 +74,8 @@ class Msgmover(commands.Cog):
             pass
 
 
+    # msgcopy
+
     @commands.command(aliases=["msgmove"])
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(add_reactions=True, read_message_history=True)
@@ -142,6 +143,8 @@ class Msgmover(commands.Cog):
             await ctx.send("Done!")
 
 
+    # msgrelay
+
     @commands.group()
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(add_reactions=True, embed_links=True)
@@ -167,6 +170,7 @@ class Msgmover(commands.Cog):
             await ctx.send(embed=es)
 
     @msgrelay.command(name="add")
+    @commands.bot_has_permissions(add_reactions=True)
     async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, str]):
         """Create a message relay
         
@@ -187,17 +191,25 @@ class Msgmover(commands.Cog):
         # Test
         try:
             await fromChannel.send("**Channels are now linked!**\nThis is a sample message.")
-        except:
+        except Exception as err:
+            logger.error(err)
             return await ctx.send("Setup was successfully completed, but some permissions may be missing.")
         await ctx.message.add_reaction("✅")
 
     @msgrelay.command(name="edit")
-    async def mmmredit(self, ctx, fromChannel: discord.TextChannel, itemToEdit: int, toChannel):
+    @commands.bot_has_permissions(add_reactions=True)
+    async def mmmredit(self, ctx, fromChannel: discord.TextChannel, itemToEdit: int, toChannel: typing.Union[discord.TextChannel, str]):
         """Edit a message relay
+        
+        fromChannel: the originating #channel
+        itemToEdit: put 1, 2, ... for which one you want to delete. (check `[p]msgrelay settings` for list of relays from each channel)
         
         Currently only supports webhook urls. [How to create webhooks.](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)
         *[Help us develop support for #channels >](https://coffeebank.github.io/discord)*"""
+
         # Error catching
+        if itemToEdit <= 0:
+            return await ctx.send("Error: If there's only one relay in the channel, please use 1 for itemToEdit.")
         relayResp = await relayCheckInput(self, ctx, toChannel)
         if relayResp == False:
             return
@@ -215,16 +227,18 @@ class Msgmover(commands.Cog):
         # Test
         try:
             await fromChannel.send("**Channels are now linked!**\nThis is a sample message.")
-        except:
+        except Exception as err:
+            logger.error(err)
             return await ctx.send("Setup was successfully completed, but some permissions may be missing.")
         await ctx.message.add_reaction("✅")
 
     @msgrelay.command(name="delete", aliases=["remove"])
+    @commands.bot_has_permissions(add_reactions=True)
     async def mmmrdelete(self, ctx, fromChannel: discord.TextChannel, itemToDelete: int):
         """Delete a message relay
         
         fromChannel: the originating #channel
-        itemToDelete: put 1, 2, ... for which one you want to delete.
+        itemToDelete: put 1, 2, ... for which one you want to delete. (check `[p]msgrelay settings` for list of relays from each channel)
         
         To delete all relays for a fromChannel, set itemToDelete to 0 (zero)."""
         result = await relayRemoveChannel(self, ctx, fromChannel, itemToDelete)
@@ -233,6 +247,7 @@ class Msgmover(commands.Cog):
         await ctx.message.add_reaction("✅")
 
     @msgrelay.command(name="settimer")
+    @commands.bot_has_permissions(add_reactions=True)
     async def mmmrsettimer(self, ctx, seconds: int):
         """Seconds after the relay checks for edited/deleted messages
         
@@ -241,6 +256,7 @@ class Msgmover(commands.Cog):
         await ctx.message.add_reaction("✅")
 
     @commands.command()
+    @commands.bot_has_permissions(add_reactions=True)
     async def msgcount(self, ctx):
         """Find how many messages it has been after a message
         
