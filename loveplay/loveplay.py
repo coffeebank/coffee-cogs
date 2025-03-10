@@ -1,17 +1,18 @@
-from redbot.core import Config, commands, checks
-from urllib.request import urlopen
-import mimetypes
-import discord
+from redbot.core import commands
+import aiohttp
 import asyncio
+import discord
 import random
-import requests
 import json
+
+import logging
+logger = logging.getLogger(__name__)
 
 class Loveplay(commands.Cog):
     """Send love to other members of the server with hugs, kisses, etc."""
 
     def __init__(self):
-        self.config = Config.get_conf(self, identifier=806715409318936616)
+        self.config = None
 
     # This cog does not store any End User Data
     async def red_get_data_for_user(self, *, user_id: int):
@@ -29,7 +30,8 @@ class Loveplay(commands.Cog):
         return url
 
         # Check for file integrity, fallback to online API
-        # Removing bc load times take too long
+        # 2021-04-14 - Removing bc load times take too long
+        # 2025-03-09 - TODO Migrate to async before restoring (removed requests, urllib.request.urlopen)
 
         # status_code = self.checkAlive(url)
 
@@ -39,12 +41,25 @@ class Loveplay(commands.Cog):
         # else:
         #     return status_code
 
-    def checkAlive(self, url):
-        meta = urlopen(url).info()
-        if "image" in meta["content-type"]:
-            return url
-        else:
-            return url
+        # def checkAlive(self, url):
+        #     meta = urlopen(url).info()
+        #     if "image" in meta["content-type"]:
+        #         return url
+        #     else:
+        #         return url
+
+    async def fetch_url(self, url):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as resp:
+                if resp.status != 200:
+                    logger.error(f"Failed to fetch {url}. Status code: {resp.status}")
+                    return None
+                try:
+                    reqdata = await resp.json()
+                    return reqdata
+                except aiohttp.ClientError as e:
+                    logger.error(f"An error occurred while parsing JSON: {e}")
+                    return None
 
     async def buildEmbed(self, ctx, descriptor, imgUrl, text=None):
         if text == None:
@@ -184,8 +199,8 @@ class Loveplay(commands.Cog):
     async def lpyuri(self, ctx, *, user):
         """Send a yuri"""
         desc = "yuri"
-        req = requests.get("https://purrbot.site/api/img/nsfw/yuri/gif").json()
-        src = req["link"]
+        req = await self.fetch_url("https://purrbot.site/api/img/nsfw/yuri/gif")
+        src = req.get("link", "") # Silently fail if no image returned
         e = await self.buildEmbed(ctx, desc, src, user)
         return # Sent in buildEmbed
         
