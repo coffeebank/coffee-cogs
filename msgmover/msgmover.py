@@ -483,7 +483,7 @@ class Msgmover(commands.Cog):
         # Add attachment if exists
         msgAttach = None
         if message.attachments:
-            attachMaxSize = 25000000 # 25MB, prev. 8MB
+            attachMaxSize = 10000000 # 10MB, prev. 25MB, prev. 8MB
             attachSuccess = False
             if json["attachsAsUrl"] == False:
                 try:
