@@ -85,8 +85,7 @@ class Msgmover(commands.Cog):
         
         Retrieving more than 10 messages will result in Discord ratelimit throttling, so please be patient.
         
-        *Errors? Please [help us by reporting them in our Support Discord >](https://coffeebank.github.io/discord)*
-        """
+        *Errors? Please [help us by reporting them in our Support Discord >](https://coffeebank.github.io/discord)*"""
 
         # Error catching
         toWebhook = await relayCheckInput(self, ctx, toChannel)
@@ -154,8 +153,6 @@ class Msgmover(commands.Cog):
 
         Forward new messages to another server via a webhook - as if you created a portal between the two chats.
         
-        (Also works with Discord-webhook-compatible bridges for other chat apps.)
-
         *[Join the Support Discord for announcements and more info](https://coffeebank.github.io/discord)*"""
         if not ctx.invoked_subcommand:
             # Message Relays
