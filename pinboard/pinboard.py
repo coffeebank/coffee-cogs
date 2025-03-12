@@ -6,6 +6,10 @@ import discord
 from urllib.parse import quote
 import json
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 class Pinboard(commands.Cog):
     """Make pinned messages communal! Users can add and remove their contributions to a pinned message at any time."""
 
@@ -59,7 +63,8 @@ class Pinboard(commands.Cog):
         try:
             await self.config.guild(ctx.guild).pinStore.set(pinStore)
             return True
-        except:
+        except Exception as err:
+            logger.error(err)
             return False
 
     async def psRemoveData(self, ctx, pinnedMsgName, userId: int):
@@ -68,7 +73,8 @@ class Pinboard(commands.Cog):
         try:
             await self.config.guild(ctx.guild).pinStore.set(pinStore)
             return True
-        except:
+        except Exception as err:
+            logger.error(err)
             return False
 
     async def psUpdateData(self, ctx, pinnedMsgName, repin: bool=False):
