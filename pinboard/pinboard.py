@@ -109,6 +109,7 @@ class Pinboard(commands.Cog):
             pass
 
     @pinboard.command(name="add", aliases=["edit"])
+    @commands.bot_has_permissions(add_reactions=True)
     async def psadd(self, ctx, pinnedMsgName, *, content):
         """Add or edit your own content to a pinned message"""
         await self.psAddData(ctx, pinnedMsgName, ctx.message.author.id, content)
@@ -116,6 +117,7 @@ class Pinboard(commands.Cog):
         await ctx.message.add_reaction("✅")
 
     @pinboard.command(name="remove")
+    @commands.bot_has_permissions(add_reactions=True)
     async def psremove(self, ctx, pinnedMsgName):
         """Remove your own content to a pinned message"""
         await self.psRemoveData(ctx, pinnedMsgName, ctx.message.author.id)
@@ -131,6 +133,7 @@ class Pinboard(commands.Cog):
             pass
     
     @setpinboard.command(name="add")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def spsadd(self, ctx, pinnedMsgName, channel: discord.TextChannel, *, messageDescription):
         """Create a new pinned message
         
@@ -151,6 +154,7 @@ class Pinboard(commands.Cog):
         await ctx.message.add_reaction("✅")
     
     @setpinboard.command(name="remove")
+    @commands.bot_has_permissions(add_reactions=True)
     async def spsremove(self, ctx, pinnedMsgName):
         """Remove a pinned message
         
@@ -160,6 +164,7 @@ class Pinboard(commands.Cog):
         await ctx.message.add_reaction("✅")
 
     @setpinboard.command(name="edit")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def spsedit(self, ctx, pinnedMsgName, *, description):
         """Edit description of a pinned message"""
         pinStore = await self.config.guild(ctx.guild).pinStore()
@@ -182,6 +187,7 @@ class Pinboard(commands.Cog):
         await ctx.send("```json\n"+pinStoreData+"```")
 
     @setpinboard.command(name="update")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def spsupdate(self, ctx, pinnedMsgName=None, repin=False):
         """Update one or all pinned messages"""
         if pinnedMsgName == None:
@@ -191,6 +197,7 @@ class Pinboard(commands.Cog):
         await ctx.message.add_reaction("✅")
 
     @setpinboard.command(name="reset")
+    @commands.bot_has_permissions(add_reactions=True)
     async def spsreset(self, ctx, areYouSure=False):
         """⚠️ Reset all pinned messages
         
