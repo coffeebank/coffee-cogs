@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class Pinboard(commands.Cog):
-    """Make pinned messages communal! Users can add and remove their contributions to a pinned message at any time."""
+    """Make a communal notes board! Users can add and remove their contributions to a pinned message at any time, like adding sticky notes to an office board."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -59,13 +59,17 @@ class Pinboard(commands.Cog):
 
     async def psAddData(self, ctx, pinnedMsgName, userId: int, data):
         pinStore = await self.config.guild(ctx.guild).pinStore()
+        # Field value length max. 1024 characters
+        if len(data) > 1024:
+            raise commands.UserInputError("Error: Contents too long... Max 1024 characters.")
+
         pinStore[pinnedMsgName]["content"][str(userId)] = str(data)
         try:
             await self.config.guild(ctx.guild).pinStore.set(pinStore)
             return True
         except Exception as err:
             logger.error(err)
-            return False
+            return err
 
     async def psRemoveData(self, ctx, pinnedMsgName, userId: int):
         pinStore = await self.config.guild(ctx.guild).pinStore()
@@ -73,9 +77,11 @@ class Pinboard(commands.Cog):
         try:
             await self.config.guild(ctx.guild).pinStore.set(pinStore)
             return True
+        except keyError:
+            raise KeyError
         except Exception as err:
             logger.error(err)
-            return False
+            raise err
 
     async def psUpdateData(self, ctx, pinnedMsgName, repin: bool=False):
         pinStore = await self.config.guild(ctx.guild).pinStore()
@@ -83,16 +89,47 @@ class Pinboard(commands.Cog):
 
         description = str(pinStore[pinnedMsgName]["description"])+"\u000a\u200b"
 
+        # Embed title max. 256 characters
+        if len(pinnedMsgName) > 256:
+            raise commands.CommandError("Error: Pinboard label is too long... Server admin(s) can update this pinboard to fix this issue.")
+        # Embed description max. 4096 characters
+        if len(description) > 4096:
+            raise commands.CommandError("Error: Description is too long... Server admin(s) can update this pinboard to fix this issue.")
+        # Field count max. 25
+        if len(pinStore[pinnedMsgName]["content"].items()) > 25:
+            raise commands.UserInputError("Error: Sorry, the pinboard is full... Max 25 users total.")
+        total_len = len(pinnedMsgName)+len(description)
+
         e = discord.Embed(color=(await ctx.embed_colour()), title=pinnedMsgName, description=description)
 
         for key, value in pinStore[pinnedMsgName]["content"].items():
             userObj = ctx.guild.get_member(int(key))
             if userObj is None:
-                continue
+                userObj = {
+                    "display_name": int(key)[-4:]
+                }
             payload = str(value)+"\u000a\u200b"
+
+            # Field name length max. 256 characters
+            if len(userObj.display_name) > 256:
+                raise commands.UserInputError("Error: User display name too long... Max 256 characters.")
+            # Field value length max. 1024 characters
+            if len(payload) > 1024:
+                raise commands.UserInputError("Error: Contents too long... Max 1024 characters.")
+            # Total length max. 6000 characters
+            total_len += len(userObj.display_name)
+            total_len += len(payload)
+            if total_len > 6000:
+                raise commands.UserInputError("Error: Sorry, the pinboard is full... Max 6000 characters total.")
+
             e.add_field(name=userObj.display_name, value=payload, inline=True)
 
-        await pinnedMsgObj.edit(embed=e)
+        try:
+            await pinnedMsgObj.edit(embed=e)
+        except Exception as err:
+            logger.error(err)
+            raise err
+
         if repin == True:
             await pinnedMsgObj.unpin()
             await pinnedMsgObj.pin()
@@ -100,9 +137,16 @@ class Pinboard(commands.Cog):
 
     async def psUpdateAll(self, ctx, repin=False):
         pinStore = await self.config.guild(ctx.guild).pinStore()
+        errs = []
         for key, value in pinStore.items():
-            await self.psUpdateData(ctx, key, repin)
-        return
+            try:
+                await self.psUpdateData(ctx, key, repin)
+            except Exception as err:
+                logger.error(err)
+                errs.append(err)
+                # Log the error, and continue refreshing the others
+                pass
+        return errs
 
 
     # Bot Commands
@@ -110,104 +154,194 @@ class Pinboard(commands.Cog):
     @commands.guild_only()
     @commands.group()
     async def pinboard(self, ctx: commands.Context):
-        """Change the list of active pinned messages"""
+        """Add your info to an active pinboard
+
+        Users can add their own contents to the pinboard, using the pinboard label (title).
+
+        *Server admins: set up using **`[p]setpinboard`***        
+        """
         if not ctx.invoked_subcommand:
             pass
 
     @pinboard.command(name="add", aliases=["edit"])
     @commands.bot_has_permissions(add_reactions=True)
-    async def psadd(self, ctx, pinnedMsgName, *, content):
-        """Add or edit your own content to a pinned message"""
-        await self.psAddData(ctx, pinnedMsgName, ctx.message.author.id, content)
-        await self.psUpdateData(ctx, pinnedMsgName, repin=False)
-        await ctx.message.add_reaction("✅")
+    async def psadd(self, ctx, label: str, *, content: str):
+        """Add/edit your info in a pinboard
+
+        Note: Multi-word pinboard labels must be in **"quotes"**
+        
+        Note: Restrictions may apply for message contents, length, and update frequency."""
+        try:
+            await self.psAddData(ctx, label, ctx.message.author.id, content)
+            await self.psUpdateData(ctx, label, repin=False)
+        except commands.UserInputError as err:
+            return await ctx.send(err)
+        except Exception as err:
+            await ctx.send("Error: Please see bot logs for details...")
+        else:
+            await ctx.message.add_reaction("✅")
 
     @pinboard.command(name="remove")
     @commands.bot_has_permissions(add_reactions=True)
-    async def psremove(self, ctx, pinnedMsgName):
-        """Remove your own content to a pinned message"""
-        await self.psRemoveData(ctx, pinnedMsgName, ctx.message.author.id)
-        await ctx.message.add_reaction("✅")
+    async def psremove(self, ctx, label: str):
+        """Remove your own content from a pinboard"""
+        try:
+            await self.psRemoveData(ctx, label, ctx.message.author.id)
+            await self.psUpdateData(ctx, label, repin=False)
+        except KeyError:
+            await ctx.send("Error: Couldn't find the pinboard. Did you enter the pinboard label correctly?")
+        except commands.UserInputError as err:
+            return await ctx.send(err)
+        except Exception as err:
+            await ctx.send("Error: Please see bot logs for details...")
+        else:
+            await ctx.message.add_reaction("✅")
 
 
     @commands.guild_only()
     @commands.group()
-    @checks.admin_or_permissions(manage_guild=True)
+    @commands.has_permissions(manage_guild=True)
     async def setpinboard(self, ctx: commands.Context):
-        """Change the list of active pinned messages"""
+        """Create new pinboard messages
+
+        Pinboards have a label and description. Users can add their own contents to the pinboard.
+        
+        Limits:
+        - The pinboard label is limited to 256 characters
+        - The description is limited to 4096 characters
+        - There can be up to 25 fields
+        - A field's name is limited to 256 characters, and its value to 1024 characters
+        - The sum of all characters from all embed structures in a message must not exceed 6000 characters
+        """
         if not ctx.invoked_subcommand:
             pass
     
     @setpinboard.command(name="add")
-    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
-    async def spsadd(self, ctx, pinnedMsgName, channel: discord.TextChannel, *, messageDescription):
-        """Create a new pinned message
+    @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True, manage_messages=True)
+    async def spsadd(self, ctx, label: str, channel: discord.TextChannel, *, messageDescription: str):
+        """Create a new pinboard
         
-        pinnedMsgName is a label for the pinned message, so that you/others can easily refer back to it later. It should be a single word and short/easy to remember."""
+        Choose a label for the pinboard, so that you/others can easily refer back to it later. It will appear in the embed title.
+
+        Note: Multi-word labels will need to be in **"quotes"** (even for users who want to add to it).
+        """
+        pinStore = await self.config.guild(ctx.guild).pinStore()
+        # Check if label already exists
+        if pinStore.get(label, None):
+            return await ctx.send("Error: Label already exists... If you'd like to edit, please use the edit command instead.")
+
         await ctx.message.add_reaction("⏳")
         e = discord.Embed(color=(await ctx.embed_colour()), description="Pin me!")
         messageObj = await channel.send(embed=e)
 
         pinStore = await self.config.guild(ctx.guild).pinStore()
-        pinStore[pinnedMsgName] = {}
-        pinStore[pinnedMsgName]["channelId"] = channel.id
-        pinStore[pinnedMsgName]["messageId"] = messageObj.id
-        pinStore[pinnedMsgName]["description"] = messageDescription
-        pinStore[pinnedMsgName]["content"] = {}
+        pinStore[label] = {}
+        pinStore[label]["channelId"] = channel.id
+        pinStore[label]["messageId"] = messageObj.id
+        pinStore[label]["description"] = messageDescription
+        pinStore[label]["content"] = {}
         await self.config.guild(ctx.guild).pinStore.set(pinStore)
 
-        await self.psUpdateData(ctx, pinnedMsgName, True)
-        await ctx.message.add_reaction("✅")
+        try:
+            await self.psUpdateData(ctx, label, True)
+        except commands.UserInputError as err:
+            return await ctx.send(err)
+        except Exception as err:
+            await ctx.send("Error: Please see bot logs for details...")
+        else:
+            await ctx.message.add_reaction("✅")
     
     @setpinboard.command(name="remove")
+    @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(add_reactions=True)
-    async def spsremove(self, ctx, pinnedMsgName):
-        """Remove a pinned message
+    async def spsremove(self, ctx, label: str):
+        """Remove a pinboard
         
-        The message stays behind, but it will be removed from the tracking system, so you can't update it anymore."""
+        The message stays behind, but it will be removed from the tracking system, so it can't be updated anymore.
+        
+        ⚠️ This is irreversible."""
         pinStore = await self.config.guild(ctx.guild).pinStore()
-        pinStore.pop(pinnedMsgName, None)
-        await ctx.message.add_reaction("✅")
+        try:
+            pinStore.pop(label, None)
+        except KeyError:
+            await ctx.send("Error: Couldn't find the pinboard. Did you enter the pinboard label correctly?")
+        else:
+            await ctx.message.add_reaction("✅")
 
     @setpinboard.command(name="edit")
+    @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
-    async def spsedit(self, ctx, pinnedMsgName, *, description):
-        """Edit description of a pinned message"""
+    async def spsedit(self, ctx, label: str, *, description: str):
+        """Edit description of a pinboard"""
         pinStore = await self.config.guild(ctx.guild).pinStore()
-        pinStore[pinnedMsgName]["description"] = description
+        pinStore[label]["description"] = description
         await self.config.guild(ctx.guild).pinStore.set(pinStore)
-        await self.psUpdateData(ctx, pinnedMsgName)
-        await ctx.message.add_reaction("✅")
+        try:
+            await self.psUpdateData(ctx, label, repin=False)
+        except commands.UserInputError as err:
+            return await ctx.send(err)
+        except Exception as err:
+            return await ctx.send("Error: Please see bot logs...")
+        else:
+            await ctx.message.add_reaction("✅")
 
-    @setpinboard.command(name="import")
-    async def spsimport(self, ctx, *, data):
-        """Import data"""
+    @setpinboard.command(name="list", aliases=["export"])
+    @commands.has_permissions(manage_guild=True)
+    async def spslist(self, ctx):
+        """List all pinboards
+        
+        TODO: Add support for >2000 characters
+        """
+        pinStore = await self.config.guild(ctx.guild).pinStore()
+        pinStoreData = json.dumps(pinStore, sort_keys=True, indent=2, separators=(',', ': '))
+        await ctx.send("```json\n"+pinStoreData[:1980]+"```")
+
+    @setpinboard.command(name="import", hidden=True)
+    @commands.has_permissions(administrator=True)
+    async def spsimport(self, ctx, *, data: str):
+        """Import data
+        
+        Import existing data, exported from **[p]setpinboard list`**"""
         await self.config.guild(ctx.guild).pinStore.set(json.loads(data))
         await ctx.send("done")
 
-    @setpinboard.command(name="list")
-    async def spslist(self, ctx):
-        """List all pinned messages"""
-        pinStore = await self.config.guild(ctx.guild).pinStore()
-        pinStoreData = json.dumps(pinStore, sort_keys=True, indent=2, separators=(',', ': '))
-        await ctx.send("```json\n"+pinStoreData+"```")
-
     @setpinboard.command(name="update")
-    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
-    async def spsupdate(self, ctx, pinnedMsgName=None, repin=False):
-        """Update one or all pinned messages"""
-        if pinnedMsgName == None:
-            await self.psUpdateAll(ctx, repin)
+    @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True, manage_messages=True)
+    async def spsupdate(self, ctx, label: str, updateAll=False, repin=False):
+        """Update one or all pinboards
+        
+        To update one pinboard, run **`[p]setpinboard update LABELNAMEHERE`**
+
+        To update all, run **`[p]setpinboard update 0 True`**
+        """
+        if label in ["0", 0, None]:
+            errs = await self.psUpdateAll(ctx, repin)
+            if len(errs) > 0:
+                await ctx.send("Completed with "+str(len(errs))+" errors:\n"+"\n".join([str(err) for err in errs])[:1950])
+            else:
+                await ctx.message.add_reaction("✅")
         else:
-            await self.psUpdateData(ctx, pinnedMsgName, repin)
-        await ctx.message.add_reaction("✅")
+            try:
+                await self.psUpdateData(ctx, label, repin)
+            except commands.UserInputError as err:
+                return await ctx.send(err)
+            except Exception as err:
+                return await ctx.send("Error: Please see bot logs...")
+            else:
+                await ctx.message.add_reaction("✅")
 
     @setpinboard.command(name="reset")
+    @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(add_reactions=True)
-    async def spsreset(self, ctx, areYouSure=False):
-        """⚠️ Reset all pinned messages
+    async def spsreset(self, ctx, areYouSure):
+        """⚠️ Remove all pinboards tracked in the system
         
-        Type **`[p]setpinboard reset True`** if you're really sure."""
+        Type **`[p]setpinboard reset True`** if you're really sure.
+        
+        **Note: This does not delete any pinboard messages. It only removes the tracking in the bot system. You will not be able to edit the messages again.**
+        """
         if areYouSure == True:
             await self.config.guild(ctx.guild).pinStore.set({})
             await ctx.message.add_reaction("✅")
