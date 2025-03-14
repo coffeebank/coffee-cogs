@@ -1,9 +1,5 @@
-from redbot.core import Config, commands, checks
-from redbot.cogs.admin import admin
-import asyncio
-import aiohttp
+from redbot.core import Config, commands
 import discord
-from urllib.parse import quote
 import json
 
 import logging
@@ -156,6 +152,8 @@ class Pinboard(commands.Cog):
     async def pinboard(self, ctx: commands.Context):
         """Add your info to an active pinboard
 
+        Make a communal notes board! Users can add and remove their contributions to a pinned message at any time, like adding sticky notes to an office board.
+
         Users can add their own contents to the pinboard, using the pinboard label (title).
 
         *Server admins: set up using **`[p]setpinboard`***        
@@ -204,14 +202,17 @@ class Pinboard(commands.Cog):
     async def setpinboard(self, ctx: commands.Context):
         """Create new pinboard messages
 
-        Pinboards have a label and description. Users can add their own contents to the pinboard.
+        Make a communal notes board! Users can add and remove their contributions to a pinned message at any time, like adding sticky notes to an office board.
+
+        Pinboards have a label (title) and description. Users can add their own contents to the pinboard, using the pinboard label (title).
         
         Limits:
-        - The pinboard label is limited to 256 characters
+        - The pinboard label (title) is limited to 256 characters
         - The description is limited to 4096 characters
-        - There can be up to 25 fields
-        - A field's name is limited to 256 characters, and its value to 1024 characters
-        - The sum of all characters from all embed structures in a message must not exceed 6000 characters
+        - There can be up to 25 fields (users per pinboard)
+        - A field's name (user display name) is limited to 256 characters
+        - A field's value (user input data) is limited to 1024 characters
+        - The sum of all characters in a message is limited to 6000 characters
         """
         if not ctx.invoked_subcommand:
             pass
