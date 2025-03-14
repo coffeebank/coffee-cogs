@@ -73,7 +73,7 @@ class Sendhook(commands.Cog):
             pass
 
     @aliashook.command(name="add")
-    async def ahadd(self, ctx, alias, webhookUrl):
+    async def ahadd(self, ctx, alias: str, webhookUrl: str):
         """Add an alias for a webhook"""
         webhookAlias = await self.config.guild(ctx.guild).webhookAlias()
         webhookAlias[alias] = webhookUrl
@@ -85,7 +85,7 @@ class Sendhook(commands.Cog):
             await ctx.send("Webhook alias added ✅")
 
     @aliashook.command(name="remove")
-    async def ahremove(self, ctx, alias):
+    async def ahremove(self, ctx, alias: str):
         """Remove an alias for a webhook"""
         webhookAlias = await self.config.guild(ctx.guild).webhookAlias()
         try:
@@ -109,7 +109,7 @@ class Sendhook(commands.Cog):
         await ctx.send("```json\n"+webhookData+"```")
 
     @aliashook.command(name="show")
-    async def ahshow(self, ctx, alias):
+    async def ahshow(self, ctx, alias: str):
         """Show the saved webhook url for an alias"""
         webhookAlias = await self.config.guild(ctx.guild).webhookAlias()
         webhookData = webhookAlias[alias]
@@ -120,7 +120,7 @@ class Sendhook(commands.Cog):
 
     @commands.command()
     @checks.mod()
-    async def sendhook(self, ctx, webhookUrl, *, webhookText=None):
+    async def sendhook(self, ctx, webhookUrl: str, *, webhookText: str=None):
         """Send a webhook
         
         webhookUrl can be an alias"""
@@ -145,7 +145,7 @@ class Sendhook(commands.Cog):
 
     @commands.command()
     @checks.mod()
-    async def sendhookself(self, ctx, webhookUrl, *, webhookText=None):
+    async def sendhookself(self, ctx, webhookUrl: str, *, webhookText: str=None):
         """Send a webhook as yourself
         
         webhookUrl can be an alias"""
@@ -170,7 +170,7 @@ class Sendhook(commands.Cog):
 
     @commands.command()
     @checks.mod()
-    async def edithook(self, ctx, webhookUrl, messageId, *, webhookText):
+    async def edithook(self, ctx, webhookUrl: str, messageId: str, *, webhookText: str):
         """Edit a message sent by a webhook
         
         webhookUrl can be an alias"""
@@ -212,7 +212,7 @@ class Sendhook(commands.Cog):
 
     @commands.command()
     @checks.mod()
-    async def newhook(self, ctx, webhookName, webhookImage, channel: discord.TextChannel=None):
+    async def newhook(self, ctx, webhookName: str, webhookImage: str="", channel: discord.TextChannel=None):
         """Create a webhook"""
         if channel == None:
             channel = ctx.message.channel
