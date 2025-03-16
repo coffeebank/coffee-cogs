@@ -3,7 +3,7 @@
   "install_msg" : "Thanks for installing, I hope you enjoy :) To stay up to date with breaking changes, you might want to join my Support Discord. To find documentation, Discord, and more, drop by my site at https://coffeebank.github.io/coffee-cogs/sendhook/",
   "name" : "sendhook",
   "short" : "The comprehensive webhooks cog, with sending, listing, and creating of webhooks",
-  "requirements" : ["requests"],
+  "requirements" : [],
   "description" : "The comprehensive webhooks cog, with sending, listing, and creating of webhooks. Comes with support for webhook aliases and sending messages as your username/avatar. Perfect for users stuck on mobile Discord.",
   "permissions" : [],
   "end_user_data_statement" : "This cog does not store any End User Data.",
