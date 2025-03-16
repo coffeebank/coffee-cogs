@@ -280,6 +280,8 @@ class Sendhook(commands.Cog):
         # Try to parse JSON
         try:
             contentJson = json.loads(webhookJson)
+        except json.JSONDecodeError as err:
+            return await ctx.send("Error: JSON Input - "+str(err))
         except Exception as err:
             logger.error(err, exc_info=True)
             return await ctx.send("Error: "+str(err))
@@ -409,6 +411,8 @@ class Sendhook(commands.Cog):
         # Try to parse JSON
         try:
             contentJson = json.loads(webhookJson)
+        except json.JSONDecodeError as err:
+            return await ctx.send("Error: JSON Input - "+str(err))
         except Exception as err:
             logger.error(err, exc_info=True)
             return await ctx.send("Error: "+str(err))
