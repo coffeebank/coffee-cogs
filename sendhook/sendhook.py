@@ -46,7 +46,7 @@ class Sendhook(commands.Cog):
     # Bot Commands
 
     @commands.guild_only()
-    @commands.group()
+    @commands.hybrid_group(name="aliashook")
     @commands.has_permissions(manage_guild=True, manage_webhooks=True)
     @commands.bot_has_permissions(manage_webhooks=True)
     async def aliashook(self, ctx: commands.Context):
@@ -59,39 +59,30 @@ class Sendhook(commands.Cog):
         if not ctx.invoked_subcommand:
             pass
 
-    @aliashook.command(name="add")
+    @aliashook.command(name="add", aliases=["edit"])
     @commands.has_permissions(manage_guild=True, manage_webhooks=True)
     @commands.bot_has_permissions(manage_messages=True)
-    async def ahadd(self, ctx, alias: str, webhookUrl: str):
-        """Add an alias for a webhook (⚠️ Sensitive info)
+    async def ahadd(self, ctx, alias: str, webhook_url: str):
+        """Add/update an alias for a webhook (⚠️ Sensitive info)
         
         To create an alias, you need a webhook URL.
 
         Create a webhook in Discord settings, or use **`[p]sendhooktools newhook`**
 
+        -
+
         ⚠️ Webhook URLs are sensitive information. **Anyone can use them to send messages into your chat!** Please only run these commands in private guild channels. Once the bot receives your command, it will be deleted, for security purposes.
         """
+        await friendlyReact(ctx, "⏳", "Loading ⏳")
 
-        # Immediately delete the command message, to hide webhook URL
-        await ctx.message.delete()
-        creating = await ctx.send("Creating ⏳")
+        if "https://" not in webhook_url:
+            return await ctx.send("Error: Invalid webhook URL")
 
         webhookAlias = await self.config.guild(ctx.guild).webhookAlias()
-        webhookAlias[alias] = webhookUrl
+        webhookAlias[alias] = webhook_url
         await self.config.guild(ctx.guild).webhookAlias.set(webhookAlias)
-        # Try to clear the loading prompt, but not important even if it fails
-        try:
-            await creating.delete()
-        except discord.NotFound:
-            pass
-        except Exception as err:
-            logger.error(err)
-            pass
         # Success
-        try:
-            await creating.edit(content="Webhook alias added successfully. ✅")
-        except Exception:
-            await ctx.send("Webhook alias added successfully. ✅")
+        await friendlyReact(ctx, "✅", "Done ✅")
 
     @aliashook.command(name="remove")
     @commands.has_permissions(manage_guild=True, manage_webhooks=True)
@@ -104,16 +95,13 @@ class Sendhook(commands.Cog):
             del webhookAlias[alias]
             await self.config.guild(ctx.guild).webhookAlias.set(webhookAlias)
             # Success
-            if ctx.channel.permissions_for(ctx.guild.me).add_reactions:
-                await ctx.message.add_reaction("✅")
-            else:
-                await ctx.send("Done ✅")
+            await friendlyReact(ctx, "✅", "Done ✅")
         except KeyError:
             pass
 
     @aliashook.command(name="list")
     @commands.has_permissions(manage_guild=True, manage_webhooks=True)
-    async def ahlist(self, ctx, safeMode: bool=True):
+    async def ahlist(self, ctx, safe_mode: bool=True):
         """List all aliases for webhooks
 
         Safe Mode:
@@ -132,7 +120,7 @@ class Sendhook(commands.Cog):
 
         returntext = ""
         for name, url in webhookAlias.items():
-            if safeMode == True:
+            if safe_mode == True:
                 returntext += "- "+name+" - …"+url[-4:]+"\n"
             else:
                 returntext += "- "+name+" - ||"+url+"||\n"
@@ -153,13 +141,15 @@ class Sendhook(commands.Cog):
             await ctx.send("Error: Couldn't fetch alias. Did you type it correctly?")
 
 
-    @commands.command()
+    @commands.hybrid_command()
     @commands.has_permissions(manage_webhooks=True)
     @commands.bot_has_permissions(manage_webhooks=True, embed_links=True)
-    async def sendhook(self, ctx, webhookUrl_or_alias: str, *, webhookText: str=None):
+    async def sendhook(self, ctx, webhook_url_or_alias: str, *, webhook_text: str, webhook_attachment: discord.Attachment=None):
         """Send a message through a webhook (⚠️ Sensitive info)
         
         You can set up aliases to mask the webhook URL, and make sending messages more convenient. For bot setup details, see **`[p]help Sendhook`**
+
+        To send only an attachment (with no body), use **`_empty`** as your webhook_text.
 
         **Required user permissions:** Manage Webhooks.
 
@@ -169,43 +159,41 @@ class Sendhook(commands.Cog):
         
         Once the bot receives your command, it will be deleted, for security purposes.
         """
-        creating = await ctx.send("Sending ⏳")
+        await friendlyReact(ctx, "⏳", "Loading ⏳")
 
         # Check if it is an alias
         try:
-            toWebhook = await validateWebhookInput(self, ctx, webhookUrl_or_alias)
+            toWebhook = await validateWebhookInput(self, ctx, webhook_url_or_alias)
         except commands.UserInputError as err:
             return await ctx.send(err)
 
+        # Error catching
+        if webhook_text in ['_empty', ' ', '" "']:
+            webhook_text = None
+        webhook_attachments = ctx.message.attachments
+        if ctx.interaction and webhook_attachment:
+            webhook_attachments = [webhook_attachment]
+        if not webhook_text and not webhook_attachments:
+            # discord.HTTPException - 400 Bad Request (error code: 50006): Cannot send an empty message
+            return await ctx.send("Error: Missing webhook_text. Did you mean to send some text, or upload an attachment?")
+
         # Send webhook
         try:
-            await sendhookEngine(toWebhook, content=webhookText, attachments=ctx.message.attachments)
+            await sendhookEngine(toWebhook, content=webhook_text, attachments=webhook_attachments)
         except ValueError as err:
-            try:
-                await creating.edit(content="Error: "+str(err))
-            except Exception:
-                await ctx.send("Error: "+str(err))
+            return await ctx.send("Error: "+str(err))
         except Exception as err:
             logger.error(err, exc_info=True)
-            err_text = "Oops, an error occurred :'( Please see bot logs for details..."
-            try:
-                await creating.edit(content=err_text)
-            except Exception:
-                await ctx.send(err_text)
+            return await ctx.send("Oops, an error occurred :'( Please see bot logs for details...")
         else:
             # Success
-            try:
-                await creating.edit(content="Sent successfully. ✅")
-                # Delete the command message, to hide webhook URL, after all attachments uploaded, silently fail OK
-                await ctx.message.delete()
-            except Exception:
-                await ctx.send("Sent successfully. ✅")
+            await friendlyReact(ctx, "✅", "Sent successfully. ✅")
 
 
-    @commands.command()
+    @commands.hybrid_command()
     @commands.has_permissions(manage_webhooks=True)
     @commands.bot_has_permissions(manage_webhooks=True, embed_links=True)
-    async def sendhookself(self, ctx, webhookUrl_or_alias: str, *, webhookText: str=None):
+    async def sendhookself(self, ctx, webhook_url_or_alias: str, *, webhook_text: str=None, webhook_attachment: discord.Attachment=None):
         """Send a webhook as yourself (⚠️ Sensitive info)
 
         You can set up aliases to mask the webhook URL, and make sending messages more convenient. For bot setup details, see **`[p]help Sendhook`**
@@ -218,43 +206,41 @@ class Sendhook(commands.Cog):
         
         Once the bot receives your command, it will be deleted, for security purposes.
         """
-        creating = await ctx.send("Sending ⏳")
+        await friendlyReact(ctx, "⏳", "Loading ⏳")
 
         # Check if it is an alias
         try:
-            toWebhook = await validateWebhookInput(self, ctx, webhookUrl_or_alias)
+            toWebhook = await validateWebhookInput(self, ctx, webhook_url_or_alias)
         except commands.UserInputError as err:
             return await ctx.send(err)
 
+        # Error catching
+        if webhook_text in ['_empty', ' ', '" "']:
+            webhook_text = None
+        webhook_attachments = ctx.message.attachments
+        if ctx.interaction and webhook_attachment:
+            webhook_attachments = [webhook_attachment]
+        if not webhook_text and not webhook_attachments:
+            # discord.HTTPException - 400 Bad Request (error code: 50006): Cannot send an empty message
+            return await ctx.send("Error: Missing webhook_text. Did you mean to send some text, or upload an attachment?")
+
         # Send webhook
         try:
-            await sendhookEngine(toWebhook, content=webhookText, attachments=ctx.message.attachments, webhookUser=ctx.message.author.display_name, webhookAvatar=ctx.message.author.display_avatar.url)
+            await sendhookEngine(toWebhook, content=webhook_text, attachments=webhook_attachments, webhookUser=ctx.message.author.display_name, webhookAvatar=ctx.message.author.display_avatar.url)
         except ValueError as err:
-            try:
-                await creating.edit(content="Error: "+str(err))
-            except Exception:
-                await ctx.send("Error: "+str(err))
+            return await ctx.send("Error: "+str(err))
         except Exception as err:
             logger.error(err, exc_info=True)
-            err_text = "Oops, an error occurred :'( Please see bot logs for details..."
-            try:
-                await creating.edit(content=err_text)
-            except Exception:
-                await ctx.send(err_text)
+            return await ctx.send("Oops, an error occurred :'( Please see bot logs for details...")
         else:
             # Success
-            try:
-                await creating.edit(content="Sent successfully. ✅")
-                # Delete the command message, to hide webhook URL, after all attachments uploaded, silently fail OK
-                await ctx.message.delete()
-            except Exception:
-                await ctx.send("Sent successfully. ✅")
+            await friendlyReact(ctx, "✅", "Done ✅")
 
 
-    @commands.command()
+    @commands.hybrid_command()
     @commands.has_permissions(manage_webhooks=True)
     @commands.bot_has_permissions(manage_webhooks=True, embed_links=True)
-    async def sendhookjson(self, ctx, webhookUrl_or_alias: str, *, webhookJson: str):
+    async def sendhookjson(self, ctx, webhook_url_or_alias: str, *, webhook_json: str):
         """Send a message through a webhook, using JSON (⚠️ Sensitive info)
 
         Supports embeds.
@@ -269,17 +255,17 @@ class Sendhook(commands.Cog):
         
         For bot setup details, see **`[p]help Sendhook`**
         """
-        creating = await ctx.send("Sending ⏳")
+        await friendlyReact(ctx, "⏳", "Loading ⏳")
 
         # Check if it is an alias
         try:
-            toWebhook = await validateWebhookInput(self, ctx, webhookUrl_or_alias)
+            toWebhook = await validateWebhookInput(self, ctx, webhook_url_or_alias)
         except commands.UserInputError as err:
             return await ctx.send(err)
 
         # Try to parse JSON
         try:
-            contentJson = json.loads(webhookJson)
+            contentJson = json.loads(webhook_json)
         except json.JSONDecodeError as err:
             return await ctx.send("Error: JSON Input - "+str(err))
         except Exception as err:
@@ -290,31 +276,19 @@ class Sendhook(commands.Cog):
         try:
             await sendhookEngine(toWebhook, content=contentJson.get("content", None), embeds=contentJson.get("embeds", None))
         except ValueError as err:
-            try:
-                await creating.edit(content="Error: "+str(err))
-            except Exception:
-                await ctx.send("Error: "+str(err))
+            return await ctx.send("Error: "+str(err))
         except Exception as err:
             logger.error(err, exc_info=True)
-            err_text = "Oops, an error occurred :'( Please see bot logs for details..."
-            try:
-                await creating.edit(content=err_text)
-            except Exception:
-                await ctx.send(err_text)
+            return await ctx.send("Oops, an error occurred :'( Please see bot logs for details...")
         else:
             # Success
-            try:
-                await creating.edit(content="Sent successfully. ✅")
-                # Delete the command message, to hide webhook URL, after all attachments uploaded, silently fail OK
-                await ctx.message.delete()
-            except Exception:
-                await ctx.send("Sent successfully. ✅")
+            await friendlyReact(ctx, "✅", "Done ✅")
 
 
-    @commands.command()
+    @commands.hybrid_command()
     @commands.has_permissions(manage_messages=True, manage_webhooks=True)
     @commands.bot_has_permissions(manage_webhooks=True, embed_links=True)
-    async def edithook(self, ctx, webhookUrl_or_alias: str, messageId: str, *, webhookText: str):
+    async def edithook(self, ctx, webhook_url_or_alias: str, message_id: str, *, webhook_text: str):
         """Edit a message sent by a webhook (⚠️ Sensitive info)
 
         You can set up aliases to mask the webhook URL, and make sending messages more convenient. For bot setup details, see **`[p]help Sendhook`**
@@ -327,55 +301,43 @@ class Sendhook(commands.Cog):
         
         Once the bot receives your command, it will be deleted, for security purposes.
         """
-        creating = await ctx.send("Sending ⏳")
+        await friendlyReact(ctx, "⏳", "Loading ⏳")
 
-        # Formatting the messageId
-        if "/" in messageId:
+        # Formatting the message_id
+        if "/" in message_id:
             try:
-                messageId = int(messageId.split('/')[-1])
+                message_id = int(message_id.split('/')[-1])
             except Exception:
                 return await ctx.send("Error: Not a valid Discord message link.")
         else:
             try:
-                messageId = int(messageId)
+                message_id = int(message_id)
             except Exception:
                 return await ctx.send("Error: Message ID should be a string of numbers.")
 
         # Check if it is an alias
         try:
-            toWebhook = await validateWebhookInput(self, ctx, webhookUrl_or_alias)
+            toWebhook = await validateWebhookInput(self, ctx, webhook_url_or_alias)
         except commands.UserInputError as err:
             return await ctx.send(err)
 
         # Send webhook
         try:
-            await edithookEngine(toWebhook=toWebhook, messageIdToEdit=messageId, content=webhookText)
+            await edithookEngine(toWebhook=toWebhook, messageIdToEdit=message_id, content=webhook_text)
         except ValueError as err:
-            try:
-                await creating.edit(content="Error: "+str(err))
-            except Exception:
-                await ctx.send("Error: "+str(err))
+            return await ctx.send("Error: "+str(err))
         except Exception as err:
             logger.error(err, exc_info=True)
-            err_text = "Oops, an error occurred :'( Please see bot logs for details..."
-            try:
-                await creating.edit(content=err_text)
-            except Exception:
-                await ctx.send(err_text)
+            return await ctx.send("Oops, an error occurred :'( Please see bot logs for details...")
         else:
             # Success
-            try:
-                await creating.edit(content="Sent successfully. ✅")
-                # Delete the command message, to hide webhook URL, after all attachments uploaded, silently fail OK
-                await ctx.message.delete()
-            except Exception:
-                await ctx.send("Sent successfully. ✅")
+            await friendlyReact(ctx, "✅", "Done ✅")
 
 
-    @commands.command()
+    @commands.hybrid_command()
     @commands.has_permissions(manage_messages=True, manage_webhooks=True)
     @commands.bot_has_permissions(manage_webhooks=True, embed_links=True)
-    async def edithookjson(self, ctx, webhookUrl_or_alias: str, messageId: str, *, webhookJson: str):
+    async def edithookjson(self, ctx, webhook_url_or_alias: str, message_id: str, *, webhook_json: str):
         """Edit a message sent by a webhook, using JSON (⚠️ Sensitive info)
 
         Supports embeds.
@@ -388,29 +350,29 @@ class Sendhook(commands.Cog):
         
         Once the bot receives your command, it will be deleted, for security purposes.
         """
-        creating = await ctx.send("Sending ⏳")
+        await friendlyReact(ctx, "⏳", "Loading ⏳")
 
-        # Formatting the messageId
-        if "/" in messageId:
+        # Formatting the message_id
+        if "/" in message_id:
             try:
-                messageId = int(messageId.split('/')[-1])
+                message_id = int(message_id.split('/')[-1])
             except Exception:
                 return await ctx.send("Error: Not a valid Discord message link.")
         else:
             try:
-                messageId = int(messageId)
+                message_id = int(message_id)
             except Exception:
                 return await ctx.send("Error: Message ID should be a string of numbers.")
 
         # Check if it is an alias
         try:
-            toWebhook = await validateWebhookInput(self, ctx, webhookUrl_or_alias)
+            toWebhook = await validateWebhookInput(self, ctx, webhook_url_or_alias)
         except commands.UserInputError as err:
             return await ctx.send(err)
 
         # Try to parse JSON
         try:
-            contentJson = json.loads(webhookJson)
+            contentJson = json.loads(webhook_json)
         except json.JSONDecodeError as err:
             return await ctx.send("Error: JSON Input - "+str(err))
         except Exception as err:
@@ -419,31 +381,19 @@ class Sendhook(commands.Cog):
 
         # Send webhook
         try:
-            await edithookEngine(toWebhook=toWebhook, messageIdToEdit=messageId, content=contentJson.get("content", None), embeds=contentJson.get("embeds", None))
+            await edithookEngine(toWebhook=toWebhook, messageIdToEdit=message_id, content=contentJson.get("content", None), embeds=contentJson.get("embeds", None))
         except ValueError as err:
-            try:
-                await creating.edit(content="Error: "+str(err))
-            except Exception:
-                await ctx.send("Error: "+str(err))
+            return await ctx.send("Error: "+str(err))
         except Exception as err:
             logger.error(err, exc_info=True)
-            err_text = "Oops, an error occurred :'( Please see bot logs for details..."
-            try:
-                await creating.edit(content=err_text)
-            except Exception:
-                await ctx.send(err_text)
+            return await ctx.send("Oops, an error occurred :'( Please see bot logs for details...")
         else:
             # Success
-            try:
-                await creating.edit(content="Sent successfully. ✅")
-                # Delete the command message, to hide webhook URL, after all attachments uploaded, silently fail OK
-                await ctx.message.delete()
-            except Exception:
-                await ctx.send("Sent successfully. ✅")
+            await friendlyReact(ctx, "✅", "Done ✅")
 
 
     @commands.guild_only()
-    @commands.group()
+    @commands.hybrid_group(name="sendhooktools")
     @commands.has_permissions(manage_webhooks=True)
     @commands.bot_has_permissions(manage_webhooks=True)
     async def sendhooktools(self, ctx: commands.Context):
@@ -464,11 +414,11 @@ class Sendhook(commands.Cog):
     @sendhooktools.command()
     @commands.has_permissions(manage_webhooks=True)
     @commands.bot_has_permissions(manage_webhooks=True, embed_links=True)
-    async def newhook(self, ctx, webhookName: str, webhookImage: str=None, channel: discord.TextChannel=None):
+    async def newhook(self, ctx, webhook_name: str, webhook_image: str=None, channel: discord.TextChannel=None):
         """Create a webhook in a channel (⚠️ Sensitive info)
         
-        - webhookName: Name of webhook
-        - webhookImage *(optional)*: URL of image to fetch, for webhook avatar (profile pic)
+        - webhook_name: Name of webhook
+        - webhook_image *(optional)*: URL of image to fetch, for webhook avatar (profile pic) - upload to a Discord channel and copy image URL
         - channel *(optional)*: Channel to create webhook in (default: current channel)
 
         ⚠️ Webhook URLs are sensitive information. **Anyone can use them to send messages into your chat!** Please only run these commands in private guild channels.
@@ -476,16 +426,12 @@ class Sendhook(commands.Cog):
         if channel == None:
             channel = ctx.message.channel
         # Loading
-        if ctx.channel.permissions_for(ctx.guild.me).add_reactions:
-            await ctx.message.add_reaction("⏳")
-        else:
-            await ctx.send("Loading ⏳")
-        await ctx.send(str(channel.mention)+" "+str(channel.id))
+        await friendlyReact(ctx, "⏳", "Loading ⏳")
 
         wimgdata = None
-        if webhookImage:
+        if webhook_image:
             async with aiohttp.ClientSession() as session:
-                async with session.get(webhookImage) as resp:
+                async with session.get(webhook_image) as resp:
                     if resp.status != 200:
                         return await channel.send('Could not fetch image... Server error.')
                     try:
@@ -495,17 +441,14 @@ class Sendhook(commands.Cog):
                         return await channel.send('Could not fetch image... Response error.')
 
         try:
-            thenewhook = await channel.create_webhook(name=webhookName, avatar=wimgdata)
+            thenewhook = await channel.create_webhook(name=webhook_name, avatar=wimgdata)
         except Exception as err:
             logger.error(err)
             await ctx.send("Could not create webhook. Please see bot logs for details...")
         else:
             # Success
-            if ctx.channel.permissions_for(ctx.guild.me).add_reactions:
-                await ctx.message.add_reaction("✅")
-            else:
-                await ctx.send("Done ✅")
-            await ctx.send(str(thenewhook.name)+" - ||"+str(thenewhook.url)+"||")
+            await friendlyReact(ctx, "✅", "Done ✅")
+            await ctx.send(str(channel.mention)+" "+str(thenewhook.name)+" - ||"+str(thenewhook.url)+"||")
 
     @sendhooktools.command()
     @commands.has_permissions(manage_guild=True, manage_webhooks=True)

@@ -11,6 +11,19 @@ logger = logging.getLogger(__name__)
 
 # Utility Commands
 
+async def friendlyReact(ctx, react: str="✅", react_str: str="Done ✅"):
+    try:
+        return await ctx.message.add_reaction(react)
+    except Exception:
+        # discord.Forbidden - Missing add_reactions permission, send as plaintext message
+        # discord.HybridCommandError - Slash command ctx message issue, just send as new message
+        # discord.HTTPException - Original message deleted
+        if react_str is not None:
+            return await ctx.send(react_str)
+        else:
+            pass
+
+
 async def validateWebhookInput(self, ctx, userInput: str):
     toWebhook = userInput
     # Only check for alias if command is run in a guild
