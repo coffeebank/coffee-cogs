@@ -5,6 +5,7 @@ import re
 import zipfile
 
 from redbot.core import Config, commands, data_manager
+from redbot.core.utils.views import SimpleMenu
 import discord
 import aiohttp
 
@@ -59,6 +60,9 @@ class Zidian(commands.Cog):
                 return await ctx.send(react_str)
             else:
                 pass
+
+    def group_array_items(self, arr: list, n: int):
+        return [arr[i:i + n] for i in range(0, len(arr), n)]
 
     def search_file(self, filename, pattern):
         regex = re.compile(pattern, re.IGNORECASE)
@@ -176,6 +180,8 @@ class Zidian(commands.Cog):
             assert dictCedict is not None
         except AssertionError:
             return await ctx.send("Error: Please run `[p]setzidian update` to initialize the dictionary first!")
+
+        await self.friendlyReact(ctx, "⏳", "Searching ⏳")
         
         patternKeyword = re.escape(keyword).replace(" ", r"s{0}(\s|\d\s)")
         startText = fr'(^{patternKeyword}|^[^\[]+\s{patternKeyword}|^[^\[]+\[{patternKeyword}(\d\]|\]).*|^[^\/]+\/{patternKeyword}([^=a-zA-Z]+).*)'
@@ -189,19 +195,41 @@ class Zidian(commands.Cog):
         except FileNotFoundError as err:
             return await ctx.send("Dictionary not initialized! Please run  **`[p]setzidian update`**  to initialize the dictionary first....")
 
+        extended_results = None
         if len(matches) < 1:
             with open(dictCedict, encoding="utf-8") as file:
                 matches = self.search_file(dictCedict, middleText)
-                sendEmbed = discord.Embed(color=(await ctx.embed_colour()), title="Results (Extended)")
+                extended_results = "(Extended)"
 
-        if matches is not None:
-            for index, i in enumerate(matches):
-                if index == 6:
-                    break
-                entry = i.split("/", 1)
-                try:
-                    sendEmbed.add_field(name=entry[0], value=entry[1][:-1][:1100], inline=True)
-                except:
-                    pass
+        if not matches:
+            return await ctx.send("Sorry, no results found...")
 
-        await ctx.send(embed=sendEmbed)
+        results = []
+        for index, i in enumerate(matches):
+            result = {}
+            entry = i.split("/", 1)
+            try:
+                result["title"] = entry[0]
+                result["description"] = entry[1][:-1][:1100]
+            except Exception as err:
+                logger.debug(err)
+                pass
+            results.append(result)
+        
+        results_grouped = self.group_array_items(results, 6)
+        results_grouped_embeds = []
+        for idx, group in enumerate(results_grouped):
+            e = discord.Embed(
+              color=(await self.bot.get_embed_colour(self))
+            )
+            for g_result in group:
+                e.add_field(
+                    name=g_result.get("title", "-"), 
+                    value=g_result.get("description", "-"),
+                    inline=True
+                )
+            e.set_footer(text=" ・ ".join(filter(None, ["Results by CC-CEDICT", str(idx+1)+"/"+str(len(results_grouped)), extended_results])))
+            results_grouped_embeds.append(e)
+
+        await SimpleMenu(pages=results_grouped_embeds, timeout=90).start(ctx)
+        await self.friendlyReact(ctx, "✅", None)
