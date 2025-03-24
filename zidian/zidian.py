@@ -110,6 +110,15 @@ class Zidian(commands.Cog):
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as response:
+                    if response.status != 200:
+                        err = aiohttp.ClientResponseError(
+                            response.request_info,
+                            response.history,
+                            status=response.status,
+                            message=response.reason
+                        )
+                        logger.error(f"Failed to fetch: {str(err)}")
+                        raise err
                     content = await response.read()
                     with zipfile.ZipFile(io.BytesIO(content)) as zip_file:
                         # Extract the first file in the zip (assumed to be the text file)
