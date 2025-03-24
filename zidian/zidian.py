@@ -47,6 +47,18 @@ class Zidian(commands.Cog):
 
     ## Utility commands
 
+    async def friendlyReact(ctx, react: str="✅", react_str: str="Done ✅"):
+        try:
+            return await ctx.message.add_reaction(react)
+        except Exception:
+            # discord.Forbidden - Missing add_reactions permission, send as plaintext message
+            # discord.HybridCommandError - Slash command ctx message issue, just send as new message
+            # discord.HTTPException - Original message deleted
+            if react_str is not None:
+                return await ctx.send(react_str)
+            else:
+                pass
+
     def search_file(self, filename, pattern):
         regex = re.compile(pattern, re.IGNORECASE)
         with open(filename, encoding="utf-8") as file:
@@ -101,7 +113,7 @@ class Zidian(commands.Cog):
                     cedictHeaders = self.search_file(text_extracted, r"^\#[\!]?\s.*")
                     await self.config.dictHeaders.cedict.set(cedictHeaders)
 
-        await ctx.message.add_reaction("✅")
+        await friendlyReact(ctx, "✅", "Done ✅")
 
     @commands.command(name="zidian")
     async def zidian(self, ctx, *, keyword):
