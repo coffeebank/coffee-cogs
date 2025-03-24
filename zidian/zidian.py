@@ -78,7 +78,7 @@ class Zidian(commands.Cog):
     
     ## Bot commands
 
-    @commands.group(aliases=["setzd"])
+    @commands.hybrid_group(aliases=["setzd"])
     async def setzidian(self, ctx: commands.Context):
         """Zidian cog settings
         
@@ -157,7 +157,7 @@ class Zidian(commands.Cog):
             await session.close()
 
 
-    @commands.command(name="zidian")
+    @commands.hybrid_command(name="zidian")
     @commands.bot_has_permissions(embed_links=True)
     async def zidian(self, ctx, *, keyword):
         """Search the zidian 字典
