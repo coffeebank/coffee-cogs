@@ -106,12 +106,14 @@ class Zidian(commands.Cog):
         """Update dictionaries"""
 
         ## cedict
-        await self.config.dictStorage.cedict.set(None)
         # Fetch latest version
         # To see current version saved in bot, use `[p]setzidian list`
         # Version and license info will be displayed
         url = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
+
+        # Slash commands need a response within 3secs
         await self.friendlyReact(ctx, "⏳", "Fetching ⏳")
+
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as response:
@@ -142,6 +144,7 @@ class Zidian(commands.Cog):
                         try:
                             with open(full_path, "wb") as extracted_file:
                                 extracted_file.write(zip_file.read(text_filename))
+                                await self.config.dictStorage.cedict.set(None)
                                 await self.config.dictStorage.cedict.set(full_path)
                         except Exception as err:
                             logger.error(err, exc_info=True)
@@ -181,6 +184,7 @@ class Zidian(commands.Cog):
         except AssertionError:
             return await ctx.send("Error: Please run `[p]setzidian update` to initialize the dictionary first!")
 
+        # Slash commands need a response within 3secs
         await self.friendlyReact(ctx, "⏳", "Searching ⏳")
         
         patternKeyword = re.escape(keyword).replace(" ", r"s{0}(\s|\d\s)")
@@ -204,6 +208,7 @@ class Zidian(commands.Cog):
         if not matches:
             return await ctx.send("Sorry, no results found...")
 
+        # List all the results
         results = []
         for index, i in enumerate(matches):
             result = {}
@@ -216,6 +221,8 @@ class Zidian(commands.Cog):
                 pass
             results.append(result)
         
+        # Group the results into groups of n
+        # Format into embeds
         results_grouped = self.group_array_items(results, 6)
         results_grouped_embeds = []
         for idx, group in enumerate(results_grouped):
@@ -231,5 +238,6 @@ class Zidian(commands.Cog):
             e.set_footer(text=" ・ ".join(filter(None, ["Results by CC-CEDICT", str(idx+1)+"/"+str(len(results_grouped)), extended_results])))
             results_grouped_embeds.append(e)
 
+        # Send embeds of n results each
         await SimpleMenu(pages=results_grouped_embeds, timeout=90).start(ctx)
         await self.friendlyReact(ctx, "✅", None)
