@@ -129,8 +129,12 @@ class Zidian(commands.Cog):
         English - Note: may not work well
 
         Note: CC-CEDICT does not contain use frequency, so some results may not be great.
-        Settings: **`[p]setzidian`**"""
+        Settings: **`[p]setzidian`**
+        """
         dictCedict = await self.config.dictStorage.cedict()
+
+
+        assert dictCedict is not None
         
         patternKeyword = re.escape(keyword).replace(" ", r"s{0}(\s|\d\s)")
         startText = fr'(^{patternKeyword}|^[^\[]+\s{patternKeyword}|^[^\[]+\[{patternKeyword}(\d\]|\]).*|^[^\/]+\/{patternKeyword}([^=a-zA-Z]+).*)'
@@ -151,12 +155,12 @@ class Zidian(commands.Cog):
 
         if matches is not None:
             for index, i in enumerate(matches):
-            if index == 6:
-                break
-            entry = i.split("/", 1)
-            try:
-                sendEmbed.add_field(name=entry[0], value=entry[1][:-1][:1100], inline=True)
-            except:
-                pass
+                if index == 6:
+                    break
+                entry = i.split("/", 1)
+                try:
+                    sendEmbed.add_field(name=entry[0], value=entry[1][:-1][:1100], inline=True)
+                except:
+                    pass
 
         await ctx.send(embed=sendEmbed)
