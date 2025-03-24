@@ -1,11 +1,15 @@
-# from redbot.core import Config
-from redbot.core import Config, commands, checks
 import asyncio
-import aiohttp
-import discord
 import io
 import re
 import zipfile
+
+from redbot.core import Config, commands
+import discord
+import aiohttp
+
+import logging
+logger = logging.getLogger(__name__)
+
 
 class Zidian(commands.Cog):
     """Chinese dictionary bot
@@ -66,7 +70,7 @@ class Zidian(commands.Cog):
           pass
 
     @setzidian.command(name="list", aliases=["dict", "dictionaries"])
-    @checks.is_owner()
+    @commands.is_owner()
     async def dictionaries(self, ctx):
         """List dictionaries"""
         srcHeaders = await self.config.dictHeaders()
@@ -78,7 +82,7 @@ class Zidian(commands.Cog):
           await ctx.send("No dictionaries. Please run update command to initialize the dictionaries.")
 
     @setzidian.command(name="update")
-    @checks.is_owner()
+    @commands.is_owner()
     async def update(self, ctx):
         """Update dictionaries"""
 
