@@ -84,6 +84,7 @@ class Zidian(commands.Cog):
 
     @setzidian.command(name="list", aliases=["dict", "dictionaries"])
     @commands.is_owner()
+    @commands.bot_has_permissions(embed_links=True)
     async def dictionaries(self, ctx):
         """List dictionaries"""
         srcHeaders = await self.config.dictHeaders()
