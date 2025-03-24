@@ -88,10 +88,11 @@ class Zidian(commands.Cog):
         srcHeaders = await self.config.dictHeaders()
         try:
             for i in srcHeaders:
-                e = discord.Embed(color=(await ctx.embed_colour()), title=i, description=self.stringize(srcHeaders[i]))
+                e = discord.Embed(color=(await ctx.embed_colour()), title=i, description=self.stringize(srcHeaders[i]).replace("#", ".")[:4096])
                 await ctx.send(embed=e)
-        except:
-            await ctx.send("No dictionaries. Please run update command to initialize the dictionaries.")
+        except Exception as err:
+            logger.error(err, exc_info=True)
+            return await ctx.send("No dictionaries. Please run update command to initialize the dictionaries.")
 
     @setzidian.command(name="update")
     @commands.is_owner()
