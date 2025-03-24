@@ -47,7 +47,7 @@ class Zidian(commands.Cog):
 
     ## Utility commands
 
-    async def friendlyReact(ctx, react: str="✅", react_str: str="Done ✅"):
+    async def friendlyReact(self, ctx, react: str="✅", react_str: str="Done ✅"):
         try:
             return await ctx.message.add_reaction(react)
         except Exception:
@@ -101,22 +101,33 @@ class Zidian(commands.Cog):
 
         ## cedict
         await self.config.dictStorage.cedict.set(None)
+        # Fetch latest version
+        # To see current version saved in bot, use `[p]setzidian list`
+        # Version and license info will be displayed
         url = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                content = await response.read()
-                with zipfile.ZipFile(io.BytesIO(content)) as zip_file:
-                    # Extract the first file in the zip (assumed to be the text file)
-                    text_filename = zip_file.namelist()[0]
-                    text_extracted = zip_file.extract(text_filename)
-                    await self.config.dictStorage.cedict.set(text_extracted)
-                    # Add source headers
-                    cedictHeaders = self.search_file(text_extracted, r"^\#[\!]?\s.*")
-                    await self.config.dictHeaders.cedict.set(cedictHeaders)
+        await self.friendlyReact(ctx, "⏳", "Fetching ⏳")
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    content = await response.read()
+                    with zipfile.ZipFile(io.BytesIO(content)) as zip_file:
+                        # Extract the first file in the zip (assumed to be the text file)
+                        text_filename = zip_file.namelist()[0]
+                        text_extracted = zip_file.extract(text_filename)
+                        await self.config.dictStorage.cedict.set(text_extracted)
+                        # Add source headers
+                        cedictHeaders = self.search_file(text_extracted, r"^\#[\!]?\s.*")
+                        await self.config.dictHeaders.cedict.set(cedictHeaders)
+        except Exception as err:
+            return await ctx.send("Error: "+str(err))
+        else:
+            await self.friendlyReact(ctx, "✅", "Done ✅")
+        finally:
+            await session.close()
 
-        await friendlyReact(ctx, "✅", "Done ✅")
 
     @commands.command(name="zidian")
+    @commands.bot_has_permissions(embed_links=True)
     async def zidian(self, ctx, *, keyword):
         """Search the zidian 字典
 
@@ -134,8 +145,10 @@ class Zidian(commands.Cog):
         """
         dictCedict = await self.config.dictStorage.cedict()
 
-
-        assert dictCedict is not None
+        try:
+            assert dictCedict is not None
+        except AssertionError:
+            return await ctx.send("Error: Please run `[p]setzidian update` to initialize the dictionary first!")
         
         patternKeyword = re.escape(keyword).replace(" ", r"s{0}(\s|\d\s)")
         startText = fr'(^{patternKeyword}|^[^\[]+\s{patternKeyword}|^[^\[]+\[{patternKeyword}(\d\]|\]).*|^[^\/]+\/{patternKeyword}([^=a-zA-Z]+).*)'
