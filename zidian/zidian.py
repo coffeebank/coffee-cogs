@@ -1,9 +1,10 @@
 import asyncio
 import io
+import os
 import re
 import zipfile
 
-from redbot.core import Config, commands
+from redbot.core import Config, commands, data_manager
 import discord
 import aiohttp
 
@@ -112,11 +113,27 @@ class Zidian(commands.Cog):
                     content = await response.read()
                     with zipfile.ZipFile(io.BytesIO(content)) as zip_file:
                         # Extract the first file in the zip (assumed to be the text file)
+                        cog_data_path = None
+                        try:
+                            cog_data_path = str(data_manager.cog_data_path(cog_instance=self))
+                            logger.info("Saved cedict to Red cog data path: " + cog_data_path)
+                        except Exception as err:
+                            # NameError: name 'redbot' is not defined
+                            if err is not NameError:
+                                logger.error(err, exc_info=True)
+                            cog_data_path = os.path.dirname(os.path.abspath(__file__))
+                            logger.info("Saved cedict to cog directory: " + cog_data_path)
                         text_filename = zip_file.namelist()[0]
-                        text_extracted = zip_file.extract(text_filename)
-                        await self.config.dictStorage.cedict.set(text_extracted)
+                        full_path = os.path.join(cog_data_path, text_filename)
+                        try:
+                            with open(full_path, "wb") as extracted_file:
+                                extracted_file.write(zip_file.read(text_filename))
+                                await self.config.dictStorage.cedict.set(full_path)
+                        except Exception as err:
+                            logger.error(err, exc_info=True)
+                            raise err
                         # Add source headers
-                        cedictHeaders = self.search_file(text_extracted, r"^\#[\!]?\s.*")
+                        cedictHeaders = self.search_file(full_path, r"^\#[\!]?\s.*")
                         await self.config.dictHeaders.cedict.set(cedictHeaders)
         except Exception as err:
             return await ctx.send("Error: "+str(err))
