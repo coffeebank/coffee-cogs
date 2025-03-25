@@ -7,11 +7,12 @@ import time
 from enum import Enum
 import random
 from random import randint, choice
+import shlex
 from typing import Final
 import urllib.parse
 import aiohttp
 import discord
-from redbot.core import commands
+from redbot.core import commands, app_commands
 from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n
 from redbot.core.utils.menus import menu
@@ -91,14 +92,24 @@ class Coffeetools(commands.Cog):
         return
 
 
-    @commands.hybrid_command(name="choose")
+    @commands.hybrid_command(name="choose", usage="item1 | item2 | item3 | ...")
+    @app_commands.describe(choices="Example: Go on a walk | Read a book | Wash the dishes | ...")
     @commands.bot_has_permissions(embed_links=True)
-    async def choose(self, ctx, *, choosetext):
+    async def choose(self, ctx, *, choices):
         """Have the bot choose for you
+
+        Supports spaces in between. Uses | as the divider.
         
-        **`[p]choose item1 | item2 | item3`**"""
+        Examples:
+        - `[p]choose one | two | three`
+        - `[p]choose a b c | 1 2 3 | 一 二 三`
+        - `[p]choose Go on a walk | Read a book | Wash the dishes`
+        """
         # Split choosetext into an array, and return random choice
-        choosearray = choosetext.split("|")
+        try:
+            choosearray = choices.split("|")
+        except Exception:
+            return await ctx.send("Error: Please use | as the divider.")
         # Wrap in an embed to prevent spam links, @mentions, etc. (Repo issue #5)
         e = discord.Embed(color=(await ctx.embed_colour()), description=random.choice(choosearray))
         e.set_footer(text="'choose' requested by "+ctx.author.display_name)
@@ -107,7 +118,7 @@ class Coffeetools(commands.Cog):
             return await ctx.send(embed=e)
         except Exception as err:
             logger.error(err);
-            return await ctx.send("Sorry, an error occurred. Are you using only alphanumeric characters?")
+            return await ctx.send("Sorry, an error occurred... Please see bot logs for details.")
 
 
     # Imported from Red Bot
@@ -122,9 +133,9 @@ class Coffeetools(commands.Cog):
         pass
 
     # @commands.command(usage="<first> <second> [others...]")
-    @general.command(name="choose")
+    @general.command(name="choose", usage="<first> <second> [others...]")
     @commands.bot_has_permissions(embed_links=True)
-    async def general_choose(self, ctx, choices):
+    async def general_choose(self, ctx, *, choices: str):
         """Choose between multiple options.
 
         There must be at least 2 options to pick from.
@@ -132,6 +143,9 @@ class Coffeetools(commands.Cog):
 
         To denote options which include whitespace, you should enclose the options in double quotes.
         """
+        # Can't use *choices with slash commands, use built-in shlex instead
+        choices = shlex.split(choices)
+
         choices = [escape(c, mass_mentions=True) for c in choices if c]
         if len(choices) < 2:
             await ctx.send(_("Not enough options to pick from."))
