@@ -177,6 +177,7 @@ class Hellohook(commands.Cog):
     @commands.guild_only()
     @commands.group()
     @checks.admin_or_permissions(manage_guild=True)
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hellohook(self, ctx: commands.Context):
         """Hellohook settings
 
@@ -196,6 +197,7 @@ class Hellohook(commands.Cog):
             pass
 
     @hellohook.command(name="settings", aliases=["list"])
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hellohooksettings(self, ctx):
         """List current Hellohook settings"""
         guildData = await self.config.guild(ctx.guild).all()
@@ -220,6 +222,7 @@ class Hellohook(commands.Cog):
           await ctx.send(embed=e3)
 
     @hellohook.command(name="setgreethook", aliases=["set", "setchannel", "setwebhook"])
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hellohooksetgreethook(self, ctx, webhookUrl):
         """Set the webhook URL/channel for Greet messages
 
@@ -238,6 +241,7 @@ class Hellohook(commands.Cog):
             await ctx.send("Error: Please enter a webhook URL!")
 
     @hellohook.command(name="setleavehook")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hellohooksetleavehook(self, ctx, webhookUrl):
         """Set the webhook URL/channel for Leave messages
 
@@ -256,6 +260,7 @@ class Hellohook(commands.Cog):
             await ctx.send("Error: Please enter a webhook URL!")
 
     @hellohook.command(name="setgreet", aliases=["setwelcome"])
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hellohooksetgreet(self, ctx, *, DiscohookJSON: str):
         """Set the Greet message
 
@@ -276,6 +281,7 @@ class Hellohook(commands.Cog):
         await ctx.message.add_reaction("✅")
 
     @hellohook.command(name="setleave")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hellohooksetleave(self, ctx, *, DiscohookJSON: str):
         """Set the Leave message
 
@@ -296,6 +302,7 @@ class Hellohook(commands.Cog):
         await ctx.message.add_reaction("✅")
 
     @hellohook.command(name="test")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hellohooktest(self, ctx):
         """Send a test welcome message to the hellohook"""
         try:
@@ -341,6 +348,7 @@ class Hellohook(commands.Cog):
             await ctx.send("Error: "+str(err))
 
     @hellohook.command(name="toggle")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hellohooktoggle(self, ctx, GreetOrLeave: str, TrueOrFalse: bool):
         """Enable/Disable Hellohook Greet/Leave messages
 
@@ -360,6 +368,7 @@ class Hellohook(commands.Cog):
             return await ctx.send("Error: Please specify whether you want to toggle Greet or Leave messages.")
 
     @hellohook.command(name="reset")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hellohooksetclear(self, ctx, TypeTrueToConfirm: bool):
         """⚠️ Reset all settings"""
         await self.config.guild(ctx.guild).clear_raw()
@@ -367,6 +376,7 @@ class Hellohook(commands.Cog):
 
     @hellohook.group(name="invite", aliases=["inv", "invites"])
     @checks.admin_or_permissions(manage_guild=True)
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hhinv(self, ctx: commands.Context):
         """Send custom Hellohook welcomes based on invite URLs (beta)
 
@@ -379,6 +389,7 @@ class Hellohook(commands.Cog):
             pass
 
     @hhinv.command(name="add")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hhinvadd(self, ctx):
         "Add a custom invite-based welcome"
         inviteList = await self.config.guild(ctx.guild).inviteList()
@@ -427,6 +438,7 @@ class Hellohook(commands.Cog):
         return
 
     @hhinv.command(name="edit")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hhinvedit(self, ctx, inviteLink: str, field: str, *, updatedContentHere: str):
         """Edit a custom invite-based welcome
 
@@ -448,6 +460,7 @@ class Hellohook(commands.Cog):
             await ctx.send("Error: Could not update. Did you type it in the format:\nINVITELINKCODE   FIELD   NEW_CONTENT_HERE")
 
     @hhinv.command(name="remove")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hhinvremove(self, ctx, inviteLink: str):
         """Remove a custom invite-based welcome
 
@@ -461,6 +474,7 @@ class Hellohook(commands.Cog):
         return await ctx.message.add_reaction("✅")
 
     @hhinv.command(name="sync")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hhinvsync(self, ctx):
         """Re-sync the invite tracker if bot's been offline
 
@@ -488,6 +502,7 @@ class Hellohook(commands.Cog):
         return await ctx.message.add_reaction("✅")
 
     @hhinv.command(name="settings", aliases=["list"])
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hhinvsettings(self, ctx):
         "List all invite-based welcomes"
         inviteList = await self.config.guild(ctx.guild).inviteList()
@@ -506,6 +521,7 @@ class Hellohook(commands.Cog):
         return
 
     @hhinv.command(name="test")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def hhinvtest(self, ctx):
         "Test all invite-based welcomes"
         await ctx.send("Starting test....")
