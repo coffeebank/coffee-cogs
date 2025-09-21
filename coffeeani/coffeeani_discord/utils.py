@@ -5,7 +5,7 @@ from ..coffeeani_utils.utils import description_parser, truncate_string_at, deep
 import logging
 logger = logging.getLogger(__name__)
 
-def discord_embed_result(result, color: str=None, service: str=None, idx: int=None, idx_total: int=None):
+def discord_embed_result(result, color: str=None, service: str=None, idx: int=None, idx_total: int=None, external_links_inline=True, names_inline=True, tags_inline=True):
     try:
         em = result
         embed = discord.Embed(title=em.get('title', str(None)))
@@ -20,15 +20,15 @@ def discord_embed_result(result, color: str=None, service: str=None, idx: int=No
         if em.get('info'):
             embed.add_field(name=str(em.get('info_status')), value=str(em.get('info')), inline=True)
         if em.get('external_links'):
-            embed.add_field(name='Links', value=truncate_string_at(em.get('external_links'), 1000, ','), inline=True)
+            embed.add_field(name='Links', value=truncate_string_at(em.get('external_links'), 1000, ','), inline=external_links_inline)
         if em.get('names'):
-            names_inline = True
+            names_inline = names_inline
             names_str = description_parser(', '.join(em.get('names', '')))
             if len(names_str) > 170:
                 names_inline = False
             embed.add_field(name='Names', value=em.get('country_of_origin_flag_str', '') + names_str, inline=names_inline)
         if em.get('tags'):
-            tags_inline = True
+            tags_inline = tags_inline
             if len(em.get('tags')) > 11:
                 tags_inline = False
             embed.add_field(name='Tags', value=truncate_string_at(', '.join(em.get('tags', '')), 1000, ','), inline=tags_inline)

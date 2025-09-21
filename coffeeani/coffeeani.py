@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Coffeeani(commands.Cog):
-    """Search for anime, manga, manhwa/manhua, light novels, and characters. See series info, status, episodes/chapters, and tags."""
+    """Search for anime, manga, manhwa, manhua/donghua, light novels, and characters. See series info, status, episodes/chapters, and tags."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -24,6 +24,12 @@ class Coffeeani(commands.Cog):
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     async def anime(self, ctx, *, title):
         """Search for anime, animations, and donghua
+
+        Searches Anilist, Bangumi.
+
+        To search by source, use:
+        - `[p]anilist anime
+        - `[p]bangumi anime
         """
         # TODO: Add MyAnimeList Support
         # Searches Anilist.
@@ -35,6 +41,12 @@ class Coffeeani(commands.Cog):
         embeds = await discord_anilist_embeds(ctx, "ANIME", title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
+
+        await msg.edit(embeds=[discord_embed_source(NAME_BANGUMI, COLOR_BANGUMI)])
+        embeds = await discord_bangumi_embeds("anime", title)
+        if embeds:
+            return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
+
         return await msg.edit(embeds=[discord_embed_source(None)])
 
     @commands.hybrid_command(aliases=["manhwa", "manhua", "lightnovel"])
@@ -43,12 +55,13 @@ class Coffeeani(commands.Cog):
     async def manga(self, ctx, *, title):
         """Search for manga, manhwa, manhua, and light novels
         
-        Searches Anilist, MangaDex, and Batoto.
+        Searches Anilist, MangaDex, Bangumi, Batoto.
 
         To search by source, use:
         - `[p]anilist manga`
-        - `[p]batoto`
         - `[p]mangadex`
+        - `[p]bangumi manga
+        - `[p]batoto`
         """
         msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
         embeds = await discord_anilist_embeds(ctx, "MANGA", title)
@@ -57,6 +70,11 @@ class Coffeeani(commands.Cog):
 
         await msg.edit(embeds=[discord_embed_source(NAME_MANGADEX, COLOR_MANGADEX)])
         embeds = await discord_mangadex_embeds(title)
+        if embeds:
+            return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
+
+        await msg.edit(embeds=[discord_embed_source(NAME_BANGUMI, COLOR_BANGUMI)])
+        embeds = await discord_bangumi_embeds("manga", title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
 
@@ -144,6 +162,41 @@ class Coffeeani(commands.Cog):
         Search MangaDex for manga, manhwa, and manhua"""
         msg = await ctx.send(embeds=[discord_embed_source(NAME_MANGADEX, COLOR_MANGADEX)])
         embeds = await discord_mangadex_embeds(title)
+        if embeds:
+            return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
+        return await msg.edit(embeds=[discord_embed_source(None)])
+
+    @commands.hybrid_group(name="bangumi")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
+    async def bangumi(self, ctx: commands.Context):
+        """Search Bangumi
+        
+        Note: Results may be in Chinese or original language."""
+        if not ctx.invoked_subcommand:
+            pass
+
+    @bangumi.command(name="anime", aliases=["donghua"])
+    @app_commands.describe(title="Search Bangumi for anime/donghua")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
+    async def bangumi_anime(self, ctx, *, title):
+        """Search Bangumi for anime/donghua
+        
+        Note: Results may be in Chinese or original language."""
+        msg = await ctx.send(embeds=[discord_embed_source(NAME_BANGUMI, COLOR_BANGUMI)])
+        embeds = await discord_bangumi_embeds("anime", title)
+        if embeds:
+            return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
+        return await msg.edit(embeds=[discord_embed_source(None)])
+
+    @bangumi.command(name="manga", aliases=["manhwa", "manhua", "lightnovel"])
+    @app_commands.describe(title="Search Bangumi for manga/manhwa/manhua and light novels")
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
+    async def bangumi_manga(self, ctx, *, title):
+        """Search Bangumi for manga, manhwa, manhua, and light novels
+        
+        Note: Results may be in Chinese or original language."""
+        msg = await ctx.send(embeds=[discord_embed_source(NAME_BANGUMI, COLOR_BANGUMI)])
+        embeds = await discord_bangumi_embeds("manga", title)
         if embeds:
             return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
         return await msg.edit(embeds=[discord_embed_source(None)])
