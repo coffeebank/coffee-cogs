@@ -96,7 +96,7 @@ See the full collection and documentation at:
 |---|---|
 |[bartender](https://coffeebank.github.io/coffee-cogs/bartender)|Serve some yummy drinks to your fellow server members!|
 |[bookery](https://coffeebank.github.io/coffee-cogs/bookery)|Search books and find more about a book. Results from Google Books API.|
-|[coffeeani](https://coffeebank.github.io/coffee-cogs/coffeeani)|Search anime, manga (manhwa/manhua/light novels), and characters. See series info, status, episodes/chapters, and tags. Searches Anilist, MangaDex, and Batoto. Forked from anisearch by Jintaku and Wyn.|
+|[coffeeani](https://coffeebank.github.io/coffee-cogs/coffeeani)|Search anime, manga (manhwa/manhua/light novels), and characters. See series info, status, episodes/chapters, and tags. Searches Anilist, MangaDex, Bangumi. Forked from anisearch by Jintaku and Wyn.|
 |[coffeetime](https://coffeebank.github.io/coffee-cogs/coffeetime)|Check timezones, user times, or times in specific places. Forked from aikaterna's improvements, cog originally by Fishyfing.|
 |[coffeetools](https://coffeebank.github.io/coffee-cogs/coffeetools)|Replacement for 'General' cog, since it needs to be disabled to override certain commands. Changes 'choose' to use \| divider.|
 |[dmreply](https://coffeebank.github.io/coffee-cogs/dmreply)|Replacing the built-in DM feature to be more customizable. Allows users specified as mods to send a customized DM embed to users via a User ID. Made with the goal of helping support teams responding to queries via DM, when used in conjunction with a cog that forwards received DMs to a server channel. Uses global settings, so only use this feature on bots hosted for a single server.|
