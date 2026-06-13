@@ -57,6 +57,9 @@ query get_content_searchComic($select: SearchComic_Select) {
 """
 
 async def batoto_request(query, variables=None):
+    # (2026-01-21) Batoto is permanently closed
+    return None
+
     if variables is None:
         variables = {}
     request_json = {"query": query, "variables": variables}
