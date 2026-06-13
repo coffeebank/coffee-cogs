@@ -181,10 +181,10 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
         whMsg = await webhook.send(
             **{k: v for k, v in whMsgArgs.items() if v is not None}
         )
-    except discord.HTTPException:
+    except discord.HTTPException as err:
         # catch HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
         #     In content: Must be 2000 or fewer in length.
-        if len(msgContent) > 1964:
+        if err.code == 50035:
             msgLines = textwrap.wrap(msgContent, 2000, break_long_words=True)
             for msgLineItem in msgLines:
                 whMsgArgs = {
@@ -200,7 +200,7 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
                     **{k: v for k, v in whMsgArgs.items() if v is not None}
                 )
         # catch HTTPException: 400 Bad Request (error code: 50006): Cannot send an empty message
-        else:
+        elif err.code == 50006:
             try:
                 whMsgArgs = {
                   "content": "**Discord:** Unsupported content\n" + str(msgContent[:1964]) + (str(msgContent[1964:]) and '…'),
@@ -227,6 +227,12 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
                 whMsg = await webhook.send(
                     **{k: v for k, v in whMsgArgs.items() if v is not None}
                 )
+        # catch HTTPException: 400 Bad Request (error code: 10003): Unknown Channel
+        elif err.code == 10003:
+            return await self.ctx.send("Error: Failed to send: \nHTTPException: 400 Bad Request (error code: 10003): Unknown Channel")
+        else:
+            logger.error(err)
+            return False
     except Exception as err:
         logger.error(err)
         # traceback.print_exc()

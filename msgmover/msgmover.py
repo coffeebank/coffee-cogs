@@ -139,6 +139,12 @@ class Msgmover(commands.Cog):
                     await ctx.message.add_reaction("✅")
                 except discord.NotFound:
                     await ctx.send("Done!")
+        except discord.HTTPException as err:
+            # catch HTTPException: 400 Bad Request (error code: 10003): Unknown Channel
+            if err.code == 10003:
+                return await ctx.send("Error: Failed to send: \nHTTPException: 400 Bad Request (error code: 10003): Unknown Channel")
+            else:
+                logger.error(err)
         finally:
             await session.close()
 
