@@ -64,7 +64,7 @@ class Msgmover(commands.Cog):
     async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, discord.Thread, str], maxMessages:int, skipMessages:int=0, thread:str=None):
         """Copies messages from one channel to another
 
-        toChannel can either be a #channel or a webhook URL.
+        toChannel can either be a #channel, #thread, or a webhook URL.
         
         Retrieve 'maxMessages' number of messages from history, and optionally discard 'skipMessages' number of messages from the retrieved list.
         
