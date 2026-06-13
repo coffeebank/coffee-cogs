@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 relayGetData = webhookSettings
 
 
-async def relayAddChannel(self, ctx, chanObj, toWebhook):
+async def relayAddChannel(self, ctx, chanObj, toWebhook, thread: discord.Thread=None):
     msgrelayStoreV2 = await self.config.guild(ctx.guild).msgrelayStoreV2()
     
     # Set attachsAsUrl
@@ -38,6 +38,7 @@ async def relayAddChannel(self, ctx, chanObj, toWebhook):
     try:
         relayInfo = {
             "toWebhook": str(toWebhook),
+            "toThreadId": getattr(thread, 'id', None),
             "attachsAsUrl": attachsAsUrlPred.result,
             "userProfiles": userProfilesPred.result,
         }

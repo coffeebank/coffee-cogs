@@ -248,6 +248,7 @@ def webhookSettings(json):
     """
     relayInfo = {
         "toWebhook": json.get("toWebhook", ""),
+        "toThreadId": json.get("toThreadId", ""),
         "attachsAsUrl": json.get("attachsAsUrl", True),
         "userProfiles": json.get("userProfiles", True),
     }

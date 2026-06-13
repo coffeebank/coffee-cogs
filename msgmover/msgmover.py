@@ -199,24 +199,37 @@ class Msgmover(commands.Cog):
 
     @msgrelay.command(name="add")
     @commands.bot_has_permissions(add_reactions=True)
-    async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, str]):
+    async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, discord.Thread, str], thread_ref: str=None):
         """Create a message relay
         
-        Cross-server relays must be a webhook. [How to create webhooks >](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)"""
+        Cross-server relays must be a webhook. [How to create webhooks >](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)
+        
+        Cross-server relays to a thread must also include the thread reference separately at the end (Thread link or Thread ID)"""
 
         # Error catching
         relayResp = await relayCheckInput(self, ctx, toChannel)
         if relayResp == False:
             return
 
+        # Check if thread
+        isThread = None
+        if isinstance(toChannel, discord.Thread):
+            isThread = toChannel
+            toChannel = toChannel.parent
+        if thread_ref:
+            threadId = checkThreadId(thread)
+            if threadId:
+                isThread = threadId
+
         # Create entry
-        relayAdd = await relayAddChannel(self, ctx, fromChannel, relayResp)
+        relayAdd = await relayAddChannel(self, ctx, fromChannel, relayResp, isThread)
         if relayAdd == False:
             return await ctx.send("Setup was stopped. Exited.")
         else:
             await self.config.guild(ctx.guild).msgrelayStoreV2.set(relayAdd)
 
         # Test
+        # At the very end, to confirm the entry has been saved and works
         try:
             await fromChannel.send("**Channels are now linked!**\nThis is a sample message.")
         except Exception as err:
@@ -319,7 +332,10 @@ class Msgmover(commands.Cog):
                 for wh in hookData:
                     configJson = relayGetData(wh)
                     webhook = Webhook.from_url(wh["toWebhook"], session=session)
-                    whResult = await msgFormatter(self, webhook, message, configJson)
+                    toThread = None
+                    if "toThreadId" in wh:
+                        toThread = discord.Object(id=wh["toThreadId"])
+                    whResult = await msgFormatter(self, webhook, message, configJson, thread=toThread)
                     wh["whResult"] = whResult.id
                 # Wait, then check for edits/deletes
                 if relayTimer <= 0:
