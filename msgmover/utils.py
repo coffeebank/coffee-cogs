@@ -14,6 +14,13 @@ WEBHOOK_EMPTY_AVATAR = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2
 WEBHOOK_EMPTY_NAME = "\u2e33\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2e33"
 
 
+def checkThreadId(threadInput: str):
+    # Match Thread ID or https://discord.com/channels/{guild.id}/{thread.id} 
+    # Thread > Copy link shows up for everyone. Copy Thread ID needs Developer Mode enabled.
+    match = re.search(r'(\d+)\s*$', threadInput)
+    if match:
+        return discord.Object(id=int(match.group(1)))
+    return None
 
 async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId=None, thread: discord.Thread=None):
     # webhook: A webhook object from discord.py

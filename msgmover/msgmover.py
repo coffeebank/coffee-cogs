@@ -6,7 +6,7 @@ from redbot.core import Config, commands
 import discord
 from discord import Webhook
 
-from .utils import msgFormatter, webhookSettings, webhookFinder, WEBHOOK_EMPTY_AVATAR, WEBHOOK_EMPTY_NAME
+from .utils import checkThreadId, msgFormatter, webhookSettings, webhookFinder, WEBHOOK_EMPTY_AVATAR, WEBHOOK_EMPTY_NAME
 from .utils_copy import timestampEmbed
 from .utils_relay import relayGetData, relayAddChannel, relayRemoveChannel, relayCheckInput, fixMsgrelayStoreV2alpha
 
@@ -61,7 +61,7 @@ class Msgmover(commands.Cog):
     @commands.command(name="msgcopy", aliases=["msgmove", "msgmover"])
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(add_reactions=True, read_message_history=True)
-    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, discord.Thread, str], maxMessages:int, skipMessages:int=0):
+    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, discord.Thread, str], maxMessages:int, skipMessages:int=0, thread:str=None):
         """Copies messages from one channel to another
 
         toChannel can either be a #channel or a webhook URL.
@@ -83,6 +83,10 @@ class Msgmover(commands.Cog):
         if isinstance(toChannel, discord.Thread):
             isThread = toChannel
             toChannel = toChannel.parent
+        if thread:
+            threadId = checkThreadId(thread)
+            if threadId:
+                isThread = threadId
 
         if maxMessages <= 0:
             return await ctx.send("Error: Please input a valid number of messages to copy.")
