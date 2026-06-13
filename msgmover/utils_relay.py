@@ -75,6 +75,9 @@ async def relayRemoveChannel(self, ctx, channel, itemToDelete):
 
 
 async def relayCheckInput(self, ctx, toChannel):
+    # Check if thread first, and return channel info instead
+    if isinstance(toChannel, discord.Thread):
+        toChannel = toChannel.parent
     # Find/create webhook at destination if input is a channel
     if isinstance(toChannel, discord.TextChannel):
         toWebhook = await webhookFinder(self, toChannel)

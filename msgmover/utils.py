@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 import json
+import re
 import textwrap
 
 import discord
@@ -14,7 +15,7 @@ WEBHOOK_EMPTY_NAME = "\u2e33\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u20
 
 
 
-async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId=None):
+async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId=None, thread: discord.Thread=None):
     # webhook: A webhook object from discord.py
     # message: A message object from discord.py
     # json: A {dict} with config variables
@@ -83,10 +84,14 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
         else:
             replyEmbed.set_author(name=replyTitle, url=refUrl)
         # Send this before the original message so that the embed appears above the message in chat
+        headerMsg = {
+          "username": userProfilesName,
+          "avatar_url": userProfilesAvatar,
+          "embeds": replyEmbed,
+          "thread": thread,
+        }
         await webhook.send(
-            username=userProfilesName,
-            avatar_url=userProfilesAvatar,
-            embed=replyEmbed
+            **{k: v for k, v in headerMsg.items() if v is not None}
         )
         await asyncio.sleep(1)
           
@@ -163,7 +168,8 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
           "avatar_url": userProfilesAvatar,
           "embeds": msgEmbed,
           "files": msgAttach,
-          "wait": True
+          "wait": True,
+          "thread": thread,
         }
         whMsg = await webhook.send(
             **{k: v for k, v in whMsgArgs.items() if v is not None}
@@ -180,7 +186,8 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
                   "avatar_url": userProfilesAvatar,
                   "embeds": msgEmbed,
                   "files": msgAttach,
-                  "wait": True
+                  "wait": True,
+                  "thread": thread,
                 }
                 whMsg = await webhook.send(
                     **{k: v for k, v in whMsgArgs.items() if v is not None}
@@ -194,7 +201,8 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
                   "avatar_url": userProfilesAvatar,
                   "embeds": msgEmbed,
                   "files": msgAttach,
-                  "wait": True
+                  "wait": True,
+                  "thread": thread,
                 }
                 whMsg = await webhook.send(
                     **{k: v for k, v in whMsgArgs.items() if v is not None}
@@ -206,7 +214,8 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
                   "username": "Unknown User",
                   "embeds": msgEmbed,
                   "files": msgAttach,
-                  "wait": True
+                  "wait": True,
+                  "thread": thread,
                 }
                 whMsg = await webhook.send(
                     **{k: v for k, v in whMsgArgs.items() if v is not None}

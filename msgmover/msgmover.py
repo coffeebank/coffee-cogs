@@ -61,7 +61,7 @@ class Msgmover(commands.Cog):
     @commands.command(name="msgcopy", aliases=["msgmove", "msgmover"])
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(add_reactions=True, read_message_history=True)
-    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, str], maxMessages:int, skipMessages:int=0):
+    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, discord.Thread, str], maxMessages:int, skipMessages:int=0):
         """Copies messages from one channel to another
 
         toChannel can either be a #channel or a webhook URL.
@@ -77,6 +77,12 @@ class Msgmover(commands.Cog):
         toWebhook = await relayCheckInput(self, ctx, toChannel)
         if toWebhook == False:
             return
+
+        # Check if thread
+        isThread = None
+        if isinstance(toChannel, discord.Thread):
+            isThread = toChannel
+            toChannel = toChannel.parent
 
         if maxMessages <= 0:
             return await ctx.send("Error: Please input a valid number of messages to copy.")
@@ -103,20 +109,24 @@ class Msgmover(commands.Cog):
                     # Send timestamp if it's been more than 10mins time difference
                     # If they equal, it means it's the first item, so send timestamp
                     if msgItemLast == msgItem.created_at or (msgItem.created_at-msgItemLast).total_seconds() > 600:
+                        headerMsg = {
+                        "username": WEBHOOK_EMPTY_NAME,
+                        "avatar_url": WEBHOOK_EMPTY_AVATAR,
+                        "embed": await timestampEmbed(self, ctx, msgItem.created_at),
+                        "thread": isThread,
+                        }
                         await webhook.send(
-                            username=WEBHOOK_EMPTY_NAME,
-                            avatar_url=WEBHOOK_EMPTY_AVATAR,
-                            embed=await timestampEmbed(self, ctx, msgItem.created_at)
+                            **{k: v for k, v in headerMsg.items() if v is not None}
                         )
                         await asyncio.sleep(1)
                     configJson = webhookSettings({"attachsAsUrl": False, "userProfiles": True})
-                    whMsg = await msgFormatter(self, webhook, msgItem, configJson)
+                    whMsg = await msgFormatter(self, webhook, msgItem, configJson, thread=isThread)
                     if whMsg == False:
                         await ctx.send("Failed to send: "+str(msgItem))
                     else:
                         # Trigger edited tag if it was edited
                         if msgItem.edited_at:
-                            await msgFormatter(self, webhook, msgItem, configJson, editMsgId=whMsg.id)
+                            await msgFormatter(self, webhook, msgItem, configJson, editMsgId=whMsg.id, thread=isThread)
                     # Save timestamp to msgItemLast
                     msgItemLast = msgItem.created_at
 
