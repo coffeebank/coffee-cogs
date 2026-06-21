@@ -60,7 +60,7 @@ class Coffeeani(commands.Cog):
         To search by source, use:
         - `[p]anilist manga`
         - `[p]mangadex`
-        - `[p]bangumi manga
+        - `[p]bangumi manga`
         """
         try:
             msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
@@ -75,9 +75,6 @@ class Coffeeani(commands.Cog):
 
             await msg.edit(embeds=[discord_embed_source(NAME_BANGUMI, COLOR_BANGUMI)])
             embeds = await discord_bangumi_embeds("manga", title)
-            if embeds:
-                return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
-
             if embeds:
                 return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
 
