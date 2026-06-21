@@ -55,13 +55,12 @@ class Coffeeani(commands.Cog):
     async def manga(self, ctx, *, title):
         """Search for manga, manhwa, manhua, and light novels
         
-        Searches Anilist, MangaDex, Bangumi, Batoto.
+        Searches Anilist, MangaDex, Bangumi.
 
         To search by source, use:
         - `[p]anilist manga`
         - `[p]mangadex`
-        - `[p]bangumi manga
-        - `[p]batoto`
+        - `[p]bangumi manga`
         """
         try:
             msg = await ctx.send(embeds=[discord_embed_source(NAME_ANILIST, COLOR_ANILIST)])
@@ -76,11 +75,6 @@ class Coffeeani(commands.Cog):
 
             await msg.edit(embeds=[discord_embed_source(NAME_BANGUMI, COLOR_BANGUMI)])
             embeds = await discord_bangumi_embeds("manga", title)
-            if embeds:
-                return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
-
-            await msg.edit(embeds=[discord_embed_source(NAME_BATOTO, COLOR_BATOTO)])
-            embeds = await discord_batoto_embeds(title)
             if embeds:
                 return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
 
@@ -234,26 +228,6 @@ class Coffeeani(commands.Cog):
         try:
             msg = await ctx.send(embeds=[discord_embed_source(NAME_BANGUMI, COLOR_BANGUMI)])
             embeds = await discord_bangumi_embeds("manga", title)
-            if embeds:
-                return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
-            return await msg.edit(embeds=[discord_embed_source(None)])
-        # Search results message was deleted
-        except discord.NotFound as err:
-            try:
-                return await ctx.send("Search was cancelled.")
-            except Exception:
-                pass
-
-    @commands.hybrid_command()
-    @app_commands.describe(title="Search Batoto for manga, manhwa, and manhua")
-    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
-    async def batoto(self, ctx, *, title):
-        """Search Batoto
-        
-        Search Batoto for manga, manhwa, and manhua"""
-        try:
-            msg = await ctx.send(embeds=[discord_embed_source(NAME_BATOTO, COLOR_BATOTO)])
-            embeds = await discord_batoto_embeds(title)
             if embeds:
                 return await ExtendedSimpleMenu(pages=embeds, timeout=90).replace(ctx, msg)
             return await msg.edit(embeds=[discord_embed_source(None)])
