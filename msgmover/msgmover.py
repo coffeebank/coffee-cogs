@@ -6,7 +6,7 @@ from redbot.core import Config, commands
 import discord
 from discord import Webhook
 
-from .utils import msgFormatter, webhookSettings, webhookFinder, WEBHOOK_EMPTY_AVATAR, WEBHOOK_EMPTY_NAME
+from .utils import checkThreadId, msgFormatter, webhookSettings, webhookFinder, WEBHOOK_EMPTY_AVATAR, WEBHOOK_EMPTY_NAME
 from .utils_copy import timestampEmbed
 from .utils_relay import relayGetData, relayAddChannel, relayRemoveChannel, relayCheckInput, fixMsgrelayStoreV2alpha
 
@@ -61,10 +61,10 @@ class Msgmover(commands.Cog):
     @commands.command(name="msgcopy", aliases=["msgmove", "msgmover"])
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(add_reactions=True, read_message_history=True)
-    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, str], maxMessages:int, skipMessages:int=0):
+    async def msgcopy(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, discord.Thread, str], maxMessages:int, skipMessages:int=0, thread:str=None):
         """Copies messages from one channel to another
 
-        toChannel can either be a #channel or a webhook URL.
+        toChannel can either be a #channel, #thread, or a webhook URL.
         
         Retrieve 'maxMessages' number of messages from history, and optionally discard 'skipMessages' number of messages from the retrieved list.
         
@@ -77,6 +77,16 @@ class Msgmover(commands.Cog):
         toWebhook = await relayCheckInput(self, ctx, toChannel)
         if toWebhook == False:
             return
+
+        # Check if thread
+        isThread = None
+        if isinstance(toChannel, discord.Thread):
+            isThread = toChannel
+            toChannel = toChannel.parent
+        if thread:
+            threadId = checkThreadId(thread)
+            if threadId:
+                isThread = threadId
 
         if maxMessages <= 0:
             return await ctx.send("Error: Please input a valid number of messages to copy.")
@@ -103,20 +113,24 @@ class Msgmover(commands.Cog):
                     # Send timestamp if it's been more than 10mins time difference
                     # If they equal, it means it's the first item, so send timestamp
                     if msgItemLast == msgItem.created_at or (msgItem.created_at-msgItemLast).total_seconds() > 600:
+                        headerMsg = {
+                        "username": WEBHOOK_EMPTY_NAME,
+                        "avatar_url": WEBHOOK_EMPTY_AVATAR,
+                        "embed": await timestampEmbed(self, ctx, msgItem.created_at),
+                        "thread": isThread,
+                        }
                         await webhook.send(
-                            username=WEBHOOK_EMPTY_NAME,
-                            avatar_url=WEBHOOK_EMPTY_AVATAR,
-                            embed=await timestampEmbed(self, ctx, msgItem.created_at)
+                            **{k: v for k, v in headerMsg.items() if v is not None}
                         )
                         await asyncio.sleep(1)
                     configJson = webhookSettings({"attachsAsUrl": False, "userProfiles": True})
-                    whMsg = await msgFormatter(self, webhook, msgItem, configJson)
+                    whMsg = await msgFormatter(self, webhook, msgItem, configJson, thread=isThread)
                     if whMsg == False:
                         await ctx.send("Failed to send: "+str(msgItem))
                     else:
                         # Trigger edited tag if it was edited
                         if msgItem.edited_at:
-                            await msgFormatter(self, webhook, msgItem, configJson, editMsgId=whMsg.id)
+                            await msgFormatter(self, webhook, msgItem, configJson, editMsgId=whMsg.id, thread=isThread)
                     # Save timestamp to msgItemLast
                     msgItemLast = msgItem.created_at
 
@@ -125,6 +139,12 @@ class Msgmover(commands.Cog):
                     await ctx.message.add_reaction("✅")
                 except discord.NotFound:
                     await ctx.send("Done!")
+        except discord.HTTPException as err:
+            # catch HTTPException: 400 Bad Request (error code: 10003): Unknown Channel
+            if err.code == 10003:
+                return await ctx.send("Error: Failed to send: \nHTTPException: 400 Bad Request (error code: 10003): Unknown Channel")
+            else:
+                logger.error(err)
         finally:
             await session.close()
 
@@ -179,24 +199,37 @@ class Msgmover(commands.Cog):
 
     @msgrelay.command(name="add")
     @commands.bot_has_permissions(add_reactions=True)
-    async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, str]):
+    async def mmmradd(self, ctx, fromChannel: discord.TextChannel, toChannel: typing.Union[discord.TextChannel, discord.Thread, str], thread_ref: str=None):
         """Create a message relay
         
-        Cross-server relays must be a webhook. [How to create webhooks >](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)"""
+        Cross-server relays must be a webhook. [How to create webhooks >](https://support.discord.com/hc/article_attachments/1500000463501/Screen_Shot_2020-12-15_at_4.41.53_PM.png)
+        
+        Cross-server relays to a thread must also include the thread reference separately at the end (Thread link or Thread ID)"""
 
         # Error catching
         relayResp = await relayCheckInput(self, ctx, toChannel)
         if relayResp == False:
             return
 
+        # Check if thread
+        isThread = None
+        if isinstance(toChannel, discord.Thread):
+            isThread = toChannel
+            toChannel = toChannel.parent
+        if thread_ref:
+            threadId = checkThreadId(thread)
+            if threadId:
+                isThread = threadId
+
         # Create entry
-        relayAdd = await relayAddChannel(self, ctx, fromChannel, relayResp)
+        relayAdd = await relayAddChannel(self, ctx, fromChannel, relayResp, isThread)
         if relayAdd == False:
             return await ctx.send("Setup was stopped. Exited.")
         else:
             await self.config.guild(ctx.guild).msgrelayStoreV2.set(relayAdd)
 
         # Test
+        # At the very end, to confirm the entry has been saved and works
         try:
             await fromChannel.send("**Channels are now linked!**\nThis is a sample message.")
         except Exception as err:
@@ -299,7 +332,10 @@ class Msgmover(commands.Cog):
                 for wh in hookData:
                     configJson = relayGetData(wh)
                     webhook = Webhook.from_url(wh["toWebhook"], session=session)
-                    whResult = await msgFormatter(self, webhook, message, configJson)
+                    toThread = None
+                    if "toThreadId" in wh:
+                        toThread = discord.Object(id=wh["toThreadId"])
+                    whResult = await msgFormatter(self, webhook, message, configJson, thread=toThread)
                     wh["whResult"] = whResult.id
                 # Wait, then check for edits/deletes
                 if relayTimer <= 0:

@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 import json
+import re
 import textwrap
 
 import discord
@@ -13,8 +14,15 @@ WEBHOOK_EMPTY_AVATAR = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2
 WEBHOOK_EMPTY_NAME = "\u2e33\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2002\u2e33"
 
 
+def checkThreadId(threadInput: str):
+    # Match Thread ID or https://discord.com/channels/{guild.id}/{thread.id} 
+    # Thread > Copy link shows up for everyone. Copy Thread ID needs Developer Mode enabled.
+    match = re.search(r'(\d+)\s*$', threadInput)
+    if match:
+        return discord.Object(id=int(match.group(1)))
+    return None
 
-async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId=None):
+async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId=None, thread: discord.Thread=None):
     # webhook: A webhook object from discord.py
     # message: A message object from discord.py
     # json: A {dict} with config variables
@@ -83,10 +91,14 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
         else:
             replyEmbed.set_author(name=replyTitle, url=refUrl)
         # Send this before the original message so that the embed appears above the message in chat
+        headerMsg = {
+          "username": userProfilesName,
+          "avatar_url": userProfilesAvatar,
+          "embeds": replyEmbed,
+          "thread": thread,
+        }
         await webhook.send(
-            username=userProfilesName,
-            avatar_url=userProfilesAvatar,
-            embed=replyEmbed
+            **{k: v for k, v in headerMsg.items() if v is not None}
         )
         await asyncio.sleep(1)
           
@@ -163,15 +175,16 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
           "avatar_url": userProfilesAvatar,
           "embeds": msgEmbed,
           "files": msgAttach,
-          "wait": True
+          "wait": True,
+          "thread": thread,
         }
         whMsg = await webhook.send(
             **{k: v for k, v in whMsgArgs.items() if v is not None}
         )
-    except discord.HTTPException:
+    except discord.HTTPException as err:
         # catch HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
         #     In content: Must be 2000 or fewer in length.
-        if len(msgContent) > 1964:
+        if err.code == 50035:
             msgLines = textwrap.wrap(msgContent, 2000, break_long_words=True)
             for msgLineItem in msgLines:
                 whMsgArgs = {
@@ -180,13 +193,14 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
                   "avatar_url": userProfilesAvatar,
                   "embeds": msgEmbed,
                   "files": msgAttach,
-                  "wait": True
+                  "wait": True,
+                  "thread": thread,
                 }
                 whMsg = await webhook.send(
                     **{k: v for k, v in whMsgArgs.items() if v is not None}
                 )
         # catch HTTPException: 400 Bad Request (error code: 50006): Cannot send an empty message
-        else:
+        elif err.code == 50006:
             try:
                 whMsgArgs = {
                   "content": "**Discord:** Unsupported content\n" + str(msgContent[:1964]) + (str(msgContent[1964:]) and '…'),
@@ -194,7 +208,8 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
                   "avatar_url": userProfilesAvatar,
                   "embeds": msgEmbed,
                   "files": msgAttach,
-                  "wait": True
+                  "wait": True,
+                  "thread": thread,
                 }
                 whMsg = await webhook.send(
                     **{k: v for k, v in whMsgArgs.items() if v is not None}
@@ -206,11 +221,18 @@ async def msgFormatter(self, webhook, message, json, editMsgId=None, deleteMsgId
                   "username": "Unknown User",
                   "embeds": msgEmbed,
                   "files": msgAttach,
-                  "wait": True
+                  "wait": True,
+                  "thread": thread,
                 }
                 whMsg = await webhook.send(
                     **{k: v for k, v in whMsgArgs.items() if v is not None}
                 )
+        # catch HTTPException: 400 Bad Request (error code: 10003): Unknown Channel
+        elif err.code == 10003:
+            return await self.ctx.send("Error: Failed to send: \nHTTPException: 400 Bad Request (error code: 10003): Unknown Channel")
+        else:
+            logger.error(err)
+            return False
     except Exception as err:
         logger.error(err)
         # traceback.print_exc()
@@ -226,6 +248,7 @@ def webhookSettings(json):
     """
     relayInfo = {
         "toWebhook": json.get("toWebhook", ""),
+        "toThreadId": json.get("toThreadId", ""),
         "attachsAsUrl": json.get("attachsAsUrl", True),
         "userProfiles": json.get("userProfiles", True),
     }
